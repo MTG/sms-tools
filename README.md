@@ -18,7 +18,7 @@ spectral modelling synthesis tools for sound and music applications
 <h3>How to execute the codes:</h3>
 
 <p> In your terminal: <code>python hpsGui.py</code> </p>
-Inside iPython --pylab: <code>run hpsGui</code>
+<p> Inside iPython --pylab: <code>run hpsGui</code> </p>
 
 <h3>How to compile UtilityFunctions:</h3>
 
