@@ -11,6 +11,7 @@ spectral modelling synthesis tools for sound and music applications
 <li>Scipy</li>
 <li>PyAudio</li>
 <li>PySide</li>
+<li>Cython</li>
 </ul>
 
 <hr>
