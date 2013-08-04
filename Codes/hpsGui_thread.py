@@ -20,26 +20,37 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     super(MainWindow, self).__init__(parent)
     self.setupUi(self)
 
+    self.fs = fs
+    self.x = x
+    self.y = np.ndarray([])
+    self.yh = np.ndarray([])
+    self.ys = np.ndarray([])
+    
     self.nextButton.clicked.connect(functools.partial(self.playButtonClicked, x, fs, 1, True, True))
     self.playButton.clicked.connect(functools.partial(self.playButtonClicked, x, fs, 1, True))
     self.rewindButton.clicked.connect(functools.partial(self.playButtonClicked, x, fs, 100, True))
     self.doubleRewindButton.clicked.connect(functools.partial(self.playButtonClicked, x, fs, 500, True))
     self.endButton.clicked.connect(functools.partial(self.playButtonClicked, x, fs, 0, False))
 
-  def playYClicked(self, x, fs):
-    wp.play(x, fs)
+    self.playX.clicked.connect(self.playXClicked)
+    self.playY.clicked.connect(self.playYClicked)
+    self.playYh.clicked.connect(self.playYhClicked)
+    self.playYs.clicked.connect(self.playYsClicked)
 
-  def playYClicked(self, y, fs):
-    wp.play(y, fs)
+  def playXClicked(self):
+    wp.play(self.x, self.fs)
 
-  def playYhClicked(self, yh, fs):
-    wp.play(yh, fs)
+  def playYClicked(self):
+    wp.play(self.y, self.fs)
 
-  def playYsClicked(self, ys, fs):
-    wp.play(ys, fs)
+  def playYhClicked(self):
+    wp.play(self.yh, self.fs)
+
+  def playYsClicked(self):
+    wp.play(self.ys, self.fs)
 
   # def pauseButtonClicked(self):
-  #  	time.sleep(5) 										# pause execution for 5 seconds
+  #   self.hpsThread.quit
 
   def playButtonClicked(self, x, fs, step, plot, process = False):
     
@@ -53,7 +64,7 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     maxhd = float(self.maxhd.text())
     stocf = float(self.stocf.text())
     nFrameStart = int(self.nFrameStart.text())
-    
+
     self.playX.setEnabled(False)
     self.playY.setEnabled(False)
     self.playYh.setEnabled(False)
@@ -69,12 +80,25 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     self.maxhd.setEnabled(False)
     self.stocf.setEnabled(False)
 
-    y, yh, ys = self.hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, step, plot, nFrameStart, process)
+    #self.pauseButton.setEnabled(True)
 
+    self.hpsThread = HpsThread(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, step, plot, process, nFrameStart)
+    self.hpsThread.start()
+    self.connect(self.hpsThread, SIGNAL("hpsDone(object, object, object, int)"), self.hpsDone, Qt.DirectConnection)
+    #self.pauseButton.clicked.connect(self.pauseButtonClicked)
+
+  def hpsDone(self, y, yh, ys, fs):
+    
     self.playX.setEnabled(True)
     self.playY.setEnabled(True)
     self.playYh.setEnabled(True)
     self.playYs.setEnabled(True)
+
+    self.y = y
+    self.yh = yh
+    self.ys = ys
+    self.fs = fs
+    self.hpsThread.quit
 
     self.w.setEnabled(True)
     self.N.setEnabled(True)
@@ -86,11 +110,28 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     self.maxhd.setEnabled(True)
     self.stocf.setEnabled(True)
 
-    self.playX.clicked.connect(functools.partial(self.playYClicked, x, fs))
-    self.playY.clicked.connect(functools.partial(self.playYClicked, y, fs))
-    self.playYh.clicked.connect(functools.partial(self.playYClicked, yh, fs))
-    self.playYs.clicked.connect(functools.partial(self.playYClicked, ys, fs))
+    #self.pauseButton.setEnabled(False)
 
+class HpsThread(QThread):
+
+  def __init__(self, x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, step, plot, process, nFrameStart, parent = None):
+    super(HpsThread, self).__init__(parent)
+    self.x = x
+    self.fs = fs
+    self.w = w
+    self.N = N
+    self.t = t
+    self.nH = nH
+    self.minf0 = minf0
+    self.maxf0 = maxf0
+    self.f0et = f0et
+    self.maxhd = maxhd
+    self.stocf = stocf
+    self.step = step
+    self.plot = plot
+    self.process = process
+    self.nFrameStart = nFrameStart
+  	
   def peak_interp(self, mX, pX, ploc):
     # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
     # iploc, ipmag, ipphase: interpolated values
@@ -116,7 +157,8 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
 
     return ploc
 
-  def hps(self, x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, step, plot, nFrameStart, process):
+  def run(self):
+
     # Analysis/synthesis of a sound using the harmonic plus stochastic model
     # x: input sound, fs: sampling rate, w: analysis window (odd size), 
     # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -127,7 +169,25 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     # stocf: decimation factor of mag spectrum for stochastic analysis
     # y: output sound, yh: harmonic component, ys: stochastic component
 
-    freq_range = 10000 # fs/2 by default
+    # initialize variables
+    x = self.x
+    fs = self.fs
+    w = self.w
+    N = self.N
+    t = self.t
+    nH = self.nH
+    minf0 = self.minf0
+    maxf0 = self.maxf0
+    f0et = self.f0et
+    maxhd = self.maxhd
+    stocf = self.stocf
+    plot = self.plot
+    process = self.process
+    step = self.step
+    nFrameStart = self.nFrameStart
+
+
+    freq_range = 10000 				# fs/2 by default
     x = np.float32(x) / (2**15)                                   # normalize input signal
 
     hN = N/2                                                      # size of positive spectrum
@@ -154,80 +214,80 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     lastyhloc = np.zeros(nH)                                      # initialize synthesis harmonic locations
     yhphase = 2*np.pi * np.random.rand(nH)                        # initialize synthesis harmonic phases     
 
-    n_frame = 0 																									# initialize number of frames counter
-    
+    n_frame = 0                                                   # initialize number of frames counter
+                 
     if plot:
-	    
-	  #-----initialize plots-----
-	    
-	    plt.ion() 																									 # activate interactive mode 
-	    clip_in = 0.0                                                # samples to clip input/output signal
-	    clip_spec = 0.0                                              # number of frames to clip spectrogram
-	    freq = np.arange(0, freq_range, fs/N)                        # frequency axis in Hz
-	    freq = freq[:freq.size-1]
-	    time = np.arange(0, np.float32(x.size)/fs, 1.0/fs)           # time axis in seconds
-	    n_bins = freq.size 																					 # number of total bins in the freq_range
-	    specgram = np.ones((n_bins, pend/H)) * -200                  # initialize spectrogram
-	    prev_harmonics = np.zeros(nH-1)                              # previous harmonics to create harmonic trajectories
-	    prev_f0 = 0                                                  # previous f0 to create f0 trajectory
+                   
+    #-----initialize plots-----
+      
+      plt.ion()                                                   # activate interactive mode 
+      clip_in = 0.0                                               # samples to clip input/output signal
+      clip_spec = 0.0                                             # number of frames to clip spectrogram
+      freq = np.arange(0, freq_range, fs/N)                       # frequency axis in Hz
+      freq = freq[:freq.size-1]
+      time = np.arange(0, np.float32(x.size)/fs, 1.0/fs)          # time axis in seconds
+      n_bins = freq.size                                          # number of total bins in the freq_range
+      specgram = np.ones((n_bins, pend/H)) * -200                 # initialize spectrogram
+      prev_harmonics = np.zeros(nH-1)                             # previous harmonics to create harmonic trajectories
+      prev_f0 = 0                                                 # previous f0 to create f0 trajectory
 
-	    fig = plt.figure(figsize = (10.5, 7.1), dpi = 100) 
-	    ax0 = plt.subplot2grid((8,6), (0, 0), colspan = 6)
-	    ax0.set_position([0.04, 0.955, 0.92, 0.015])
-	    ax0.set_title("timeline", size = 7, fontweight = 'bold')
-	    ax0.yaxis.set_ticks([])                           					 # no y axis ticks
-	    ax0.xaxis.set_ticks([0, np.float32(x.size)/fs])              # set only two ticks in the limits of the plot
-	    ax0.set_xticklabels(['0 s',  '%.2f' % (np.float32(x.size)/fs) + ' s'])
-	    ax0.set_xlim(0, np.float32(x.size)/fs)
-	    ax0.plot(time, np.zeros(x.size), lw = 1.5)
-	    plt.tick_params(axis = 'both', labelsize = 8)
-	    rect_zoom = patches.Rectangle((0, -2**7), width = (80.0*H)/fs, height = 2**15, color = 'black', alpha = 0.2)
-	    ax0.add_patch(rect_zoom)
+      fig = plt.figure(figsize = (10.5, 7.1), dpi = 100) 
+      ax0 = plt.subplot2grid((8,6), (0, 0), colspan = 6)
+      ax0.set_position([0.04, 0.955, 0.92, 0.015])
+      ax0.set_title("timeline", size = 7, fontweight = 'bold')
+      ax0.yaxis.set_ticks([])                                     # no y axis ticks
+      ax0.xaxis.set_ticks([0, np.float32(x.size)/fs])             # set only two ticks in the limits of the plot
+      ax0.set_xticklabels(['0 s',  '%.2f' % (np.float32(x.size)/fs) + ' s'])
+      ax0.set_xlim(0, np.float32(x.size)/fs)
+      ax0.plot(time, np.zeros(x.size), lw = 1.5)
+      plt.tick_params(axis = 'both', labelsize = 8)
+      rect_zoom = patches.Rectangle((0, -2**7), width = (80.0*H)/fs, height = 2**15, color = 'black', alpha = 0.2)
+      ax0.add_patch(rect_zoom)
 
-	    ax1 = plt.subplot2grid((8, 6), (1, 0), colspan = 6)
-	    ax1.set_position([0.04, 0.87, 0.92, 0.05])
-	    ax1.set_title("Input Signal (x)", size = 9, fontweight = 'bold')
-	    ax1.locator_params(axis = 'y', nbins = 5)
-	    ax1.set_xlim(0, (80.0*H)/fs)
-	    ax1.set_ylim(x.min(), x.max())
-	    plt.tick_params(axis = 'both', labelsize = 8)
-	    plt.setp(ax1.get_xticklabels(), visible = False)
-	    ax1.plot(time[:80*H], x[:80*H], 'b')
+      ax1 = plt.subplot2grid((8, 6), (1, 0), colspan = 6)
+      ax1.set_position([0.04, 0.87, 0.92, 0.05])
+      ax1.set_title("Input Signal (x)", size = 9, fontweight = 'bold')
+      ax1.locator_params(axis = 'y', nbins = 5)
+      ax1.set_xlim(0, (80.0*H)/fs)
+      ax1.set_ylim(x.min(), x.max())
+      plt.tick_params(axis = 'both', labelsize = 8)
+      plt.setp(ax1.get_xticklabels(), visible = False)
+      ax1.plot(time[:80*H], x[:80*H], 'b')
 
-	    ax2 = plt.subplot2grid((8, 6), (2, 0), colspan = 6, sharex = ax1, sharey = ax1)
-	    ax2.set_position([0.04, 0.79, 0.92, 0.05])
-	    ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
-	    ax2.set_xlim(0, (80.0*H)/fs)
-	    ax2.set_ylim(x.min(), x.max())
-	    plt.tick_params(axis = 'both', labelsize = 8)
+      ax2 = plt.subplot2grid((8, 6), (2, 0), colspan = 6, sharex = ax1, sharey = ax1)
+      ax2.set_position([0.04, 0.79, 0.92, 0.05])
+      ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
+      ax2.set_xlim(0, (80.0*H)/fs)
+      ax2.set_ylim(x.min(), x.max())
+      plt.tick_params(axis = 'both', labelsize = 8)
 
-	    ax3 = plt.subplot2grid((8, 6), (3, 0), rowspan = 2, colspan = 3)
-	    ax3.set_position([0.06, 0.52, 0.42, 0.21])
-	    ax3.set_title("Original spectrum (mX, iploc, ipmag, f0, hloc, hmag)", size = 9, fontweight = 'bold')
-	    ax3.set_xlabel("Frequency (Hz)", size = 8)
-	    ax3.set_ylabel("Amplitude (dB)", size = 8)
-	    ax3.set_xlim(0, freq_range)
-	    ax3.set_ylim(-100, 0)
-	    plt.tick_params(axis = 'both', labelsize = 8)
+      ax3 = plt.subplot2grid((8, 6), (3, 0), rowspan = 2, colspan = 3)
+      ax3.set_position([0.06, 0.52, 0.42, 0.21])
+      ax3.set_title("Original spectrum (mX, iploc, ipmag, f0, hloc, hmag)", size = 9, fontweight = 'bold')
+      ax3.set_xlabel("Frequency (Hz)", size = 8)
+      ax3.set_ylabel("Amplitude (dB)", size = 8)
+      ax3.set_xlim(0, freq_range)
+      ax3.set_ylim(-100, 0)
+      plt.tick_params(axis = 'both', labelsize = 8)
 
-	    ax4 = plt.subplot2grid((8, 6), (3, 4), rowspan = 2, colspan = 3, sharex = ax3, sharey = ax3)
-	    ax4.set_position([0.55, 0.52, 0.42, 0.21])
-	    ax4.set_title("Harmonic plus residual spectrum (mXh, mXr, mX2)", size = 9, fontweight = 'bold')
-	    ax4.set_xlabel("Frequency (Hz)", size = 8)
-	    ax4.set_ylabel("Amplitude (dB)", size = 8)
-	    ax4.set_xlim(0, freq_range)
-	    ax4.set_ylim(-100, 0)
-	    plt.tick_params(axis = 'both', labelsize = 8)
+      ax4 = plt.subplot2grid((8, 6), (3, 4), rowspan = 2, colspan = 3, sharex = ax3, sharey = ax3)
+      ax4.set_position([0.55, 0.52, 0.42, 0.21])
+      ax4.set_title("Harmonic plus residual spectrum (mXh, mXr, mX2)", size = 9, fontweight = 'bold')
+      ax4.set_xlabel("Frequency (Hz)", size = 8)
+      ax4.set_ylabel("Amplitude (dB)", size = 8)
+      ax4.set_xlim(0, freq_range)
+      ax4.set_ylim(-100, 0)
+      plt.tick_params(axis = 'both', labelsize = 8)
 
-	    ax5 = plt.subplot2grid((8, 6), (7, 1), rowspan = 2, colspan = 4)
-	    ax5.set_position([0.05, 0.03, 0.92, 0.42])
-	    ax5.set_title("Peak tracking", size = 9, fontweight = 'bold')
-	    ax5.imshow(specgram, interpolation = 'nearest', extent = (0, pend/H, 0, freq_range), aspect = 'auto', cmap = 'jet', vmin = -100, vmax = -20)
-	    ax5.set_ylabel("Frequency (Hz)", size = 8)
-	    ax5.set_xlim(0, 80)
-	    ax5.set_ylim(0, freq_range)
-	    ax5.ticklabel_format(axis = 'y', scilimits = (-2, 2))    # use scientific limits above 1e2
-	    plt.tick_params(axis = 'both', labelsize = 8)
+      ax5 = plt.subplot2grid((8, 6), (7, 1), rowspan = 2, colspan = 4)
+      ax5.set_position([0.05, 0.03, 0.92, 0.42])
+      ax5.set_title("Peak tracking", size = 9, fontweight = 'bold')
+      ax5.imshow(specgram, interpolation = 'nearest', extent = (0, pend/H, 0, freq_range), aspect = 'auto', cmap = 'jet', vmin = -100, vmax = -20)
+      ax5.set_ylabel("Frequency (Hz)", size = 8)
+      ax5.set_xlim(0, 80)
+      ax5.set_ylim(0, freq_range)
+      ax5.ticklabel_format(axis = 'y', scilimits = (-2, 2))    # use scientific limits above 1e2
+      plt.tick_params(axis = 'both', labelsize = 8)
 
     while pin<pend:
 
@@ -322,117 +382,118 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
       ys[ri:ri+Ns] += sws*ysw                                      # overlap-add for stoch
 
       #-----plotting-------
+      
       if plot and n_frame>=nFrameStart and (n_frame%step == 0 or (pin+H)>pend):
         
-	    # clear all plots
+      # clear all plots
 
-	      # clear only if not enough space to plot
-	      if pin > ax1.get_xlim()[1]*fs - (5.0*H) :
-	        clip_in = np.float32(pin) - 50.0*H
-	        clip_spec = pin/H - 50.0
-	        rect_zoom.remove()
-	        rect_zoom = patches.Rectangle((clip_in/fs, -2**7), width = (80.0*H)/fs, height = 2**15, color = 'black', alpha = 0.2)
-	        ax0.add_patch(rect_zoom)
-	        
-	        ax1.cla()
-	        ax1.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
-	        ax1.set_ylim(x.min(), x.max())
-	        ax1.set_title("Input Signal (x)", size = 9, fontweight = 'bold')
-	        ax1.locator_params(axis = 'y', nbins = 5)
-	        plt.setp(ax1.get_xticklabels(), visible = False)
-	        ax1.plot(time[:clip_in+80*H], x[:clip_in+80*H], 'b')
-	        
-	        ax2.cla()
-	        ax2.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
-	        ax2.set_ylim(x.min(), x.max())
-	        ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
-	        ax2.locator_params(axis = 'y', nbins = 5)
-	        ax2.plot(time[:ri], yh[:ri], 'b')
-	        
-	        ax5.set_xlim(clip_spec, clip_spec+80)
+        # clear only if not enough space to plot
+        if pin > ax1.get_xlim()[1]*fs - (5.0*H) :
+          clip_in = np.float32(pin) - 50.0*H
+          clip_spec = pin/H - 50.0
+          rect_zoom.remove()
+          rect_zoom = patches.Rectangle((clip_in/fs, -2**7), width = (80.0*H)/fs, height = 2**15, color = 'black', alpha = 0.2)
+          ax0.add_patch(rect_zoom)
+          
+          ax1.cla()
+          ax1.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
+          ax1.set_ylim(x.min(), x.max())
+          ax1.set_title("Input Signal (x)", size = 9, fontweight = 'bold')
+          ax1.locator_params(axis = 'y', nbins = 5)
+          plt.setp(ax1.get_xticklabels(), visible = False)
+          ax1.plot(time[:clip_in+80*H], x[:clip_in+80*H], 'b')
+          
+          ax2.cla()
+          ax2.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
+          ax2.set_ylim(x.min(), x.max())
+          ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
+          ax2.locator_params(axis = 'y', nbins = 5)
+          ax2.plot(time[:ri], yh[:ri], 'b')
+          
+          ax5.set_xlim(clip_spec, clip_spec+80)
 
-	      ax3.cla()
-	      ax3.set_title("Original spectrum (mX, iploc, ipmag, f0, hloc, hmag)", size = 9, fontweight = 'bold')
-	      ax3.set_xlabel("Frequency (Hz)", size = 8)
-	      ax3.set_ylabel("Amplitude (dB)", size = 8)
-	      ax3.set_xlim(0, freq_range)
-	      ax3.set_ylim(-100, 0)
+        ax3.cla()
+        ax3.set_title("Original spectrum (mX, iploc, ipmag, f0, hloc, hmag)", size = 9, fontweight = 'bold')
+        ax3.set_xlabel("Frequency (Hz)", size = 8)
+        ax3.set_ylabel("Amplitude (dB)", size = 8)
+        ax3.set_xlim(0, freq_range)
+        ax3.set_ylim(-100, 0)
 
-	      ax4.cla()
-	      ax4.set_title("Harmonic plus residual spectrum (mXh, mXr, mX2)", size = 9, fontweight = 'bold')
-	      ax4.set_xlabel("Frequency (Hz)", size = 8)
-	      ax4.set_ylabel("Amplitude (dB)", size = 8)
-	      ax4.set_xlim(0, freq_range)
-	      ax4.set_ylim(-100, 0)
+        ax4.cla()
+        ax4.set_title("Harmonic plus residual spectrum (mXh, mXr, mX2)", size = 9, fontweight = 'bold')
+        ax4.set_xlabel("Frequency (Hz)", size = 8)
+        ax4.set_ylabel("Amplitude (dB)", size = 8)
+        ax4.set_xlim(0, freq_range)
+        ax4.set_ylim(-100, 0)
 
-	    # plot all the information of the current sample
+      # plot all the information of the current sample
 
-	      rect = patches.Rectangle((np.float32(pin-hM)/fs, -2**7), width = np.float32(w.size)/fs, height = 2**15, color = 'blue', alpha = 0.5)
-	      ax1.add_patch(rect) 
-	      if process: plt.draw()
+        rect = patches.Rectangle((np.float32(pin-hM)/fs, -2**7), width = np.float32(w.size)/fs, height = 2**15, color = 'blue', alpha = 0.5)
+        ax1.add_patch(rect) 
+        if process: plt.draw()
 
-	      ax3.plot(freq, mX[:n_bins], 'b')                                              # plot spectrum
-	      ax3.fill_between(freq, -200, mX[:n_bins], facecolor = 'blue', alpha = 0.3) 
-	      if process: plt.draw()
-	      ax3.plot(np.float32(iploc[:n_bins])/N*fs, ipmag[:n_bins], 'rx', ms = 3)       # plot interpolated peak locations
-	      if process: plt.draw()
+        ax3.plot(freq, mX[:n_bins], 'b')                                              # plot spectrum
+        ax3.fill_between(freq, -200, mX[:n_bins], facecolor = 'blue', alpha = 0.3) 
+        if process: plt.draw()
+        ax3.plot(np.float32(iploc[:n_bins])/N*fs, ipmag[:n_bins], 'rx', ms = 3)       # plot interpolated peak locations
+        if process: plt.draw()
 
-	      ax5.imshow(specgram, interpolation = 'nearest', extent = (0, pend/H, 0, freq_range), aspect = 'auto', cmap = 'jet', vmin = -100, vmax = -20)
-	      if process: plt.draw()
+        ax5.imshow(specgram, interpolation = 'nearest', extent = (0, pend/H, 0, freq_range), aspect = 'auto', cmap = 'jet', vmin = -100, vmax = -20)
+        if process: plt.draw()
 
-	      if f0 > 0:                                                  									# plot f0
-	        loc = np.where(iploc/N*fs == f0)[0] 
-	        if loc.size == 0: loc = np.argmin(np.abs(iploc/N*fs-f0))  									# closest peak location
-	        ax3.plot(f0, ipmag[loc], 'go', ms = 4)                    									# plot in spectrum
-	        if prev_f0 != 0 and f0 != 0:                              									# plot in spectrogram
-	          ax5.plot([n_frame-0.5, n_frame+0.5], [prev_f0, f0], '-or', ms = 3, mfc = 'green', lw = 1.6)
-	        elif prev_f0 == 0 and f0 != 0:                            									# initialize new line of f0's
-	          ax5.plot(n_frame+0.5, f0, 'or', ms = 3, mfc = 'green')
-	        if process: plt.draw()
+        if f0 > 0:                                                    # plot f0
+          loc = np.where(iploc/N*fs == f0)[0] 
+          if loc.size == 0: loc = np.argmin(np.abs(iploc/N*fs-f0))    # closest peak location
+          ax3.plot(f0, ipmag[loc], 'go', ms = 4)                      # plot in spectrum
+          if prev_f0 != 0 and f0 != 0:                                # plot in spectrogram
+            ax5.plot([n_frame-0.5, n_frame+0.5], [prev_f0, f0], '-or', ms = 3, mfc = 'green', lw = 1.6)
+          elif prev_f0 == 0 and f0 != 0:                              # initialize new line of f0's
+            ax5.plot(n_frame+0.5, f0, 'or', ms = 3, mfc = 'green')
+          if process: plt.draw()
 
-	      if step == 1: prev_f0 = f0 												# save prev. f0 only if we are not rewinding plots
+        if step == 1: prev_f0 = f0                # save prev. f0 only if we are not rewinding plots
 
-	      if f0 > 0: ax3.plot(harmonics[1:], hmag[1:], 'o', ms = 3, mfc = 'yellow') 		# plot harmonics
-	      for i in range(1, nH-1):
-	        if prev_harmonics[i] != 0 and harmonics[i] != 0: 
-	          ax5.plot([n_frame-0.5, n_frame+0.5], [prev_harmonics[i], harmonics[i]], '-og', ms = 2.5, mfc = 'yellow', lw = 1.3)
-	        elif prev_harmonics[i] == 0 and harmonics[i] != 0:        									# initialize new line of harmonics
-	          ax5.plot(n_frame+0.5, harmonics[i], 'og', ms = 2.5, mfc = 'yellow')
-	      
-	      if process: plt.draw()
-
-	      if step == 1: prev_harmonics = harmonics          # save prev. harmonics only if we are not rewinding plots
-
-	      mX2 = 20 * np.log10( abs(X2[:hNs]) )                         # magnitude spectrum of positive frequencies
-	      mX2 = resample(np.maximum(-200, mX2), hN)
-	      ax4.plot(freq[:n_bins], mX2[:n_bins], 'b', alpha = 0.3)
-	      ax4.fill_between(freq[:n_bins], -200, mX2[:n_bins], facecolor = 'blue', alpha = 0.1)
-	      if process: plt.draw()
-
-	      mXh = 20 * np.log10( abs(Xh[:hNs]) )                         # magnitude spectrum of positive frequencies
-	      mXh = resample(np.maximum(-200, mXh), hN)
-	      ax4.plot(freq[:n_bins], mXh[:n_bins], 'g')
-	      ax4.fill_between(freq[:n_bins], -200, mXh[:n_bins], facecolor = 'green', alpha = 0.4)
-	      if process: plt.draw()
-
-	      mXr = resample(np.maximum(-200, mXr), hN)
-	      ax4.plot(freq[:n_bins], mXr[:n_bins], 'r', alpha = 0.3)
-	      ax4.fill_between(freq[:n_bins], -200, mXr[:n_bins], facecolor = 'red', alpha = 0.1)
-	      if process: plt.draw()
-
-	      rect2 = patches.Rectangle((np.float32(ri)/fs, -2**7), width = np.float32(Ns)/fs, height = 2**15, color = 'green', alpha = 0.3)
-	      ax2.cla()
-	      ax2.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
-	      ax2.set_ylim(x.min(), x.max())
-	      ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
-	      ax2.locator_params(axis = 'y', nbins = 5)
-	      ax2.add_patch(rect2)  
-	      ax2.plot(time[:ri+Ns], yh[:ri+Ns], 'b')
-	      plt.draw()
-	      rect2.remove()
-	      rect.remove()
+        if f0 > 0: ax3.plot(harmonics[1:], hmag[1:], 'o', ms = 3, mfc = 'yellow')   # plot harmonics
+        for i in range(1, nH-1):
+          if prev_harmonics[i] != 0 and harmonics[i] != 0: 
+            ax5.plot([n_frame-0.5, n_frame+0.5], [prev_harmonics[i], harmonics[i]], '-og', ms = 2.5, mfc = 'yellow', lw = 1.3)
+          elif prev_harmonics[i] == 0 and harmonics[i] != 0:          # initialize new line of harmonics
+            ax5.plot(n_frame+0.5, harmonics[i], 'og', ms = 2.5, mfc = 'yellow')
         
-      n_frame += 1              																	 # increment number of frames analyzed
+        if process: plt.draw()
+
+        if step == 1: prev_harmonics = harmonics                     # save prev. harmonics only if we are not rewinding plots
+
+        mX2 = 20 * np.log10( abs(X2[:hNs]) )                         # magnitude spectrum of positive frequencies
+        mX2 = resample(np.maximum(-200, mX2), hN)
+        ax4.plot(freq[:n_bins], mX2[:n_bins], 'b', alpha = 0.3)
+        ax4.fill_between(freq[:n_bins], -200, mX2[:n_bins], facecolor = 'blue', alpha = 0.1)
+        if process: plt.draw()
+
+        mXh = 20 * np.log10( abs(Xh[:hNs]) )                         # magnitude spectrum of positive frequencies
+        mXh = resample(np.maximum(-200, mXh), hN)
+        ax4.plot(freq[:n_bins], mXh[:n_bins], 'g')
+        ax4.fill_between(freq[:n_bins], -200, mXh[:n_bins], facecolor = 'green', alpha = 0.4)
+        if process: plt.draw()
+
+        mXr = resample(np.maximum(-200, mXr), hN)
+        ax4.plot(freq[:n_bins], mXr[:n_bins], 'r', alpha = 0.3)
+        ax4.fill_between(freq[:n_bins], -200, mXr[:n_bins], facecolor = 'red', alpha = 0.1)
+        if process: plt.draw()
+
+        rect2 = patches.Rectangle((np.float32(ri)/fs, -2**7), width = np.float32(Ns)/fs, height = 2**15, color = 'green', alpha = 0.3)
+        ax2.cla()
+        ax2.set_xlim(clip_in/fs, ((80.0*H)+clip_in)/fs)
+        ax2.set_ylim(x.min(), x.max())
+        ax2.set_title("Output Signal (yh)", size = 9, fontweight = 'bold')
+        ax2.locator_params(axis = 'y', nbins = 5)
+        ax2.add_patch(rect2)  
+        ax2.plot(time[:ri+Ns], yh[:ri+Ns], 'b')
+        plt.draw()
+        rect2.remove()
+        rect.remove()
+        
+      n_frame += 1                                                 # increment number of frames analyzed
       pin += H                                                     # advance sound pointer
 
     y = yh+ys
@@ -443,7 +504,7 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     ys *= 2**15
     ys = ys.astype(np.int16)
 
-    return y, yh, ys
+    self.emit(SIGNAL("hpsDone(object, object, object, int)"), y, yh, ys, fs) 
 
 
 if __name__ == '__main__':
@@ -452,7 +513,7 @@ if __name__ == '__main__':
   if app == None: app = QApplication(sys.argv)
   
   (fs, x) = read('oboe.wav')
-  
+
   form = MainWindow(x, fs)
   form.show()
   app.exec_()

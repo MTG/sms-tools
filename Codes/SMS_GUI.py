@@ -203,7 +203,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Controller", None, QtGui.QApplication.UnicodeUTF8))
         
-        self.w.setText(QtGui.QApplication.translate("MainWindow", "1025", None, QtGui.QApplication.UnicodeUTF8))
+        self.w.setText(QtGui.QApplication.translate("MainWindow", "801", None, QtGui.QApplication.UnicodeUTF8))
         self.wLabel.setText(QtGui.QApplication.translate("MainWindow", "w:", None, QtGui.QApplication.UnicodeUTF8))
         self.N.setText(QtGui.QApplication.translate("MainWindow", "1024", None, QtGui.QApplication.UnicodeUTF8))
         self.NLabel.setText(QtGui.QApplication.translate("MainWindow", "N:", None, QtGui.QApplication.UnicodeUTF8))
