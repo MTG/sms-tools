@@ -377,7 +377,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
   return y, yh, ys
 
 
-(fs, x) = read('speech-female.wav')
+(fs, x) = read('../sounds/speech-female.wav')
 # wp.play(x, fs)
 
 # fig = plt.figure()
