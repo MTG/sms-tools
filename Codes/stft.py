@@ -43,12 +43,13 @@ def stft(x, fs, w, N, H) :
   return y
 
 # example call of stft function
-(fs, x) = read('../sounds/oboe.wav')
-w = np.hamming(511)
-N = 512
-H = 256
-wp.play(x, fs)
-y = stft(x, fs, w, N, H)
-y *= 2**15
-y = y.astype(np.int16)
-wp.play(y, fs)
+if __name__ == '__main__':
+  (fs, x) = read('../sounds/oboe.wav')
+  w = np.hamming(511)
+  N = 512
+  H = 256
+  wp.play(x, fs)
+  y = stft(x, fs, w, N, H)
+  y *= 2**15
+  y = y.astype(np.int16)
+  wp.play(y, fs)

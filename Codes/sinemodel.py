@@ -116,13 +116,14 @@ def sine_model(x, fs, w, N, t):
   return y
 
 # example call of sine_model function
-(fs, x) = read('../sounds/oboe.wav')
-w = np.hamming(511)
-N = 512
-t = -60
-fig = plt.figure()
-y = sine_model(x, fs, w, N, t)
+if __name__ == '__main__':
+  (fs, x) = read('../sounds/oboe.wav')
+  w = np.hamming(511)
+  N = 512
+  t = -60
+  fig = plt.figure()
+  y = sine_model(x, fs, w, N, t)
 
-y *= 2**15
-y = y.astype(np.int16)
-wp.play(y, fs)
+  y *= 2**15
+  y = y.astype(np.int16)
+  wp.play(y, fs)
