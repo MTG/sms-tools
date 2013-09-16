@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def stochastic_model(x, w, N, H, stocf) :
+def stochasticModel(x, w, N, H, stocf) :
   # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
   # stocf: decimation factor of mag spectrum for stochastic analysis
   # y: output sound
@@ -58,7 +58,7 @@ def stochastic_model(x, w, N, H, stocf) :
   
   return y
 
-def DefaultTest():
+def defaultTest():
     
     str_time = time.time()
     
@@ -67,7 +67,7 @@ def DefaultTest():
     N = 512
     H = 256
     stocf = 0.5
-    y = stochastic_model(x, w, N, H, stocf)
+    y = stochasticModel(x, w, N, H, stocf)
 
     print "time taken for computation " + str(time.time()-str_time)
     
@@ -81,5 +81,5 @@ if __name__ == '__main__':
     N = 512
     H = 256
     stocf = 0.5
-    y = stochastic_model(x, w, N, H, stocf)
+    y = stochasticModel(x, w, N, H, stocf)
     wp.play(y, fs)

@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
+def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   # Analysis/synthesis of a sound using the sinusoidal harmonic model
   # x: input sound, fs: sampling rate, w: analysis window (odd size), 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -59,11 +59,11 @@ def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     fftbuffer[N-hM+1:] = xw[:hM-1]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)                             # detect peak locations
+    ploc = PP.peakDetection(mX, hN, t)                             # detect peak locations
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values
     
-    f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -83,7 +83,7 @@ def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     hloc = (hloc!=0) * (hloc*Ns/N)                               # synth. locs
 
   #-----synthesis-----
-    Yh = GS.genspecsines(hloc, hmag, hphase, Ns)                    # generate spec sines          
+    Yh = GS.genSpecSines(hloc, hmag, hphase, Ns)                    # generate spec sines          
     fftbuffer = np.real( ifft(Yh) )                              # inverse FFT
     yh[:hNs-1] = fftbuffer[hNs+1:]                               # undo zero-phase window
     yh[hNs-1:] = fftbuffer[:hNs+1] 
@@ -92,7 +92,7 @@ def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
 
   return y
 
-def DefaultTest():
+def defaultTest():
     
     str_time = time.time()    
     (fs, x) = wp.wavread('../../sounds/speech-female.wav')
@@ -104,7 +104,7 @@ def DefaultTest():
     maxf0 = 500
     f0et = 2
     maxhd = 0.2
-    y = harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)    
+    y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)    
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
@@ -119,5 +119,5 @@ if __name__ == '__main__':
     maxf0 = 500
     f0et = 2
     maxhd = 0.2
-    y = harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
+    y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
     wp.play(y, fs)

@@ -142,9 +142,9 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
     fftbuffer[N-hM+1:] = xw[:hM-1]              
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)                
+    ploc = PP.peakDetection(mX, hN, t)                
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values
     
     smag = np.sort(ipmag)[::-1]                                  # sort peaks by magnitude in descending order
     I = np.argsort(ipmag)[::-1]
@@ -172,7 +172,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
     fftbuffer[hNs:] = xw2[:hNs]              
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
     
-    Xh = GS.genspecsines(sloc, smag, sphase, Ns)                    # generate sines
+    Xh = GS.genSpecSines(sloc, smag, sphase, Ns)                    # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
     mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
@@ -206,7 +206,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
     lastsmag = smag                                   # update last frame data
     lastsphase = sphase                               # update last frame data
 
-    Yh = GS.genspecsines(ysloc, ysmag, ysphase, Ns)      # generate spec sines 
+    Yh = GS.genSpecSines(ysloc, ysmag, ysphase, Ns)      # generate spec sines 
     mYs = resample(mYrenv, hNs)                       # interpolate to original size
     pYs = 2*np.pi*np.random.rand(hNs)                 # generate phase random values
     

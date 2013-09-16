@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def stft_peaks(x, fs, w, N, H, t) :
+def stftPeaks(x, fs, w, N, H, t) :
   # Analysis/synthesis of a sound using the peaks
   # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
   # t: threshold in negative dB, y: output sound
@@ -44,7 +44,7 @@ def stft_peaks(x, fs, w, N, H, t) :
     fftbuffer[N-hM+1:] = xw[:hM-1]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)
+    ploc = PP.peakDetection(mX, hN, t)
     pmag = mX[ploc]
     # freq = np.arange(0, fs/2, fs/N)                     # frequency axis in Hz
     # freq = freq[:freq.size-1]
@@ -69,7 +69,7 @@ def stft_peaks(x, fs, w, N, H, t) :
   return y
 
 
-def DefaultTest():
+def defaultTest():
     
     str_time = time.time()
       
@@ -79,7 +79,7 @@ def DefaultTest():
     H = 256
     t = -60
     # fig = plt.figure()
-    y = stft_peaks(x, fs, w, N, H, t)
+    y = stftPeaks(x, fs, w, N, H, t)
     print "time taken for computation " + str(time.time()-str_time)
     
   
@@ -92,5 +92,5 @@ if __name__ == '__main__':
     H = 256
     t = -60
     # fig = plt.figure()
-    y = stft_peaks(x, fs, w, N, H, t)
+    y = stftPeaks(x, fs, w, N, H, t)
     wp.play(y, fs)

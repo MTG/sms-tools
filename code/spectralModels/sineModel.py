@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def sine_model(x, fs, w, N, t):
+def sineModel(x, fs, w, N, t):
   # Analysis/synthesis of a sound using the sinusoidal model
   # x: input array sound, w: analysis window, N: size of complex spectrum,
   # t: threshold in negative dB 
@@ -54,14 +54,14 @@ def sine_model(x, fs, w, N, t):
     fftbuffer[N-hM+1:] = xw[:hM-1]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)                      # detect locations of peaks
+    ploc = PP.peakDetection(mX, hN, t)                      # detect locations of peaks
     pmag = mX[ploc]                                       # get the magnitude of the peajs
     pX = np.unwrap( np.angle(X[:hN]) )                    # unwrapped phase spect. of positive freq.
-    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)     # refine peak values by interpolation
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)     # refine peak values by interpolation
   
   #-----synthesis-----
     plocs = iploc*Ns/N;                                   # adapt peak locations to size of synthesis FFT
-    Y = GS.genspecsines(plocs, ipmag, ipphase, Ns)           # generate sines in the spectrum         
+    Y = GS.genSpecSines(plocs, ipmag, ipphase, Ns)           # generate sines in the spectrum         
     fftbuffer = np.real( ifft(Y) )                        # compute inverse FFT
     yw[:hNs-1] = fftbuffer[hNs+1:]                        # undo zero-phase window
     yw[hNs-1:] = fftbuffer[:hNs+1] 
@@ -70,7 +70,7 @@ def sine_model(x, fs, w, N, t):
     
   return y
 
-def DefaultTest():
+def defaultTest():
   
   str_time = time.time()
     
@@ -79,15 +79,15 @@ def DefaultTest():
   N = 512
   t = -60
   fig = plt.figure()
-  y = sine_model(x, fs, w, N, t)
+  y = sineModel(x, fs, w, N, t)
   print "time taken for computation " + str(time.time()-str_time)  
   
-# example call of sine_model function
+# example call of sineModel function
 if __name__ == '__main__':
   (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(511)
   N = 512
   t = -60
   fig = plt.figure()
-  y = sine_model(x, fs, w, N, t)
+  y = sineModel(x, fs, w, N, t)
   wp.play(y, fs)

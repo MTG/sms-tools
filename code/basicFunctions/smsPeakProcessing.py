@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def peak_interp(mX, pX, ploc):
+def peakInterp(mX, pX, ploc):
   # interpolate peak values using parabolic interpolation
   # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
   # returns iploc, ipmag, ipphase: interpolated values
@@ -15,7 +15,7 @@ def peak_interp(mX, pX, ploc):
 
   return iploc, ipmag, ipphase
 
-def peak_detection(mX, hN, t):
+def peakDetection(mX, hN, t):
   # detect spectral peak locations
   # mX: magnitude spectrum, hN: half number of samples, t: threshold
   # returns ploc: peak locations

@@ -20,7 +20,7 @@ except ImportError:
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
-def hpsmodelparams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale,timbremapping) :
+def hpsModelParams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale,timbremapping) :
   # Analysis/synthesis of a sound using the harmonic plus stochastic model
   # x: input sound, fs: sampling rate, w: analysis window (odd size), 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -68,11 +68,11 @@ def hpsmodelparams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale
     fftbuffer[N-hM+1:] = xw[:hM-1]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)                
+    ploc = PP.peakDetection(mX, hN, t)                
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values
     
-    f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -97,7 +97,7 @@ def hpsmodelparams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale
     fftbuffer[hNs:] = xw2[:hNs]                            
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
     
-    Xh = GS.genspecsines(hloc, hmag, hphase, Ns)                    # generate sines
+    Xh = GS.genSpecSines(hloc, hmag, hphase, Ns)                    # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
     mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf
@@ -114,7 +114,7 @@ def hpsmodelparams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
     lastyhloc = yhloc 
     
-    Yh = GS.genspecsines(yhloc, yhmag, yhphase, Ns)                 # generate spec sines 
+    Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)                 # generate spec sines 
     mYs = resample(mYrenv, hNs)                                  # interpolate to original size
     mYs = 10**(mYs/20)                                           # dB to linear magnitude  
     if f0>0:

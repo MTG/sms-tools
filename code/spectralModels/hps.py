@@ -70,11 +70,11 @@ def hps(x, fs, w=np.hamming(801), N=1024, t=-120, nH=30, minf0=200, maxf0=500, f
 
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peak_detection(mX, hN, t)                
+    ploc = PP.peakDetection(mX, hN, t)                
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values 
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values 
 
-    f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
 
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
@@ -101,7 +101,7 @@ def hps(x, fs, w=np.hamming(801), N=1024, t=-120, nH=30, minf0=200, maxf0=500, f
     fftbuffer[hNs:] = xw2[:hNs]                            
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
     
-    Xh = GS.genspecsines(hloc, hmag, hphase, Ns)                    # generate sines
+    Xh = GS.genSpecSines(hloc, hmag, hphase, Ns)                    # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
     mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf
@@ -118,7 +118,7 @@ def hps(x, fs, w=np.hamming(801), N=1024, t=-120, nH=30, minf0=200, maxf0=500, f
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
     lastyhloc = yhloc 
     
-    Yh = GS.genspecsines(yhloc, yhmag, yhphase, Ns)                 # generate spec sines 
+    Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)                 # generate spec sines 
     mYs = resample(mYrenv, hNs)                                  # interpolate to original size
     mYs = 10**(mYs/20)                                           # dB to linear magnitude  
     if f0>0:
@@ -150,7 +150,7 @@ def hps(x, fs, w=np.hamming(801), N=1024, t=-120, nH=30, minf0=200, maxf0=500, f
   y = yh+ys
   return y, yh, ys
 
-def DefaultTest():
+def defaultTest():
     
     str_time = time.time()
     

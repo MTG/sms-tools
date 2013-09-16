@@ -1,7 +1,7 @@
 import numpy as np
 import smsGenBhLobe as GB
 
-def genspecsines(iploc, ipmag, ipphase, N):
+def genSpecSines(iploc, ipmag, ipphase, N):
   # Generate a spectrum from a series of sine values
   # iploc, ipmag, ipphase: sine peaks locations, magnitudes and phases
   # N: size of complex spectrum
@@ -16,7 +16,7 @@ def genspecsines(iploc, ipmag, ipphase, N):
     if loc<1 or loc>hN-1: continue
     binremainder = round(loc)-loc;
     lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
-    lmag = GB.genbhlobe(lb) * 10**(ipmag[i]/20)  # lobe magnitudes of the complex exponential
+    lmag = GB.genBhLobe(lb) * 10**(ipmag[i]/20)  # lobe magnitudes of the complex exponential
     b = np.arange(round(loc)-4, round(loc)+5)
     
     for m in range(0, 9):

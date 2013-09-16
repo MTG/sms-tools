@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 
-def f0detectiontwm(ploc, pmag, N, fs, ef0max, minf0, maxf0):
+def f0DetectionTwm(ploc, pmag, N, fs, ef0max, minf0, maxf0):
   # Fundamental frequency detection function
   # ploc, pmag: peak loc and mag, N: size of complex spectrum, fs: sampling rate,
   # ef0max: maximum error allowed, minf0: minimum f0, maxf0: maximum f0
