@@ -1,5 +1,5 @@
 import numpy as np
-import sms_wavplayer as wp
+import smsWavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft

@@ -6,8 +6,8 @@
 //#include "tables.h"
 
 
-#ifndef UTILITYFUNCTIONS_H
-#define UTILITYFUNCTIONS_H
+#ifndef BASICFUNCTIONS_H
+#define BASICFUNCTIONS_H
 
 void genbh92lobe_C(double *x, double *y, int N);
 void genspecsines_C(double *iploc, double *ipmag, double *ipphase, int n_peaks, double *real, double*imag, int size_spec);

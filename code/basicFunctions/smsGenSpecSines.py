@@ -1,5 +1,5 @@
 import numpy as np
-import sms_genbhlobe as GB
+import smsGenBhLobe as GB
 
 def genspecsines(iploc, ipmag, ipphase, N):
   # Generate a spectrum from a series of sine values

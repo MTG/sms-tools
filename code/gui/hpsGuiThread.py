@@ -9,24 +9,24 @@ from scipy.fftpack import fft, ifft, fftshift
 
 import sys, os, functools
 
-sys.path.append(os.path.realpath('../UtilityFunctions/'))
-sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
-import sms_f0detectiontwm as fd
-import sms_wavplayer as wp
-import sms_PeakProcessing as PP
+sys.path.append(os.path.realpath('../basicFunctions/'))
+sys.path.append(os.path.realpath('../basicFunctions_C/'))
+import smsF0DetectionTwm as fd
+import smsWavplayer as wp
+import smsPeakProcessing as PP
 
 try:
-  import UtilityFunctions_C as GS
+  import basicFunctions_C as GS
 except ImportError:
-  import sms_GenSpecSines as GS
+  import smsGenSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-import SMS_GUI
+import smsGui
 
-class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
+class MainWindow(QDialog, smsGui.Ui_MainWindow):
 
   def __init__(self, x, fs, parent = None):
     super(MainWindow, self).__init__(parent)

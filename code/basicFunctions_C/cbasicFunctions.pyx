@@ -3,7 +3,7 @@
 import numpy as np
 cimport numpy as np
 from libc.stdlib cimport *
-from cUtilityFunctions cimport *
+from cbasicFunctions cimport *
 
 np.import_array()
 

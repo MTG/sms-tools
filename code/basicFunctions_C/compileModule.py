@@ -26,9 +26,9 @@ np_lib = os.path.dirname(numpy.__file__)
 np_inc = [os.path.join(np_lib, 'core/include')]
 ext_inc = os
 
-sourcefiles = ["UtilityFunctions.c", "cUtilityFunctions.pyx"]
+sourcefiles = ["basicFunctions.c", "cbasicFunctions.pyx"]
 
 setup(
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("UtilityFunctions_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
+    ext_modules = [Extension("basicFunctions_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
   )
