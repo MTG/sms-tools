@@ -25,7 +25,7 @@ def genbh92lobe(x):
 	
 
 	
-def genspecsines(iploc, ipmag, ipphase,N):
+def genSpecSines(iploc, ipmag, ipphase,N):
 	"comments"
 	
 	cdef np.ndarray[np.float_t, ndim=1] iploc_arr

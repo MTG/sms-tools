@@ -3,6 +3,7 @@ import smsWavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
+import time , os, sys
 
 def stft(x, fs, w, N, H) :
   # Analysis/synthesis of a sound using the short-time fourier transform
@@ -42,6 +43,16 @@ def stft(x, fs, w, N, H) :
   
   return y
 
+def defaultTest():
+  
+  str_time = time.time()    
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
+  w = np.hamming(511)
+  N = 512
+  H = 256
+  y = stft(x, fs, w, N, H)
+  print "time taken for computation " + str(time.time()-str_time)  
+
 # example call of stft function
 if __name__ == '__main__':
   (fs, x) = read('../../sounds/oboe.wav')
@@ -50,6 +61,4 @@ if __name__ == '__main__':
   H = 256
   wp.play(x, fs)
   y = stft(x, fs, w, N, H)
-  y *= 2**15
-  y = y.astype(np.int16)
   wp.play(y, fs)

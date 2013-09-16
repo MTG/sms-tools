@@ -6,8 +6,11 @@ import time
 
 import sys, os, functools
 
-sys.path.append(os.path.realpath('../basicFunctions/'))
-sys.path.append(os.path.realpath('../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+
+#sys.path.append(os.path.realpath('../basicFunctions/'))
+#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -195,8 +198,9 @@ def hpsMorph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, h
 def defaultTest():
     
     str_time = time.time()
-    fs, x = wp.wavread('../../sounds/soprano-E4.wav')
-    fs, x2 = wp.wavread('../../sounds/violin-B3.wav')
+    fs, x = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/soprano-E4.wav'))
+    fs, x2 = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/violin-B3.wav'))
+    
     
     w = np.hamming(1025)
     N = 2048

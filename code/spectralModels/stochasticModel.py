@@ -6,8 +6,11 @@ import time
 
 import sys, os
 
-sys.path.append(os.path.realpath('../basicFunctions/'))
-sys.path.append(os.path.realpath('../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+
+#sys.path.append(os.path.realpath('../basicFunctions/'))
+#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -62,13 +65,12 @@ def defaultTest():
     
     str_time = time.time()
     
-    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
     w = np.hamming(512)
     N = 512
     H = 256
     stocf = 0.5
     y = stochasticModel(x, w, N, H, stocf)
-
     print "time taken for computation " + str(time.time()-str_time)
     
     

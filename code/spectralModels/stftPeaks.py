@@ -6,8 +6,11 @@ import time
 
 import sys, os
 
-sys.path.append(os.path.realpath('../basicFunctions/'))
-sys.path.append(os.path.realpath('../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+
+#sys.path.append(os.path.realpath('../basicFunctions/'))
+#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -73,7 +76,7 @@ def defaultTest():
     
     str_time = time.time()
       
-    (fs, x) = wp.wavread('../../sounds/oboe.wav')
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
     w = np.hamming(511)
     N = 512
     H = 256

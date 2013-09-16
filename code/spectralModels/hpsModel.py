@@ -7,8 +7,11 @@ import time
 
 import sys, os
 
-sys.path.append(os.path.realpath('../basicFunctions/'))
-sys.path.append(os.path.realpath('../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+
+#sys.path.append(os.path.realpath('../basicFunctions/'))
+#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -241,30 +244,42 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf) :
   y = yh+ys
   return y, yh, ys
 
+def defaultTest():
+    
+    str_time = time.time()
+      
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
+    w = np.hamming(1025)
+    N = 1024
+    t = -120
+    nH = 30
+    minf0 = 200
+    maxf0 = 500
+    f0et = 5
+    maxhd = 0.2
+    stocf = 0.5
+    y, yh, ys = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
 
-(fs, x) = wp.wavread('speech-female.wav')
-# wp.play(x, fs)
+    print "time taken for computation " + str(time.time()-str_time)
+    
+    
+if __name__ == '__main__':
+      
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
+    wp.play(x, fs)
 
-w = np.hamming(1025)
-N = 1024
-t = -120
-nH = 30
-minf0 = 200
-maxf0 = 500
-f0et = 5
-maxhd = 0.2
-stocf = 0.5
-y, yh, ys = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
+    w = np.hamming(1025)
+    N = 1024
+    t = -120
+    nH = 30
+    minf0 = 200
+    maxf0 = 500
+    f0et = 5
+    maxhd = 0.2
+    stocf = 0.5
+    y, yh, ys = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
 
-y *= 2**15
-y = y.astype(np.int16)
 
-yh *= 2**15
-yh = yh.astype(np.int16)
-
-ys *= 2**15
-ys = ys.astype(np.int16)
-
-wp.play(y, fs)
-wp.play(yh, fs)
-wp.play(ys, fs)
+    wp.play(y, fs)
+    wp.play(yh, fs)
+    wp.play(ys, fs)
