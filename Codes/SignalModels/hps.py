@@ -11,14 +11,14 @@ import sys, os, time
 
 sys.path.append(os.path.realpath('../UtilityFunctions/'))
 sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
-import f0detectiontwm as fd
-import wavplayer as wp
-import PeakProcessing as PP
+import sms_f0detectiontwm as fd
+import sms_wavplayer as wp
+import sms_PeakProcessing as PP
 
 try:
   import UtilityFunctions_C as GS
 except ImportError:
-  import GenSpecSines as GS
+  import sms_GenSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"

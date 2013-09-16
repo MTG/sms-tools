@@ -1,5 +1,5 @@
 import numpy as np
-import wavplayer as wp
+import sms_wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
@@ -44,7 +44,7 @@ def stft(x, fs, w, N, H) :
 
 # example call of stft function
 if __name__ == '__main__':
-  (fs, x) = read('../sounds/oboe.wav')
+  (fs, x) = read('../../sounds/oboe.wav')
   w = np.hamming(511)
   N = 512
   H = 256
