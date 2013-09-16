@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 
@@ -38,7 +37,6 @@ def sine_model(x, fs, w, N, t):
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
   yw = np.zeros(Ns)                                       # initialize output sound frame
   y = np.zeros(x.size)                                    # initialize output array
-  x = np.float32(x) / (2**15)                             # normalize input signal
   w = w / sum(w)                                          # normalize analysis window
   sw = np.zeros(Ns)                                       # initialize synthesis window
   ow = triang(2*H);                                       # triangular window
@@ -76,27 +74,20 @@ def DefaultTest():
   
   str_time = time.time()
     
-  (fs, x) = read('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(511)
   N = 512
   t = -60
   fig = plt.figure()
   y = sine_model(x, fs, w, N, t)
-
-  y *= 2**15
-  y = y.astype(np.int16)
-  
   print "time taken for computation " + str(time.time()-str_time)  
   
 # example call of sine_model function
 if __name__ == '__main__':
-  (fs, x) = read('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(511)
   N = 512
   t = -60
   fig = plt.figure()
   y = sine_model(x, fs, w, N, t)
-
-  y *= 2**15
-  y = y.astype(np.int16)
   wp.play(y, fs)

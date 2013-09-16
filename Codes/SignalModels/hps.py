@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 from pylab import specgram
@@ -34,8 +33,6 @@ def hps(x, fs, w=np.hamming(801), N=1024, t=-120, nH=30, minf0=200, maxf0=500, f
   # maxhd: max. relative deviation in harmonic detection (ex: .2)
   # stocf: decimation factor of mag spectrum for stochastic analysis
   # y: output sound, yh: harmonic component, ys: stochastic component
-
-  x = np.float32(x) / (2**15)                                   # normalize input signal
 
   hN = N/2                                                      # size of positive spectrum
   hM = (w.size+1)/2                                             # half analysis window size
@@ -157,7 +154,7 @@ def DefaultTest():
     
     str_time = time.time()
     
-    (fs, x) = read('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     w = np.hamming(1025)
     N = 1024
     t = -120
@@ -169,22 +166,13 @@ def DefaultTest():
     stocf = 0.5
     y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
 
-    y *= 2**15
-    y = y.astype(np.int16)
-
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-
-    ys *= 2**15
-    ys = ys.astype(np.int16)
-    
     print "time taken for computation " + str(time.time()-str_time)
 
 
 if __name__ == '__main__':
       
-    (fs, x) = read('../../sounds/speech-female.wav')
-    # wp.play(x, fs)
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
+    wp.play(x, fs)
 
     w = np.hamming(1025)
     N = 1024
@@ -196,15 +184,6 @@ if __name__ == '__main__':
     maxhd = 0.2
     stocf = 0.5
     y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-
-    ys *= 2**15
-    ys = ys.astype(np.int16)
 
     wp.play(y, fs)
     wp.play(yh, fs)

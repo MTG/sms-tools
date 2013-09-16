@@ -4,7 +4,6 @@ from PySide.QtGui import *
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import thread
@@ -13,14 +12,14 @@ import sys, os, functools
 
 sys.path.append(os.path.realpath('../UtilityFunctions/'))
 sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
-import f0detectiontwm as fd
-import wavplayer as wp
-import PeakProcessing as PP
+import sms_f0detectiontwm as fd
+import sms_wavplayer as wp
+import sms_PeakProcessing as PP
 
 try:
   import UtilityFunctions_C as GS
 except ImportError:
-  import GenSpecSines as GS
+  import sms_GenSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -64,13 +63,6 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     y, yh, ys = self.hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, plot, step, process)
     # self.pauseButton.clicked.connect(self.pauseButtonClicked)
 
-    y *= 2**15
-    y = y.astype(np.int16)
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-    ys *= 2**15
-    ys = ys.astype(np.int16)
-
     self.playX.setEnabled(True)
     self.playY.setEnabled(True)
     self.playYh.setEnabled(True)
@@ -93,8 +85,7 @@ class MainWindow(QDialog, SMS_GUI.Ui_MainWindow):
     # y: output sound, yh: harmonic component, ys: stochastic component
 
     freq_range = 10000 # fs/2 by default
-    x = np.float32(x) / (2**15)                                   # normalize input signal
-
+    
     hN = N/2                                                      # size of positive spectrum
     hM = (w.size+1)/2                                             # half analysis window size
     Ns = 512                                                      # FFT size for synthesis (even)
@@ -410,7 +401,7 @@ if __name__ == '__main__':
   app = QApplication.instance()
   if app == None: app = QApplication(sys.argv)
   
-  (fs, x) = read('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(1025)
   N = 1024
   t = -60

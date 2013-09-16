@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
@@ -42,7 +41,6 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
   ysw = np.zeros(Ns)                                            # initialize output residual sound frame
   yh = np.zeros(x.size)                                         # initialize output sine component
   ys = np.zeros(x.size)                                         # initialize output residual component
-  x = np.float32(x) / (2**15)                                   # normalize input signal
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H)                                              # overlapping window
@@ -182,10 +180,7 @@ def DefaultTest():
   
   str_time = time.time()
     
-  (fs, x) = read('../../sounds/speech-female.wav')
-  # wp.play(x, fs)
-
-  # fig = plt.figure()
+  (fs, x) = wp.wavread('../../sounds/speech-female.wav')
   w = np.hamming(801)
   N = 1024
   t = -120
@@ -193,21 +188,12 @@ def DefaultTest():
   stocf = 0.5
   y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)
 
-  y *= 2**15
-  y = y.astype(np.int16)
-
-  yh *= 2**15
-  yh = yh.astype(np.int16)
-
-  ys *= 2**15
-  ys = ys.astype(np.int16)
-  
   print "time taken for computation " + str(time.time()-str_time)  
   
 
 if __name__ == '__main__':
 
-  (fs, x) = read('../../sounds/speech-female.wav')
+  (fs, x) = wp.wavread('../../sounds/speech-female.wav')
   # wp.play(x, fs)
 
   # fig = plt.figure()
@@ -217,15 +203,6 @@ if __name__ == '__main__':
   maxnS = 30
   stocf = 0.5
   y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)
-
-  y *= 2**15
-  y = y.astype(np.int16)
-
-  yh *= 2**15
-  yh = yh.astype(np.int16)
-
-  ys *= 2**15
-  ys = ys.astype(np.int16)
 
   wp.play(y, fs)
   wp.play(yh, fs)

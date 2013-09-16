@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, resample
 from scipy.fftpack import fft, ifft
 import time
@@ -32,7 +31,6 @@ def stochastic_model(x, w, N, H, stocf) :
   pin = hM                                                 # initialize sound pointer in middle of analysis window       
   pend = x.size-hM                                         # last sample to start a frame
   fftbuffer = np.zeros(N)                                  # initialize buffer for FFT
-  x = np.float32(x) / (2**15)                              # normalize input signal (so 0 dB is the max amp. value)
   yw = np.zeros(w.size)                                    # initialize output sound frame
   y = np.zeros(x.size)                                     # initialize output array
   w = w / sum(w)                                           # normalize analysis window
@@ -64,22 +62,19 @@ def DefaultTest():
     
     str_time = time.time()
     
-    (fs, x) = read('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     w = np.hamming(512)
     N = 512
     H = 256
     stocf = 0.5
     y = stochastic_model(x, w, N, H, stocf)
 
-    y *= 2**15
-    y = y.astype(np.int16)
-    
     print "time taken for computation " + str(time.time()-str_time)
     
     
 if __name__ == '__main__':
 
-    (fs, x) = read('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     # wp.play(x, fs)
     # fig = plt.figure()
     w = np.hamming(512)
@@ -87,7 +82,4 @@ if __name__ == '__main__':
     H = 256
     stocf = 0.5
     y = stochastic_model(x, w, N, H, stocf)
-
-    y *= 2**15
-    y = y.astype(np.int16)
     wp.play(y, fs)

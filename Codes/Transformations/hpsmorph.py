@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
@@ -9,14 +8,14 @@ import sys, os, functools
 
 sys.path.append(os.path.realpath('../UtilityFunctions/'))
 sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
-import f0detectiontwm as fd
-import wavplayer as wp
-import PeakProcessing as PP
+import sms_f0detectiontwm as fd
+import sms_wavplayer as wp
+import sms_PeakProcessing as PP
 
 try:
   import UtilityFunctions_C as GS
 except ImportError:
-  import GenSpecSines as GS
+  import sms_GenSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -107,8 +106,6 @@ def hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, 
   ysw = np.zeros(Ns)                                            # initialize output residual sound frame
   yh = np.zeros(x.size)                                         # initialize output sine component
   ys = np.zeros(x.size)                                         # initialize output residual component
-  x = np.float32(x) / (2**15)                                   # normalize input signal
-  x2 = np.float32(x2) / (2**15)                                 # normalize input signal
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H)                                              # overlapping window
@@ -198,8 +195,8 @@ def hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, 
 def DefaultTest():
     
     str_time = time.time()
-    fs, x = read('../../sounds/soprano-E4.wav')
-    fs, x2 = read('../../sounds/violin-B3.wav')
+    fs, x = wp.wavread('../../sounds/soprano-E4.wav')
+    fs, x2 = wp.wavread('../../sounds/violin-B3.wav')
     
     w = np.hamming(1025)
     N = 2048
@@ -216,21 +213,12 @@ def DefaultTest():
     rintp = np.array([[ 0, dur], [0, 1]])
     y, yh, ys = hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, htintp, rintp)
 
-    y *= 2**15
-    y = y.astype(np.int16)
-
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-
-    ys *= 2**15
-    ys = ys.astype(np.int16)
-    
     print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
       
-    fs, x = read('../../sounds/soprano-E4.wav')
-    fs, x2 = read('../../sounds/violin-B3.wav')
+    fs, x = wp.wavread('../../sounds/soprano-E4.wav')
+    fs, x2 = wp.wavread('../../sounds/violin-B3.wav')
 
     w = np.hamming(1025)
     N = 2048
@@ -246,15 +234,6 @@ if __name__ == '__main__':
     htintp = np.array([[ 0, dur], [0, 1]]) 
     rintp = np.array([[ 0, dur], [0, 1]])
     y, yh, ys = hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, htintp, rintp)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-
-    ys *= 2**15
-    ys = ys.astype(np.int16)
 
     wp.play(y, fs)
     wp.play(yh, fs)

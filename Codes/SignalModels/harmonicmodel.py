@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import time
@@ -43,7 +42,6 @@ def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
   yh = np.zeros(Ns)                                             # initialize output sound frame
   y = np.zeros(x.size)                                          # initialize output array
-  x = np.float32(x) / (2**15)                                   # normalize input signal
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)                                             # initialize synthesis window
   ow = triang(2*H)                                              # overlapping window
@@ -91,14 +89,13 @@ def harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     yh[hNs-1:] = fftbuffer[:hNs+1] 
     y[pin-hNs:pin+hNs] += sw*yh                                  # overlap-add
     pin += H                                                     # advance sound pointer
-  
+
   return y
 
 def DefaultTest():
     
-    str_time = time.time()
-    
-    (fs, x) = read('../../sounds/speech-female.wav')
+    str_time = time.time()    
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     w = np.hamming(1025)
     N = 1024
     t = -120
@@ -107,18 +104,13 @@ def DefaultTest():
     maxf0 = 500
     f0et = 2
     maxhd = 0.2
-    y = harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-    
+    y = harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)    
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
 
-    (fs, x) = read('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     wp.play(x, fs)
-
     w = np.hamming(1025)
     N = 1024
     t = -120
@@ -128,8 +120,4 @@ if __name__ == '__main__':
     f0et = 2
     maxhd = 0.2
     y = harmonic_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-
     wp.play(y, fs)

@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 
@@ -44,7 +43,6 @@ def hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   yrw = np.zeros(Ns)                                            # initialize output sound frame
   yh = np.zeros(x.size)                                         # initialize output array
   yr = np.zeros(x.size)                                         # initialize output array
-  x = np.float32(x) / (2**15)                                   # normalize input signal
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H);                                             # overlapping window
@@ -118,7 +116,7 @@ def DefaultTest():
     
     str_time = time.time()
    
-    (fs, x) = read('../../sounds/oboe.wav')
+    (fs, x) = wp.wavread('../../sounds/oboe.wav')
     w = np.hamming(1025)
     N = 1024
     t = -120
@@ -128,19 +126,12 @@ def DefaultTest():
     f0et = 2
     maxhd = 0.2
     y, yh, yr = hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-    yr *= 2**15
-    yr = yr.astype(np.int16)
     
     print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
     
-    (fs, x) = read('../../sounds/oboe.wav')
+    (fs, x) = wp.wavread('../../sounds/oboe.wav')
     w = np.hamming(1025)
     N = 1024
     t = -120
@@ -150,13 +141,6 @@ if __name__ == '__main__':
     f0et = 2
     maxhd = 0.2
     y, yh, yr = hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-    yr *= 2**15
-    yr = yr.astype(np.int16)
 
     wp.play(y, fs)
     wp.play(yh, fs)

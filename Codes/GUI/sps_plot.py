@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 
@@ -10,14 +9,14 @@ import sys, os, functools
 
 sys.path.append(os.path.realpath('../UtilityFunctions/'))
 sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
-import f0detectiontwm as fd
-import wavplayer as wp
-import PeakProcessing as PP
+import sms_f0detectiontwm as fd
+import sms_wavplayer as wp
+import sms_PeakProcessing as PP
 
 try:
   import UtilityFunctions_C as GS
 except ImportError:
-  import GenSpecSines as GS
+  import sms_GenSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -33,8 +32,6 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
   # y: output sound, yh: harmonic component, ys: stochastic component
   
   freq_range = 10000 # fs/2 by default
-  x = np.float32(x) / (2**15)                                   # normalize input signal
-
   hN = N/2                                                      # size of positive spectrum
   hM = (w.size+1)/2                                             # half analysis window size
   Ns = 512                                                      # FFT size for synthesis (even)
@@ -335,7 +332,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
 
 if __name__ == '__main__':
 
-    (fs, x) = read('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     # wp.play(x, fs)
 
     # fig = plt.figure()
@@ -345,15 +342,6 @@ if __name__ == '__main__':
     maxnS = 30
     stocf = 0.5
     y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)
-
-    y *= 2**15
-    y = y.astype(np.int16)
-
-    yh *= 2**15
-    yh = yh.astype(np.int16)
-
-    ys *= 2**15
-    ys = ys.astype(np.int16)
 
     wp.play(y, fs)
     wp.play(yh, fs)

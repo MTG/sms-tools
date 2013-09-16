@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as mpl
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
@@ -48,7 +47,6 @@ def hpsmodelparams(x,fs,w,N,t,nH,minf0,maxf0,f0et,maxhd,stocf,timemapping,fscale
   ysw = np.zeros(Ns)                                            # initialize output sound frame
   yh = np.zeros(x.size)                                         # initialize output array
   ys = np.zeros(x.size)                                         # initialize output array
-  x = np.float32(x) / (2**15)                                   # normalize input signal
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H)                                              # overlapping window

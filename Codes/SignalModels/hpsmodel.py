@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
@@ -243,7 +242,7 @@ def hps_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf) :
   return y, yh, ys
 
 
-(fs, x) = read('speech-female.wav')
+(fs, x) = wp.wavread('speech-female.wav')
 # wp.play(x, fs)
 
 w = np.hamming(1025)
