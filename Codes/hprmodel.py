@@ -1,73 +1,27 @@
 import numpy as np
-import UtilityFunctions as uf
 import matplotlib.pyplot as plt
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
-import time
+
+import sys, os, functools, time
+
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
 import f0detectiontwm as fd
+import wavplayer as wp
+import PeakProcessing as PP
 
-def genspecsines(iploc, ipmag, ipphase, N):
-  # Compute a spectrum from a series of sine values
-  # iploc, ipmag, ipphase: sine locations, magnitudes and phases
-  # N: size of complex spectrum
-  # Y: generated complex spectrum of sines
-
-  Y = np.zeros(N, dtype = complex)                 # initialize output spectrum  
-  hN = N/2                                         # size of positive freq. spectrum
-
-  for i in range(0, iploc.size):                   # generate all sine spectral lobes
-    loc = iploc[i]                                 # it should be in range ]0,hN-1[
-
-    if loc<1 or loc>hN-1: continue
-    binremainder = round(loc)-loc;
-    lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
-    lmag = uf.genbh92lobe(lb) * 10**(ipmag[i]/20)     # lobe magnitudes of the complex exponential
-    b = np.arange(round(loc)-4, round(loc)+5)
-    
-    for m in range(0, 9):
-      if b[m] < 0:                                 # peak lobe crosses DC bin
-        Y[-b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] > hN:                              # peak lobe croses Nyquist bin
-        Y[b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] == 0 or b[m] == hN:                # peak lobe in the limits of the spectrum 
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i]) + lmag[m]*np.exp(-1j*ipphase[i])
-      
-      else:                                        # peak lobe in positive freq. range
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i])
-    
-    Y[hN+1:] = Y[hN-1:0:-1].conjugate()            # fill the rest of the spectrum
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
-  return Y
 
-def peak_interp(mX, pX, ploc):
-  # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-  # iploc, ipmag, ipphase: interpolated values
   
-  val = mX[ploc]                                          # magnitude of peak bin 
-  lval = mX[ploc-1]                                       # magnitude of bin at left
-  rval = mX[ploc+1]                                       # magnitude of bin at right
-  iploc = ploc + 0.5*(lval-rval)/(lval-2*val+rval)        # center of parabola
-  ipmag = val - 0.25*(lval-rval)*(iploc-ploc)             # magnitude of peaks
-  ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks
-
-  return iploc, ipmag, ipphase
-
-def peak_detection(mX, hN, t):
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold
-  # to be a peak it has to accomplish three conditions:
-
-  thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0);
-  next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)
-  prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)
-  ploc = thresh * next_minor * prev_minor
-  ploc = ploc.nonzero()[0] + 1
-
-  return ploc
-
 def hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   # Analysis/synthesis of a sound using the harmonic plus residual model
   # x: input sound, fs: sampling rate, w: analysis window (odd size), 
@@ -109,9 +63,9 @@ def hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     fftbuffer[N-hM+1:] = xw[:hM-1]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = peak_detection(mX, hN, t)                
+    ploc = PP.peak_detection(mX, hN, t)                
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.    
-    iploc, ipmag, ipphase = peak_interp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
     
     f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
@@ -139,7 +93,7 @@ def hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     Xr = fft(fftbuffer)                                          # compute FFT for residual analysis
   
   #-----synthesis-----
-    Yh = genspecsines(hloc[:hi], hmag, hphase, Ns)               # generate spec sines          
+    Yh = GS.genspecsines(hloc[:hi], hmag, hphase, Ns)               # generate spec sines          
     Yr = Xr-Yh;                                                  # get the residual complex spectrum
     
     fftbuffer = np.zeros(Ns)
@@ -159,24 +113,51 @@ def hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   y = yh+yr
   return y, yh, yr
 
-(fs, x) = read('oboe.wav')
-w = np.hamming(1025)
-N = 1024
-t = -120
-nH = 30
-minf0 = 200
-maxf0 = 500
-f0et = 2
-maxhd = 0.2
-y, yh, yr = hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
 
-y *= 2**15
-y = y.astype(np.int16)
-yh *= 2**15
-yh = yh.astype(np.int16)
-yr *= 2**15
-yr = yr.astype(np.int16)
+def DefaultTest():
+    
+    str_time = time.time()
+   
+    (fs, x) = read('../../sounds/oboe.wav')
+    w = np.hamming(1025)
+    N = 1024
+    t = -120
+    nH = 30
+    minf0 = 200
+    maxf0 = 500
+    f0et = 2
+    maxhd = 0.2
+    y, yh, yr = hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
 
-wp.play(y, fs)
-wp.play(yh, fs)
-wp.play(yr, fs)
+    y *= 2**15
+    y = y.astype(np.int16)
+    yh *= 2**15
+    yh = yh.astype(np.int16)
+    yr *= 2**15
+    yr = yr.astype(np.int16)
+    
+    print "time taken for computation " + str(time.time()-str_time)
+  
+if __name__ == '__main__':
+    
+    (fs, x) = read('../../sounds/oboe.wav')
+    w = np.hamming(1025)
+    N = 1024
+    t = -120
+    nH = 30
+    minf0 = 200
+    maxf0 = 500
+    f0et = 2
+    maxhd = 0.2
+    y, yh, yr = hpr_model(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
+
+    y *= 2**15
+    y = y.astype(np.int16)
+    yh *= 2**15
+    yh = yh.astype(np.int16)
+    yr *= 2**15
+    yr = yr.astype(np.int16)
+
+    wp.play(y, fs)
+    wp.play(yh, fs)
+    wp.play(yr, fs)

@@ -1,72 +1,26 @@
 import numpy as np
-import UtilityFunctions as uf
 import matplotlib.pyplot as plt
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
 
-def genspecsines(iploc, ipmag, ipphase, N) :
-  # Compute a spectrum from a series of sine values
-  # iploc, ipmag, ipphase: sine locations, magnitudes and phases
-  # N: size of complex spectrum
-  # Y: generated complex spectrum of sines
+import sys, os
 
-  Y = np.zeros(N, dtype = complex)                 # initialize output spectrum  
-  hN = N/2                                         # size of positive freq. spectrum
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
+import f0detectiontwm as fd
+import wavplayer as wp
+import PeakProcessing as PP
 
-  for i in range(0, iploc.size):                   # generate all sine spectral lobes
-    loc = iploc[i]                                 # it should be in range ]0,hN-1[
-
-    if loc<1 or loc>hN-1: continue
-    binremainder = round(loc)-loc
-    lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
-    lmag = uf.genbh92lobe(lb) * 10**(ipmag[i]/20)  # lobe magnitudes of the complex exponential
-    b = np.arange(round(loc)-4, round(loc)+5)
-    
-    for m in range(0, 9):
-      if b[m] < 0:                                 # peak lobe crosses DC bin
-        Y[-b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] > hN:                              # peak lobe croses Nyquist bin
-        Y[b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] == 0 or b[m] == hN:                # peak lobe in the limits of the spectrum 
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i]) + lmag[m]*np.exp(-1j*ipphase[i])
-      
-      else:                                        # peak lobe in positive freq. range
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i])
-    
-    Y[hN+1:] = Y[hN-1:0:-1].conjugate()            # fill the rest of the spectrum
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
-  return Y
-
-def peak_interp(mX, pX, ploc) :
-  # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-  # iploc, ipmag, ipphase: interpolated values
-  
-  val = mX[ploc]                                          # magnitude of peak bin 
-  lval = mX[ploc-1]                                       # magnitude of bin at left
-  rval = mX[ploc+1]                                       # magnitude of bin at right
-  iploc = ploc + 0.5*(lval-rval)/(lval-2*val+rval)        # center of parabola
-  ipmag = val - 0.25*(lval-rval)*(iploc-ploc)             # magnitude of peaks
-  ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks
-
-  return iploc, ipmag, ipphase
-
-def peak_detection(mX, hN, t) :
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold
-  # to be a peak it has to accomplish three conditions:
-
-  thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0)
-  next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)
-  prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)
-  ploc = thresh * next_minor * prev_minor
-  ploc = ploc.nonzero()[0] + 1
-
-  return ploc
-
 # def extrap(x, xp, yp):
 #   # np.interp function with linear extrapolation
 
@@ -141,9 +95,9 @@ def sps_timescale(x, fs, w, N, t, maxnS, stocf) :
     fftbuffer[N-hM+1:] = xw[:hM-1]              
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = peak_detection(mX, hN, t)                
+    ploc = PP.peak_detection(mX, hN, t)                
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = peak_interp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
     
     smag = np.sort(ipmag)[::-1]                                  # sort peaks by magnitude in descending order
     I = np.argsort(ipmag)[::-1]
@@ -171,7 +125,7 @@ def sps_timescale(x, fs, w, N, t, maxnS, stocf) :
     fftbuffer[hNs:] = xw2[:hNs]              
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
     
-    Xh = genspecsines(sloc, smag, sphase, Ns)                    # generate sines
+    Xh = GS.genspecsines(sloc, smag, sphase, Ns)                    # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
     mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf    
@@ -205,7 +159,7 @@ def sps_timescale(x, fs, w, N, t, maxnS, stocf) :
     lastsmag = smag                                   # update last frame data
     lastsphase = sphase                               # update last frame data
 
-    Yh = genspecsines(ysloc, ysmag, ysphase, Ns)      # generate spec sines 
+    Yh = GS.genspecsines(ysloc, ysmag, ysphase, Ns)      # generate spec sines 
     mYs = resample(mYrenv, hNs)                       # interpolate to original size
     pYs = 2*np.pi*np.random.rand(hNs)               # generate phase random values
     
@@ -233,26 +187,50 @@ def sps_timescale(x, fs, w, N, t, maxnS, stocf) :
   y = yh+ys
   return y, yh, ys
 
+def DefaultTest():
+    
+    str_time = time.time()
+	  
+    (fs, x) = read('../../sounds/speech-female.wav')
+    w = np.hamming(801)
+    N = 1024
+    t = -120
+    maxnS = 30
+    stocf = 0.5
+    y, yh, ys = sps_timescale(x, fs, w, N, t, maxnS, stocf)
 
-(fs, x) = read('speech-female.wav')
-# wp.play(x, fs)
+    y *= 2**15
+    y = y.astype(np.int16)
 
-w = np.hamming(801)
-N = 1024
-t = -120
-maxnS = 30
-stocf = 0.5
-y, yh, ys = sps_timescale(x, fs, w, N, t, maxnS, stocf)
+    yh *= 2**15
+    yh = yh.astype(np.int16)
 
-y *= 2**15
-y = y.astype(np.int16)
+    ys *= 2**15
+    ys = ys.astype(np.int16)
+    
+    print "time taken for computation " + str(time.time()-str_time)
+  
+if __name__ == '__main__':     
+	  
+    (fs, x) = read('../../sounds/speech-female.wav')
+    # wp.play(x, fs)
 
-yh *= 2**15
-yh = yh.astype(np.int16)
+    w = np.hamming(801)
+    N = 1024
+    t = -120
+    maxnS = 30
+    stocf = 0.5
+    y, yh, ys = sps_timescale(x, fs, w, N, t, maxnS, stocf)
 
-ys *= 2**15
-ys = ys.astype(np.int16)
+    y *= 2**15
+    y = y.astype(np.int16)
 
-wp.play(y, fs)
-wp.play(yh, fs)
-wp.play(ys, fs)
+    yh *= 2**15
+    yh = yh.astype(np.int16)
+
+    ys *= 2**15
+    ys = ys.astype(np.int16)
+
+    wp.play(y, fs)
+    wp.play(yh, fs)
+    wp.play(ys, fs)

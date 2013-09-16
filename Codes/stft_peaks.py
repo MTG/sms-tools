@@ -1,22 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
 import time
 
-def peak_detection(mX, hN, t) :
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold in negative dB
-  # to be a peak it has to accomplish three conditions:
+import sys, os
 
-  thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0);             # more than threshold
-  next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)     # next value less than actual
-  prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)  # previous value less than actual
-  ploc = thresh * next_minor * prev_minor
-  ploc = ploc.nonzero()[0] + 1
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
+import f0detectiontwm as fd
+import wavplayer as wp
+import PeakProcessing as PP
 
-  return ploc
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  
 
 def stft_peaks(x, fs, w, N, H, t) :
   # Analysis/synthesis of a sound using the peaks
@@ -42,7 +46,7 @@ def stft_peaks(x, fs, w, N, H, t) :
     fftbuffer[N-hM+1:] = xw[:hM-1]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
-    ploc = peak_detection(mX, hN, t)
+    ploc = PP.peak_detection(mX, hN, t)
     pmag = mX[ploc]
     # freq = np.arange(0, fs/2, fs/N)                     # frequency axis in Hz
     # freq = freq[:freq.size-1]
@@ -65,16 +69,37 @@ def stft_peaks(x, fs, w, N, H, t) :
     pin += H                                              # advance sound pointer
   
   return y
-  
-(fs, x) = read('oboe.wav')
-wp.play(x, fs)
-w = np.hamming(511)
-N = 512
-H = 256
-t = -60
-# fig = plt.figure()
-y = stft_peaks(x, fs, w, N, H, t)
 
-y *= 2**15
-y = y.astype(np.int16)
-wp.play(y, fs)
+
+def DefaultTest():
+    
+    str_time = time.time()
+      
+    (fs, x) = read('../../sounds/oboe.wav')
+    w = np.hamming(511)
+    N = 512
+    H = 256
+    t = -60
+    # fig = plt.figure()
+    y = stft_peaks(x, fs, w, N, H, t)
+
+    y *= 2**15
+    y = y.astype(np.int16)
+
+    print "time taken for computation " + str(time.time()-str_time)
+    
+  
+if __name__ == '__main__':   
+      
+    (fs, x) = read('../../sounds/oboe.wav')
+    wp.play(x, fs)
+    w = np.hamming(511)
+    N = 512
+    H = 256
+    t = -60
+    # fig = plt.figure()
+    y = stft_peaks(x, fs, w, N, H, t)
+
+    y *= 2**15
+    y = y.astype(np.int16)
+    wp.play(y, fs)

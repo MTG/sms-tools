@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def genbh92lobe(x):
   # Calculate transform of the Blackman-Harris 92dB window
   # x: bin positions to compute (real values), y: transform values

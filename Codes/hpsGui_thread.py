@@ -1,16 +1,29 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
-import sys
+
 import numpy as np
-import UtilityFunctions as uf
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
+
+import sys, os, functools
+
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
 import f0detectiontwm as fd
-import functools
+import wavplayer as wp
+import PeakProcessing as PP
+
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  
 
 import SMS_GUI
 
@@ -132,30 +145,6 @@ class HpsThread(QThread):
     self.process = process
     self.nFrameStart = nFrameStart
   	
-  def peak_interp(self, mX, pX, ploc):
-    # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-    # iploc, ipmag, ipphase: interpolated values
-    
-    val = mX[ploc]                                          # magnitude of peak bin 
-    lval = mX[ploc-1]                                       # magnitude of bin at left
-    rval = mX[ploc+1]                                       # magnitude of bin at right
-    iploc = ploc + 0.5*(lval-rval)/(lval-2*val+rval)        # center of parabola
-    ipmag = val - 0.25*(lval-rval)*(iploc-ploc)             # magnitude of peaks
-    ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks
-
-    return iploc, ipmag, ipphase
-
-  def peak_detection(self, mX, hN, t):
-    # mX: magnitude spectrum, hN: half number of samples, t: threshold
-    # to be a peak it has to accomplish three conditions:
-
-    thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0)
-    next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)
-    prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)
-    ploc = thresh * next_minor * prev_minor
-    ploc = ploc.nonzero()[0] + 1
-
-    return ploc
 
   def run(self):
 
@@ -301,9 +290,9 @@ class HpsThread(QThread):
 
       X = fft(fftbuffer)                                           # compute FFT
       mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-      ploc = self.peak_detection(mX, hN, t)                
+      ploc = PP.peak_detection(mX, hN, t)                
       pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-      iploc, ipmag, ipphase = self.peak_interp(mX, pX, ploc)       # refine peak values
+      iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)       # refine peak values
 
       if plot: specgram[:, n_frame] = mX[n_bins-1::-1]
       f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
@@ -334,7 +323,7 @@ class HpsThread(QThread):
       fftbuffer[hNs:] = xw2[:hNs]                            
       X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
       
-      Xh = uf.genspecsines(hloc, hmag, hphase, Ns)                 # generate sines
+      Xh = GS.genspecsines(hloc, hmag, hphase, Ns)                 # generate sines
       Xr = X2-Xh                                                   # get the residual complex spectrum
       mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
       mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf
@@ -353,7 +342,7 @@ class HpsThread(QThread):
       yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
       lastyhloc = yhloc 
       
-      Yh = uf.genspecsines(yhloc, yhmag, yhphase, Ns)              # generate spec sines 
+      Yh = GS.genspecsines(yhloc, yhmag, yhphase, Ns)              # generate spec sines 
       mYs = resample(mYrenv, hNs)                                  # interpolate to original size
       mYs = 10**(mYs/20)                                           # dB to linear magnitude  
       if f0>0:
@@ -512,7 +501,7 @@ if __name__ == '__main__':
   app = QApplication.instance()
   if app == None: app = QApplication(sys.argv)
   
-  (fs, x) = read('oboe.wav')
+  (fs, x) = read('../../sounds/oboe.wav')
 
   form = MainWindow(x, fs)
   form.show()

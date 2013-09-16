@@ -1,72 +1,25 @@
 import numpy as np
-import UtilityFunctions as uf
 import matplotlib.pyplot as plt
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
+
+import sys, os, functools
+
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
 import f0detectiontwm as fd
+import wavplayer as wp
+import PeakProcessing as PP
 
-def genspecsines(iploc, ipmag, ipphase, N):
-  # Compute a spectrum from a series of sine values
-  # iploc, ipmag, ipphase: sine locations, magnitudes and phases
-  # N: size of complex spectrum
-  # Y: generated complex spectrum of sines
-
-  Y = np.zeros(N, dtype = complex)                 # initialize output spectrum  
-  hN = N/2                                         # size of positive freq. spectrum
-
-  for i in range(0, iploc.size):                   # generate all sine spectral lobes
-    loc = iploc[i]                                 # it should be in range ]0,hN-1[
-
-    if loc<1 or loc>hN-1: continue
-    binremainder = round(loc)-loc
-    lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
-    lmag = uf.genbh92lobe(lb) * 10**(ipmag[i]/20)     # lobe magnitudes of the complex exponential
-    b = np.arange(round(loc)-4, round(loc)+5)
-    
-    for m in range(0, 9):
-      if b[m] < 0:                                 # peak lobe crosses DC bin
-        Y[-b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] > hN:                              # peak lobe croses Nyquist bin
-        Y[b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
-      
-      elif b[m] == 0 or b[m] == hN:                # peak lobe in the limits of the spectrum 
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i]) + lmag[m]*np.exp(-1j*ipphase[i])
-      
-      else:                                        # peak lobe in positive freq. range
-        Y[b[m]] += lmag[m]*np.exp(1j*ipphase[i])
-    
-    Y[hN+1:] = Y[hN-1:0:-1].conjugate()            # fill the rest of the spectrum
-  
-  return Y
-
-def peak_interp(mX, pX, ploc):
-  # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-  # iploc, ipmag, ipphase: interpolated values
-  
-  val = mX[ploc]                                          # magnitude of peak bin 
-  lval = mX[ploc-1]                                       # magnitude of bin at left
-  rval = mX[ploc+1]                                       # magnitude of bin at right
-  iploc = ploc + 0.5*(lval-rval)/(lval-2*val+rval)        # center of parabola
-  ipmag = val - 0.25*(lval-rval)*(iploc-ploc)             # magnitude of peaks
-  ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks
-
-  return iploc, ipmag, ipphase
-
-def peak_detection(mX, hN, t):
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold
-  # to be a peak it has to accomplish three conditions:
-
-  thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0)
-  next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)
-  prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)
-  ploc = thresh * next_minor * prev_minor
-  ploc = ploc.nonzero()[0] + 1
-
-  return ploc
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 def hpsanalysis(x, fs, w, wr, pin, N, hN, Ns, hNs, hM, nH, t, f0et, minf0, maxf0, maxhd, stocf):
   
@@ -76,9 +29,9 @@ def hpsanalysis(x, fs, w, wr, pin, N, hN, Ns, hNs, hM, nH, t, f0et, minf0, maxf0
   fftbuffer[N-hM+1:] = xw[:hM-1]                           
   X = fft(fftbuffer)                                           # compute FFT
   mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-  ploc = peak_detection(mX, hN, t)                
+  ploc = PP.peak_detection(mX, hN, t)                
   pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-  iploc, ipmag, ipphase = peak_interp(mX, pX, ploc)            # refine peak values
+  iploc, ipmag, ipphase = PP.peak_interp(mX, pX, ploc)            # refine peak values
   
   f0 = fd.f0detectiontwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
   hloc = np.zeros(nH)                                          # initialize harmonic locations
@@ -105,7 +58,7 @@ def hpsanalysis(x, fs, w, wr, pin, N, hN, Ns, hNs, hM, nH, t, f0et, minf0, maxf0
   fftbuffer[hNs:] = xw2[:hNs]                            
   X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
   
-  Xh = genspecsines(hloc, hmag, hphase, Ns)                    # generate sines
+  Xh = GS.genspecsines(hloc, hmag, hphase, Ns)                    # generate sines
   Xr = X2-Xh                                                   # get the residual complex spectrum
   mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
   mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)         # decimate the magnitude spectrum and avoid -Inf    
@@ -214,7 +167,7 @@ def hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, 
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                 # propagate phases
     lastyhloc = yhloc 
     
-    Yh = genspecsines(yhloc, yhmag, yhphase, Ns)                  # generate spec sines 
+    Yh = GS.genspecsines(yhloc, yhmag, yhphase, Ns)                  # generate spec sines 
     mYs = resample(mYrenv, hNs)                                   # interpolate to original size
     pYs = 2*np.pi * np.random.rand(hNs)                           # generate phase random values
     
@@ -241,34 +194,68 @@ def hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, 
   return y, yh, ys
 
 
-fs, x = read('soprano-E4.wav')
-fs, x2 = read('violin-B3.wav')
-# wp.play(x, fs)
 
-w = np.hamming(1025)
-N = 2048
-t = -150
-nH = 200
-minf0 = 100
-maxf0 = 400
-f0et = 5
-maxhd = 0.2
-stocf = 0.1
-dur = x.size/fs
-f0intp = np.array([[ 0, dur], [0, 1]])
-htintp = np.array([[ 0, dur], [0, 1]]) 
-rintp = np.array([[ 0, dur], [0, 1]])
-y, yh, ys = hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, htintp, rintp)
+def DefaultTest():
+    
+    str_time = time.time()
+    fs, x = read('../../sounds/soprano-E4.wav')
+    fs, x2 = read('../../sounds/violin-B3.wav')
+    
+    w = np.hamming(1025)
+    N = 2048
+    t = -150
+    nH = 200
+    minf0 = 100
+    maxf0 = 400
+    f0et = 5
+    maxhd = 0.2
+    stocf = 0.1
+    dur = x.size/fs
+    f0intp = np.array([[ 0, dur], [0, 1]])
+    htintp = np.array([[ 0, dur], [0, 1]]) 
+    rintp = np.array([[ 0, dur], [0, 1]])
+    y, yh, ys = hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, htintp, rintp)
 
-y *= 2**15
-y = y.astype(np.int16)
+    y *= 2**15
+    y = y.astype(np.int16)
 
-yh *= 2**15
-yh = yh.astype(np.int16)
+    yh *= 2**15
+    yh = yh.astype(np.int16)
 
-ys *= 2**15
-ys = ys.astype(np.int16)
+    ys *= 2**15
+    ys = ys.astype(np.int16)
+    
+    print "time taken for computation " + str(time.time()-str_time)
+  
+if __name__ == '__main__':
+      
+    fs, x = read('../../sounds/soprano-E4.wav')
+    fs, x2 = read('../../sounds/violin-B3.wav')
 
-wp.play(y, fs)
-wp.play(yh, fs)
-wp.play(ys, fs)
+    w = np.hamming(1025)
+    N = 2048
+    t = -150
+    nH = 200
+    minf0 = 100
+    maxf0 = 400
+    f0et = 5
+    maxhd = 0.2
+    stocf = 0.1
+    dur = x.size/fs
+    f0intp = np.array([[ 0, dur], [0, 1]])
+    htintp = np.array([[ 0, dur], [0, 1]]) 
+    rintp = np.array([[ 0, dur], [0, 1]])
+    y, yh, ys = hps_morph(x, x2, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, f0intp, htintp, rintp)
+
+    y *= 2**15
+    y = y.astype(np.int16)
+
+    yh *= 2**15
+    yh = yh.astype(np.int16)
+
+    ys *= 2**15
+    ys = ys.astype(np.int16)
+
+    wp.play(y, fs)
+    wp.play(yh, fs)
+    wp.play(ys, fs)

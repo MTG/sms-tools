@@ -1,10 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import wavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming, hanning, resample
 from scipy.fftpack import fft, ifft
 import time
+
+import sys, os
+
+sys.path.append(os.path.realpath('../UtilityFunctions/'))
+sys.path.append(os.path.realpath('../UtilityFunctions_C/'))
+import f0detectiontwm as fd
+import wavplayer as wp
+import PeakProcessing as PP
+
+try:
+  import UtilityFunctions_C as GS
+except ImportError:
+  import GenSpecSines as GS
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
+  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  
 
 def stochastic_model(x, w, N, H, stocf) :
   # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
@@ -44,15 +60,34 @@ def stochastic_model(x, w, N, H, stocf) :
   
   return y
 
-(fs, x) = read('speech-female.wav')
-# wp.play(x, fs)
-# fig = plt.figure()
-w = np.hamming(512)
-N = 512
-H = 256
-stocf = 0.5
-y = stochastic_model(x, w, N, H, stocf)
+def DefaultTest():
+    
+    str_time = time.time()
+    
+    (fs, x) = read('../../sounds/speech-female.wav')
+    w = np.hamming(512)
+    N = 512
+    H = 256
+    stocf = 0.5
+    y = stochastic_model(x, w, N, H, stocf)
 
-y *= 2**15
-y = y.astype(np.int16)
-wp.play(y, fs)
+    y *= 2**15
+    y = y.astype(np.int16)
+    
+    print "time taken for computation " + str(time.time()-str_time)
+    
+    
+if __name__ == '__main__':
+
+    (fs, x) = read('../../sounds/speech-female.wav')
+    # wp.play(x, fs)
+    # fig = plt.figure()
+    w = np.hamming(512)
+    N = 512
+    H = 256
+    stocf = 0.5
+    y = stochastic_model(x, w, N, H, stocf)
+
+    y *= 2**15
+    y = y.astype(np.int16)
+    wp.play(y, fs)
