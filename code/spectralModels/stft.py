@@ -15,7 +15,6 @@ def stft(x, fs, w, N, H) :
   pin = hM                                                # initialize sound pointer in middle of analysis window       
   pend = x.size-hM                                        # last sample to start a frame
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
-  x = np.float32(x) / (2**15)                             # normalize input signal (so 0 dB is the max amp. value)
   yw = np.zeros(w.size)                                   # initialize output sound frame
   y = np.zeros(x.size)                                    # initialize output array
   w = w / sum(w)                                          # normalize analysis window
@@ -55,10 +54,9 @@ def defaultTest():
 
 # example call of stft function
 if __name__ == '__main__':
-  (fs, x) = read('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(511)
   N = 512
   H = 256
-  wp.play(x, fs)
   y = stft(x, fs, w, N, H)
   wp.play(y, fs)
