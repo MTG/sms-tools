@@ -17,7 +17,7 @@ def peakInterp(mX, pX, ploc):
 
 def peakDetection(mX, hN, t):
   # detect spectral peak locations
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold
+  # mX: magnitude spectrum, hN: size of positive spectrum, t: threshold
   # returns ploc: peak locations
 
   thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0);          # locations above threshold
