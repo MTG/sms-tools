@@ -78,7 +78,6 @@ def defaultTest():
   w = np.hamming(511)
   N = 512
   t = -60
-  fig = plt.figure()
   y = sineModel(x, fs, w, N, t)
   print "time taken for computation " + str(time.time()-str_time)  
   
@@ -88,6 +87,5 @@ if __name__ == '__main__':
   w = np.hamming(511)
   N = 512
   t = -60
-  fig = plt.figure()
   y = sineModel(x, fs, w, N, t)
   wp.play(y, fs)

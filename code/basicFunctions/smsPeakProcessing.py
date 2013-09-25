@@ -4,7 +4,7 @@ import numpy as np
 def peakInterp(mX, pX, ploc):
   # interpolate peak values using parabolic interpolation
   # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-  # returns iploc, ipmag, ipphase: interpolated values
+  # returns iploc, ipmag, ipphase: interpolated peak location, magnitude and phase values
   
   val = mX[ploc]                                          # magnitude of peak bin 
   lval = mX[ploc-1]                                       # magnitude of bin at left
