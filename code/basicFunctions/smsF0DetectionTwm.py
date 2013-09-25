@@ -72,11 +72,11 @@ def TWM (pfreq, pmag, maxnpeaks, f0c):
     Ponddif = np.array(FreqDistance) * (np.array(harmonic.T)**(-p))
     PeakMag = pmag[peakloc]
     MagFactor = 10**((PeakMag-Amax)/20)
-    ErrorPM = ErrorPM + (Ponddif + MagFactor*(1.4*Ponddif-r)).T
+    ErrorPM = ErrorPM + (Ponddif + MagFactor*(q*Ponddif-r)).T
     harmonic = harmonic+f0c
 
   ErrorMP = np.zeros(harmonic.size)                # initialize MP errors
-  MaxNMP = min(10, pfreq.size)
+  MaxNMP = min(maxnpeaks, pfreq.size)
   for i in range(0, f0c.size) :                    # measured to predicted mismatch error
     nharm = np.round(pfreq[:MaxNMP]/f0c[i])
     nharm = (nharm>=1)*nharm + (nharm<1)

@@ -1,14 +1,17 @@
 import numpy as np
+import time, os, sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+
 import smsWavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
-import time, os, sys
 
 def stft(x, fs, w, N, H) :
-  # Analysis/synthesis of a sound using the short-time fourier transform
-  # x: input array sound, w: analysis window (odd size), N: FFT size, H: hop size
-  # returns y: output array sound
+  ''' Analysis/synthesis of a sound using the short-time fourier transform
+  x: input array sound, w: analysis window (odd size), N: FFT size, H: hop size
+  returns y: output array sound '''
 
   hN = N/2                                                # size of positive spectrum
   hM = (w.size+1)/2                                       # half analysis window size
