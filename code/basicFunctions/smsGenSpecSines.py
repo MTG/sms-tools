@@ -4,7 +4,7 @@ import smsGenBhLobe as GB
 def genSpecSines(iploc, ipmag, ipphase, N):
   # Generate a spectrum from a series of sine values
   # iploc, ipmag, ipphase: sine peaks locations, magnitudes and phases
-  # N: size of complex spectrum
+  # N: size of the complex spectrum to generate
   # returns Y: generated complex spectrum of sines
 
   Y = np.zeros(N, dtype = complex)                 # initialize output spectrum  

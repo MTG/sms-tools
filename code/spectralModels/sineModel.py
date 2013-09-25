@@ -9,8 +9,6 @@ import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
-#sys.path.append(os.path.realpath('../basicFunctions/'))
-#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -57,14 +55,14 @@ def sineModel(x, fs, w, N, t):
     fftbuffer[N-hM+1:] = xw[:hM-1]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
-    ploc = PP.peakDetection(mX, hN, t)                      # detect locations of peaks
-    pmag = mX[ploc]                                       # get the magnitude of the peajs
+    ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
+    pmag = mX[ploc]                                       # get the magnitude of the peaks
     pX = np.unwrap( np.angle(X[:hN]) )                    # unwrapped phase spect. of positive freq.
-    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)     # refine peak values by interpolation
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
   
   #-----synthesis-----
     plocs = iploc*Ns/N;                                   # adapt peak locations to size of synthesis FFT
-    Y = GS.genSpecSines(plocs, ipmag, ipphase, Ns)           # generate sines in the spectrum         
+    Y = GS.genSpecSines(plocs, ipmag, ipphase, Ns)        # generate sines in the spectrum         
     fftbuffer = np.real( ifft(Y) )                        # compute inverse FFT
     yw[:hNs-1] = fftbuffer[hNs+1:]                        # undo zero-phase window
     yw[hNs-1:] = fftbuffer[:hNs+1] 
@@ -74,7 +72,6 @@ def sineModel(x, fs, w, N, t):
   return y
 
 def defaultTest():
-  
   str_time = time.time()
     
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))

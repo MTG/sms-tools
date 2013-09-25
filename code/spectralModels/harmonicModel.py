@@ -33,7 +33,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   # f0et: error threshold in the f0 detection (ex: 5),
   # maxhd: max. relative deviation in harmonic detection (ex: .2)
   # yh: harmonic component, yr: residual component
-  # returns y: output sound
+  # returns y: output array sound
 
   hN = N/2                                                      # size of positive spectrum
   hM = (w.size+1)/2                                             # half analysis window size
@@ -62,9 +62,9 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     fftbuffer[N-hM+1:] = xw[:hM-1]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peakDetection(mX, hN, t)                             # detect peak locations
+    ploc = PP.peakDetection(mX, hN, t)                           # detect peak locations
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
     
     f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
@@ -96,12 +96,11 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   return y
 
 def defaultTest():
-    
     str_time = time.time()    
     (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
-    w = np.hamming(1025)
+    w = np.hamming(601)
     N = 1024
-    t = -120
+    t = -80
     nH = 30
     minf0 = 200
     maxf0 = 500
@@ -113,10 +112,9 @@ def defaultTest():
 if __name__ == '__main__':
 
     (fs, x) = wp.wavread('../../sounds/speech-female.wav')
-    wp.play(x, fs)
-    w = np.hamming(1025)
+    w = np.hamming(601)
     N = 1024
-    t = -120
+    t = -80
     nH = 30
     minf0 = 200
     maxf0 = 500

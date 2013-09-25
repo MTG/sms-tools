@@ -3,31 +3,18 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
 import time
-
 import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
-#sys.path.append(os.path.realpath('../basicFunctions/'))
-#sys.path.append(os.path.realpath('../basicFunctions_C/'))
-import smsF0DetectionTwm as fd
 import smsWavplayer as wp
-import smsPeakProcessing as PP
-
-try:
-  import basicFunctions_C as GS
-except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  
+import smsPeakProcessing as PP 
 
 def stftPeaks(x, fs, w, N, H, t) :
-  # Analysis/synthesis of a sound using the peaks
+  # Analysis/synthesis of a sound using the spectral peaks
   # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
-  # t: threshold in negative dB, y: output sound
+  # t: threshold in negative dB 
+  # returns y: output array sound
 
   hN = N/2                                                # size of positive spectrum
   hM = (w.size+1)/2                                       # half analysis window size
@@ -47,15 +34,8 @@ def stftPeaks(x, fs, w, N, H, t) :
     fftbuffer[N-hM+1:] = xw[:hM-1]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
-    ploc = PP.peakDetection(mX, hN, t)
-    pmag = mX[ploc]
-    # freq = np.arange(0, fs/2, fs/N)                     # frequency axis in Hz
-    # freq = freq[:freq.size-1]
-    # fig.clf()
-    # plt.plot(freq, mX)
-    # plt.ylabel('Magnitude(dB)'), plt.xlabel('Frequency(Hz)')         
-    # plt.plot(freq[ploc], pmag, 'ro')
-    # plt.draw()          
+    ploc = PP.peakDetection(mX, hN, t)                    # detect all peaks above a threshold
+    pmag = mX[ploc]                                       # get the magnitude of the peaks
     pX = np.unwrap( np.angle(X[:hN]) )                    # unwrapped phase spect. of positive freq.
     pphase = pX[ploc]
 
@@ -77,11 +57,10 @@ def defaultTest():
     str_time = time.time()
       
     (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
-    w = np.hamming(511)
-    N = 512
-    H = 256
-    t = -60
-    # fig = plt.figure()
+    w = np.hamming(801)
+    N = 1024
+    H = 200
+    t = -70
     y = stftPeaks(x, fs, w, N, H, t)
     print "time taken for computation " + str(time.time()-str_time)
     
@@ -90,10 +69,9 @@ if __name__ == '__main__':
       
     (fs, x) = wp.wavread('../../sounds/oboe.wav')
     wp.play(x, fs)
-    w = np.hamming(511)
-    N = 512
-    H = 256
-    t = -60
-    # fig = plt.figure()
+    w = np.hamming(801)
+    N = 1024
+    H = 200
+    t = -70
     y = stftPeaks(x, fs, w, N, H, t)
     wp.play(y, fs)

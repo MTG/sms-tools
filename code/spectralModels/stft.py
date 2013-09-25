@@ -3,12 +3,12 @@ import smsWavplayer as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
-import time , os, sys
+import time, os, sys
 
 def stft(x, fs, w, N, H) :
   # Analysis/synthesis of a sound using the short-time fourier transform
   # x: input array sound, w: analysis window (odd size), N: FFT size, H: hop size
-  # y: output sound
+  # returns y: output array sound
 
   hN = N/2                                                # size of positive spectrum
   hM = (w.size+1)/2                                       # half analysis window size
@@ -43,7 +43,6 @@ def stft(x, fs, w, N, H) :
   return y
 
 def defaultTest():
-  
   str_time = time.time()    
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
   w = np.hamming(511)

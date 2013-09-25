@@ -1,9 +1,9 @@
 import numpy as np
 
-
 def genBhLobe(x):
-  # Calculate transform of the Blackman-Harris 92dB window
-  # x: bin positions to compute (real values), y: transform values
+  # Generate the transform of the Blackman-Harris window
+  # x: bin positions to compute (real values)
+  # returns y: transform values
 
   N = 512;
   f = x*np.pi*2/N                                  # frequency sampling
@@ -19,7 +19,7 @@ def genBhLobe(x):
   return y                                           # normalize
 
 def D(x, N):
-  # Calculate rectangular window transform (Dirichlet kernel)
+  # Generate a sinc function (Dirichlet kernel)
 
   y = np.sin(N * x/2) / np.sin(x/2)
   y[np.isnan(y)] = N                                 # avoid NaN if x == 0

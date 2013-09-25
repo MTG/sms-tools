@@ -9,6 +9,7 @@ INT16_FAC = (2**15)-1
 
 
 def play(y, fs):
+	# play the array y as a sound using fs as the sampling rate
 	
 	x = copy.deepcopy(y)	#just deepcopying to modify signal to play and to not change original array
 	
@@ -35,6 +36,7 @@ def play(y, fs):
 	os.remove(os.getcwd()+'/temp_file.wav')
 	
 def wavread(filename):
+	# read a sound file and return an array with the sound and the sampling rate
 	
 	(fs, x) = read(filename)
 	
@@ -44,6 +46,7 @@ def wavread(filename):
 	return fs, x
       
 def wavwrite(y, fs, filename):
+	# write a sound file from an array with the sound and the sampling rate
 	
 	x = copy.deepcopy(y)	#just deepcopying to modify signal to write and to not change original array
 	
