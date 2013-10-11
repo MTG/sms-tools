@@ -1,0 +1,82 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.fftpack import fft, ifft
+
+N = 256
+M = 63
+f0 = 1000
+fs = 10000
+A0 = .8 
+hN = N/2                                                # size of positive spectrum
+hM = (M+1)/2
+fftbuffer = np.zeros(N)
+X1 = np.zeros(N)
+X2 = np.zeros(N)
+
+x = A0 * np.exp(1j*2*np.pi*f0/fs*np.arange(-hM+1,hM))
+
+plt.figure(1)
+w = np.hanning(M)
+plt.subplot(2,3,1)
+plt.title('hanning window: w')
+plt.plot(np.arange(-hM+1, hM), w, 'b')
+plt.axis([-hM+1, hM, 0, 1])
+plt.xlabel('time (samples)')
+plt.ylabel('amplitude')
+
+fftbuffer[:hM] = w[hM-1:]
+fftbuffer[N-hM+1:] = w[:hM-1]  
+X = fft(fftbuffer)
+X1[:hN] = X[hN:]
+X1[N-hN:] = X[:hN]
+mX = 20*np.log10(abs(X1))       
+
+plt.subplot(2,3,2)
+plt.title('magnitude spectrum: abs(W)')
+plt.plot(np.arange(-hN, hN), mX-max(mX), 'r')
+plt.axis([-hN,hN,-65,0])
+plt.xlabel('frequency (bins)')
+plt.ylabel('amplitude (dB)')
+
+pX = np.angle(X1)
+plt.subplot(2,3,3)
+plt.title('phase spectrum: angle(W)')
+plt.plot(np.arange(-hN, hN), pX, 'g')
+plt.axis([-hN,hN,0-.1,np.pi+.1])
+plt.xlabel('frequency (bins)')
+plt.ylabel('phase (radians)')
+
+plt.subplot(2,3,4)
+plt.title('complex sinewave: x')
+xwreal = np.real(x)*w
+xwimag = np.imag(x)*w
+plt.plot(np.arange(-hM+1, hM), xwreal, 'b')
+plt.plot(np.arange(-hM+1, hM), xwimag, 'r')
+plt.axis([-hM+1, hM, -1, 1])
+plt.xlabel('time (samples)')
+plt.ylabel('amplitude')
+
+fftbuffer = np.zeros(N, dtype= complex)
+fftbuffer[0:hM] = np.vectorize(complex)(xwreal[hM-1:],xwimag[hM-1:])
+fftbuffer[N-hM+1:] = np.vectorize(complex)(xwreal[:hM-1], xwimag[:hM-1])
+X = fft(fftbuffer)
+X2[:hN] = X[hN:]                            # zero-phase window in fftbuffer
+X2[N-hN:] = X[:hN]
+mX2 = 20*np.log10(abs(X2))  
+
+plt.subplot(2,3,5)
+plt.title('magnitude spectrum: abs(X)')
+plt.plot(np.arange(-hN, hN), mX2-max(mX2), 'r')
+plt.axis([-hN,hN,-65,0])
+plt.xlabel('frequency (bins)')
+plt.ylabel('amplitude (dB)')
+
+pX = np.angle(X2)
+plt.subplot(2,3,6)
+plt.title('phase spectrum: angle(X)')
+plt.plot(np.arange(-hN,hN), pX, 'g')
+plt.axis([-hN,hN,0-.1,np.pi+.1])
+plt.xlabel('frequency (bins)')
+plt.ylabel('phase (radians)')
+
+plt.show()
