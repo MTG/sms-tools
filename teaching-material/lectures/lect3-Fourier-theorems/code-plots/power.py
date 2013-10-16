@@ -10,8 +10,8 @@ x = np.cos(2*np.pi*3/M*np.arange(M)) * np.hanning(M)
 
 plt.subplot(2,1,1)
 plt.title('x')
-plt.plot(x, 'b')
-plt.axis([0,M-1,-1,1])
+plt.plot(np.arange(-M/2.0,M/2), x, 'b')
+plt.axis([-M/2,M/2-1,-1,1])
 
 powerx = sum(np.abs(x)**2)
 print powerx
@@ -19,8 +19,8 @@ print powerx
 mX = np.abs(fftshift(fft(x, N)))
 plt.subplot(2,1,2)
 plt.title('abs(X)')
-plt.plot(mX, 'r')
-plt.axis([0,N-1,0,max(mX)+1])
+plt.plot(np.arange(-N/2.0,N/2), mX, 'r')
+plt.axis([-N/2,N/2-1,0,max(mX)])
 
 powerX = sum(mX**2) / N
 
