@@ -12,7 +12,6 @@ x = np.cos(2*np.pi*k0/N*nv)
 plt.subplot(411)
 plt.title('real sinewave: x')
 plt.plot(nv, np.real(x))
-plt.plot(nv, np.imag(x))
 plt.axis([-N/2,N/2-1,-1,1])
 for k in kv:
 	s = np.exp(1j*2*np.pi*k/N*nv)
