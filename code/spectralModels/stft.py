@@ -11,7 +11,7 @@ import math
 
 def stft(x, fs, w, N, H) :
   ''' Analysis/synthesis of a sound using the short-time fourier transform
-  x: input array sound, w: analysis window (odd size), N: FFT size, H: hop size
+  x: input array sound, w: analysis window, N: FFT size, H: hop size
   returns y: output array sound '''
 
   hN = N/2                                                # size of positive spectrum
@@ -40,7 +40,7 @@ def stft(x, fs, w, N, H) :
     Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                  # generate positive frequencies
     Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1]) # generate negative frequencies
     fftbuffer = np.real( ifft(Y) )                        # compute inverse FFT
-    yw[:hM2] = fftbuffer[N-hM2:]                        # undo zero-phase window
+    yw[:hM2] = fftbuffer[N-hM2:]                          # undo zero-phase window
     yw[hM2:] = fftbuffer[:hM1]
     y[pin-hM1:pin+hM2] += H*yw                            # overlap-add
     pin += H                                              # advance sound pointer
