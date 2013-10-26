@@ -4,12 +4,13 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
 import smsWavplayer as wp
+import smsPeakProcessing as PP
 from scipy import signal
 import matplotlib.pyplot as plt
 import math
 from numpy.fft import fft
 
-def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
+def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     ''' Analysis/synthesis of a sound using the short-time fourier transform
     x: input array sound, w: analysis window, N: FFT size, H: hop size
     returns y: output array sound 
@@ -37,17 +38,19 @@ def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
         fftbuffer[:hM1] = xw[hM2:]                            # zero-phase window in fftbuffer
         fftbuffer[N-hM2:] = xw[:hM2]        
         X = fft(fftbuffer)                                    # compute FFT
-        mX = 20 * np.log10( abs(X[firstBin:lastBin]) )        # magnitude spectrum of positive frequencies in dB     
-        pX = np.unwrap( np.angle(X[firstBin:lastBin]) )       # unwrapped phase spectrum of positive frequencies
+        mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies in dB     
+        pX = np.unwrap(np.angle(X[:hN]))                      # unwrapped phase spectrum of positive frequencies
+        ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
+        pmag = mX[ploc]                                       # get the magnitude of the peaks
+        iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
         if frmNum == 0:                                       # Accumulate and store STFT
-            YSpec = np.transpose(np.array([mX]))
+            YSpec = np.transpose(np.array([mX[firstBin:lastBin]]))
         else:
-            YSpec = np.hstack((YSpec,np.transpose(np.array([mX]))))
+            YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
         pin += H
         frmNum += 1
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
     plt.pcolormesh(frmTime,binFreq,YSpec)
-    plt.plot(3,2,'ro')
     plt.xlabel('Time(s)')
     plt.ylabel('Frequency(Hz)')
     plt.autoscale(tight=True)
@@ -60,7 +63,8 @@ if __name__ == '__main__':
     w = np.hamming(511)
     N = 1024
     H = 256
+    t = -60
     minFreq = 0
     maxFreq = fs/10.0
-    YSpec = stftPlot(x,fs,w,N,H,minFreq,maxFreq)
+    YSpec = sineModelPlot(x,fs,w,N,H,t,minFreq,maxFreq)
    
