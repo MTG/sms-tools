@@ -6,27 +6,15 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ba
 import smsWavplayer as wp
 from scipy import signal
 import matplotlib.pyplot as plt
-import importlib
-import inspect
-import sys
-import pprint
-import wave
-import pyaudio
-import os, copy
-from scipy.io.wavfile import write
-from scipy.io.wavfile import read
 import math
-from numpy.fft import fft, ifft
+from numpy.fft import fft
 
-def stft2(x, fs, w, N, H):
+def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
     ''' Analysis/synthesis of a sound using the short-time fourier transform
     x: input array sound, w: analysis window, N: FFT size, H: hop size
     returns y: output array sound 
-    YSpec: The STFT of x (Only the half spectrum is stored)
-    frmTime: The time values at which the STFT was computed
-    binFreq: The frequency values of the bins at which the STFT was computed
-    If T = len(frmTime) and F = len(binFreq), YSpec is a FxT sized matrix '''
-    
+    YSpec: The STFT of x (Only the half spectrum is stored)'''
+   
     hN = N/2                                                # size of positive spectrum
     hM1 = int(math.floor((w.size+1)/2))                     # Ceil of half analysis window size
     hM2 = int(math.floor(w.size/2))                         # Floor of half analysis window size
@@ -39,10 +27,11 @@ def stft2(x, fs, w, N, H):
     numFrames = int(math.floor(pend/float(H)))
     frmNum = 0
     frmTime = []
-    binFreq = np.arange(N/2)*float(fs)/N                    # The bin frequencies
+    firstBin = N*minFreq/float(fs)
+    lastBin = N*maxFreq/float(fs)
+    binFreq = np.arange(firstBin,lastBin)*float(fs)/N                    # The bin frequencies
     while pin<pend:                                         # while sound pointer is smaller than last sample    
-        frmTime.append(pin/float(fs))
-        #-----analysis-----             
+        frmTime.append(pin/float(fs))         
         xw = x[pin-hM1:pin+hM2]*w                             # window the input sound
         fftbuffer = np.zeros(N)                               # clean fft buffer
         fftbuffer[:hM1] = xw[hM2:]                            # zero-phase window in fftbuffer
@@ -50,25 +39,20 @@ def stft2(x, fs, w, N, H):
         X = fft(fftbuffer)                                    # compute FFT
         mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies in dB     
         pX = np.unwrap( np.angle(X[:hN]) )                    # unwrapped phase spectrum of positive frequencies
-        
         if frmNum == 0:                                       # Accumulate and store STFT
-            YSpec = np.transpose(np.array([X[:hN]]))
+            YSpec = np.transpose(np.array([X[firstBin:lastBin]]))
         else:
-            YSpec = np.hstack((YSpec,np.transpose(np.array([X[:hN]]))))
-        #-----synthesis-----
-        Y = np.zeros(N, dtype = complex)                      # clean output spectrun
-        Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                  # generate positive frequencies
-        Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1]) # generate negative frequencies
-        fftbuffer = np.real(ifft(Y) )                         # compute inverse FFT
-        yw[:hM2] = fftbuffer[N-hM2:]                          # undo zero-phase window
-        yw[hM2:] = fftbuffer[:hM1]
-        y[pin-hM1:pin+hM2] += H*yw                            # overlap-add
-        pin += H                                              # advance sound pointer
+            YSpec = np.hstack((YSpec,np.transpose(np.array([X[firstBin:lastBin]]))))
+        pin += H
         frmNum += 1
-    
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
-    
-    return (y, YSpec, frmTime, binFreq)
+    plt.pcolormesh(frmTime,binFreq,20*np.log10(abs(YSpec)))
+    plt.xlabel('Time(s)')
+    plt.ylabel('Frequency(Hz)')
+    plt.title('oboe')
+    plt.autoscale(tight=True)
+    plt.show()
+    return YSpec
 
 # example call of stft function
 if __name__ == '__main__':
@@ -76,11 +60,7 @@ if __name__ == '__main__':
     w = np.hamming(511)
     N = 1024
     H = 256
-    (yout, YSpec, frmTime, binFreq) = stft2(x,fs,w,N,H)
-    plt.pcolormesh(frmTime,binFreq,20*np.log10(abs(YSpec)))
-    plt.xlabel('Time(s)')
-    plt.ylabel('Frequency(Hz)')
-    plt.title('oboe')
-    plt.autoscale(tight=True)
-    plt.show()
-
+    minFreq = 0
+    maxFreq = fs/4.0
+    YSpec = stftPlot(x,fs,w,N,H,minFreq,maxFreq)
+   
