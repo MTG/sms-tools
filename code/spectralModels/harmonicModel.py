@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import time
+import math
 
 import sys, os, functools
 
@@ -24,7 +25,7 @@ except ImportError:
 
 def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   # Analysis/synthesis of a sound using the sinusoidal harmonic model
-  # x: input sound, fs: sampling rate, w: analysis window (odd size), 
+  # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
   # nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
   # maxf0: maximim f0 frequency in Hz, 
@@ -33,13 +34,15 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   # yh: harmonic component, yr: residual component
   # returns y: output array sound
 
+  
   hN = N/2                                                      # size of positive spectrum
-  hM = (w.size+1)/2                                             # half analysis window size
+  hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
+  hM2 = int(math.floor(w.size/2))                               # half analysis window size by floor
   Ns = 512                                                      # FFT size for synthesis (even)
   H = Ns/4                                                      # Hop size used for analysis and synthesis
   hNs = Ns/2      
-  pin = max(hNs, hM)                                            # initialize sound pointer in middle of analysis window          
-  pend = x.size - max(hNs, hM)                                  # last sample to start a frame
+  pin = max(hNs, hM1)                                           # initialize sound pointer in middle of analysis window          
+  pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
   fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
   yh = np.zeros(Ns)                                             # initialize output sound frame
   y = np.zeros(x.size)                                          # initialize output array
@@ -50,14 +53,12 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   bh = blackmanharris(Ns)                                       # synthesis window
   bh = bh / sum(bh)                                             # normalize synthesis window
   sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]
-
-  while pin<pend:       
-            
+  while pin<pend:             
   #-----analysis-----             
-    xw = x[pin-hM:pin+hM-1] * w                                  # window the input sound
+    xw = x[pin-hM1:pin+hM2] * w                                  # window the input sound
     fftbuffer = np.zeros(N)                                      # reset buffer
-    fftbuffer[:hM] = xw[hM-1:]                                   # zero-phase window in fftbuffer
-    fftbuffer[N-hM+1:] = xw[:hM-1]                           
+    fftbuffer[:hM1] = xw[hM2:]                                   # zero-phase window in fftbuffer
+    fftbuffer[N-hM2:] = xw[:hM2]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
     ploc = PP.peakDetection(mX, hN, t)                           # detect peak locations
@@ -71,7 +72,6 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
     hf = (f0>0)*(f0*np.arange(1, nH+1))                          # initialize harmonic frequencies
     hi = 0                                                       # initialize harmonic index
     npeaks = ploc.size                                           # number of peaks found
-    
     while f0>0 and hi<nH and hf[hi]<fs/2 :                       # find harmonic peaks
       dev = min(abs(iploc/N*fs - hf[hi]))
       pei = np.argmin(abs(iploc/N*fs - hf[hi]))                  # closest peak
@@ -80,17 +80,14 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
         hmag[hi] = ipmag[pei]                                    # harmonic magnitudes
         hphase[hi] = ipphase[pei]                                # harmonic phases
       hi += 1                                                    # increase harmonic index
-    
     hloc = (hloc!=0) * (hloc*Ns/N)                               # synth. locs
-
   #-----synthesis-----
-    Yh = GS.genSpecSines(hloc, hmag, hphase, Ns)                    # generate spec sines          
+    Yh = GS.genSpecSines(hloc, hmag, hphase, Ns)                 # generate spec sines          
     fftbuffer = np.real( ifft(Yh) )                              # inverse FFT
     yh[:hNs-1] = fftbuffer[hNs+1:]                               # undo zero-phase window
     yh[hNs-1:] = fftbuffer[:hNs+1] 
     y[pin-hNs:pin+hNs] += sw*yh                                  # overlap-add
     pin += H                                                     # advance sound pointer
-
   return y
 
 def defaultTest():
@@ -108,7 +105,6 @@ def defaultTest():
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
-
     (fs, x) = wp.wavread('../../sounds/speech-female.wav')
     w = np.hamming(601)
     N = 1024

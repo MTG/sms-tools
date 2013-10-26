@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
+import math
 
 
 import sys, os, functools, time
@@ -29,12 +30,13 @@ def sineModel(x, fs, w, N, t):
   # returns y: output array sound
 
   hN = N/2                                                # size of positive spectrum
-  hM = (w.size+1)/2                                       # half analysis window size
+  hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
+  hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
   Ns = 512                                                # FFT size for synthesis (even)
   H = Ns/4                                                # Hop size used for analysis and synthesis
   hNs = Ns/2                                              # half of synthesis FFT size
-  pin = max(hNs, hM)                                      # initialize sound pointer in middle of analysis window       
-  pend = x.size - max(hNs, hM)                            # last sample to start a frame
+  pin = max(hNs, hM1)                                     # initialize sound pointer in middle of analysis window       
+  pend = x.size - max(hNs, hM1)                           # last sample to start a frame
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
   yw = np.zeros(Ns)                                       # initialize output sound frame
   y = np.zeros(x.size)                                    # initialize output array
@@ -49,10 +51,10 @@ def sineModel(x, fs, w, N, t):
   while pin<pend:                                         # while input sound pointer is within sound 
     
   #-----analysis-----             
-    xw = x[pin-hM:pin+hM-1] * w                           # window the input sound
+    xw = x[pin-hM1:pin+hM2] * w                           # window the input sound
     fftbuffer = np.zeros(N)                               # reset buffer
-    fftbuffer[:hM] = xw[hM-1:]                            # zero-phase window in fftbuffer
-    fftbuffer[N-hM+1:] = xw[:hM-1]        
+    fftbuffer[:hM1] = xw[hM2:]                            # zero-phase window in fftbuffer
+    fftbuffer[N-hM2:] = xw[:hM2]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
     ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
@@ -76,7 +78,7 @@ def defaultTest():
     
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
   w = np.hamming(511)
-  N = 512
+  N = 1024
   t = -60
   y = sineModel(x, fs, w, N, t)
   print "time taken for computation " + str(time.time()-str_time)  
@@ -85,7 +87,7 @@ def defaultTest():
 if __name__ == '__main__':
   (fs, x) = wp.wavread('../../sounds/oboe.wav')
   w = np.hamming(511)
-  N = 512
+  N = 1024
   t = -60
   y = sineModel(x, fs, w, N, t)
   wp.play(y, fs)

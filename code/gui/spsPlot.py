@@ -37,7 +37,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
   freq_range = 10000 # fs/2 by default
   hN = N/2                                                      # size of positive spectrum
   hM = (w.size+1)/2                                             # half analysis window size
-  Ns = 512                                                      # FFT size for synthesis (even)
+  Ns = 256                                                      # FFT size for synthesis (even)
   H = Ns/4                                                      # Hop size used for analysis and synthesis
   hNs = Ns/2      
   pin = max(hNs, hM)                                            # initialize sound pointer in middle of analysis window          
@@ -168,7 +168,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
       idx = np.argmin(abs(sloc[i] - lastsloc[:lastnS]))  
       lastidx[i] = idx
 
-    ri = pin-hNs-1                                               # input sound pointer for residual analysis
+    ri = pin-hNs                                                 # input sound pointer for residual analysis
     xw2 = x[ri:ri+Ns]*wr                                         # window the input sound                                       
     fftbuffer = np.zeros(Ns)                                     # reset buffer
     fftbuffer[:hNs] = xw2[hNs:]                                  # zero-phase window in fftbuffer
@@ -336,12 +336,9 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
 if __name__ == '__main__':
 
     (fs, x) = wp.wavread('../../sounds/speech-female.wav')
-    # wp.play(x, fs)
-
-    # fig = plt.figure()
-    w = np.hamming(801)
+    w = np.hamming(701)
     N = 1024
-    t = -120
+    t = -70
     maxnS = 30
     stocf = 0.5
     y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)

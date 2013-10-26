@@ -15,8 +15,8 @@ def stft(x, fs, w, N, H) :
   returns y: output array sound '''
 
   hN = N/2                                                # size of positive spectrum
-  hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size
-  hM2 = int(math.floor(w.size/2))                         # half analysis window size
+  hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
+  hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
   pin = hM1                                               # initialize sound pointer in middle of analysis window       
   pend = x.size-hM1                                       # last sample to start a frame
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
