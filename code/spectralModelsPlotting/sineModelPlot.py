@@ -79,6 +79,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
 if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
     w = np.hamming(511)
+    w = np.hamming(501)
     N = 1024
     H = 256
     t = -60
