@@ -80,6 +80,9 @@ if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
     w = np.hamming(501)
     N = 1024
+    H = 250
+    t = -50
     minFreq = 0
+    maxFreq = fs/15.0
     YSpec = sineModelPlot(x,fs,w,N,H,t,minFreq,maxFreq)
    
