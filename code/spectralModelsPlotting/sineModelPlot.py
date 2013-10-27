@@ -30,7 +30,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     firstBin = N*minFreq/float(fs)
     lastBin = N*maxFreq/float(fs)
     binFreq = np.arange(firstBin,lastBin)*float(fs)/N       # The bin frequencies
-    specPeaks=[]
+    
     while pin<pend:                                         # while sound pointer is smaller than last sample    
         frmTime.append(pin/float(fs))         
         xw = x[pin-hM1:pin+hM2]*w                             # window the input sound
@@ -48,20 +48,27 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
             ind1 = np.where(iploc>=firstBin)[0]
             ind2 = np.where(iploc<=lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
-            specPeaks.append(iploc[ind])
+            final_peaks = iploc[ind]
+            parray = np.zeros([final_peaks.size,2])
+            parray[:,0]=pin/float(fs)
+            parray[:,1]=final_peaks*float(fs)/N
+            specPeaks = parray
         else:
             YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
             ind1 = np.where(iploc>=firstBin)[0]
             ind2 = np.where(iploc<=lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
-            specPeaks.append(iploc[ind])
+            final_peaks = iploc[ind]
+            parray = np.zeros([final_peaks.size,2])
+            parray[:,0]=pin/float(fs)
+            parray[:,1]=final_peaks*float(fs)/N
+            specPeaks = np.append(specPeaks, parray,axis=0)
         pin += H
         frmNum += 1
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
     plt.hold(True)
     plt.pcolormesh(frmTime,binFreq,YSpec)
-    for i,peaks in enumerate(specPeaks):
-        plt.scatter(frmTime[i]*np.ones(peaks.size),peaks*float(fs)/N )
+    plt.scatter(specPeaks[:,0], specPeaks[:,1])
     plt.xlabel('Time(s)')
     plt.ylabel('Frequency(Hz)')
     plt.autoscale(tight=True)
