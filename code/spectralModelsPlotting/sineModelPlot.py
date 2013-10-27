@@ -30,6 +30,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     firstBin = N*minFreq/float(fs)
     lastBin = N*maxFreq/float(fs)
     binFreq = np.arange(firstBin,lastBin)*float(fs)/N       # The bin frequencies
+    specPeaks=[]
     while pin<pend:                                         # while sound pointer is smaller than last sample    
         frmTime.append(pin/float(fs))         
         xw = x[pin-hM1:pin+hM2]*w                             # window the input sound
@@ -44,12 +45,23 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
         iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
         if frmNum == 0:                                       # Accumulate and store STFT
             YSpec = np.transpose(np.array([mX[firstBin:lastBin]]))
+            ind1 = np.where(iploc>=firstBin)[0]
+            ind2 = np.where(iploc<=lastBin)[0]
+            ind = list((set(ind1.tolist())&set(ind2.tolist())))
+            specPeaks.append(iploc[ind])
         else:
             YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
+            ind1 = np.where(iploc>=firstBin)[0]
+            ind2 = np.where(iploc<=lastBin)[0]
+            ind = list((set(ind1.tolist())&set(ind2.tolist())))
+            specPeaks.append(iploc[ind])
         pin += H
         frmNum += 1
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
+    plt.hold(True)
     plt.pcolormesh(frmTime,binFreq,YSpec)
+    for i,peaks in enumerate(specPeaks):
+        plt.scatter(frmTime[i]*np.ones(peaks.size),peaks*float(fs)/N )
     plt.xlabel('Time(s)')
     plt.ylabel('Frequency(Hz)')
     plt.autoscale(tight=True)
