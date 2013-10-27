@@ -58,7 +58,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
 
 # example call of sineModelPlot function
 if __name__ == '__main__':
-    (fs, x) = wp.wavread('../../sounds/oboe.wav')
+    (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
     w = np.hamming(511)
     N = 1024
     H = 256

@@ -49,7 +49,6 @@ def sineModel(x, fs, w, N, t):
   sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]     # normalized synthesis window
 
   while pin<pend:                                         # while input sound pointer is within sound 
-    
   #-----analysis-----             
     xw = x[pin-hM1:pin+hM2] * w                           # window the input sound
     fftbuffer = np.zeros(N)                               # reset buffer
@@ -76,7 +75,7 @@ def sineModel(x, fs, w, N, t):
 def defaultTest():
   str_time = time.time()
     
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
   w = np.hamming(511)
   N = 1024
   t = -60
@@ -85,7 +84,7 @@ def defaultTest():
   
 # example call of sineModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
   w = np.hamming(511)
   N = 1024
   t = -60
