@@ -3,6 +3,7 @@ import time, os, sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
+import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
 from scipy import signal
@@ -10,7 +11,7 @@ import matplotlib.pyplot as plt
 import math
 from numpy.fft import fft
 
-def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
+def harmonicModelPlot(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxhd, minFreq, maxFreq):
     ''' Analysis/synthesis of a sound using the short-time fourier transform
     x: input array sound, w: analysis window, N: FFT size, H: hop size
     YSpec: The STFT of x (Only the half spectrum is stored)'''
@@ -43,22 +44,37 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
         ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
         pmag = mX[ploc]                                       # get the magnitude of the peaks
         iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
+        f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+        hloc = np.zeros(nH)                                          # initialize harmonic locations
+        hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
+        hphase = np.zeros(nH)                                        # initialize harmonic phases
+        hf = (f0>0)*(f0*np.arange(1, nH+1))                          # initialize harmonic frequencies
+        hi = 0                                                       # initialize harmonic index
+        npeaks = ploc.size                                           # number of peaks found
+        while f0>0 and hi<nH and hf[hi]<fs/2 :                       # find harmonic peaks
+            dev = min(abs(iploc/N*fs - hf[hi]))
+            pei = np.argmin(abs(iploc/N*fs - hf[hi]))                  # closest peak
+            if ( hi==0 or not any(hloc[:hi]==iploc[pei]) ) and dev<maxhd*hf[hi] :
+                hloc[hi] = iploc[pei]                                    # harmonic locations
+                hmag[hi] = ipmag[pei]                                    # harmonic magnitudes
+                hphase[hi] = ipphase[pei]                                # harmonic phases
+            hi += 1                                                    # increase harmonic index        
         if frmNum == 0:                                       # Accumulate and store STFT
             YSpec = np.transpose(np.array([mX[firstBin:lastBin]]))
-            ind1 = np.where(iploc>=firstBin)[0]
-            ind2 = np.where(iploc<=lastBin)[0]
+            ind1 = np.where(hloc>=firstBin)[0]
+            ind2 = np.where(hloc<=lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
-            final_peaks = iploc[ind]
+            final_peaks = hloc[ind]
             parray = np.zeros([final_peaks.size,2])
             parray[:,0]=pin/float(fs)
             parray[:,1]=final_peaks*float(fs)/N
             specPeaks = parray
         else:
             YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
-            ind1 = np.where(iploc>=firstBin)[0]
-            ind2 = np.where(iploc<=lastBin)[0]
+            ind1 = np.where(hloc>=firstBin)[0]
+            ind2 = np.where(hloc<=lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
-            final_peaks = iploc[ind]
+            final_peaks = hloc[ind]
             parray = np.zeros([final_peaks.size,2])
             parray[:,0]=pin/float(fs)
             parray[:,1]=final_peaks*float(fs)/N
@@ -78,11 +94,16 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
 # example call of sineModelPlot function
 if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
-    w = np.hamming(501)
+    w = np.hamming(601)
     N = 2048
-    H = 500
-    t = -70
+    H = 250
+    t = -50
+    nH = 30
+    minf0 = 200
+    maxf0 = 500
+    f0et = 2
+    maxhd = 0.2
     minFreq = 0
     maxFreq = fs/15.0
-    YSpec = sineModelPlot(x[:40000],fs,w,N,H,t,minFreq,maxFreq)
+    YSpec = harmonicModelPlot(x[:40000],fs,w,N,H,t,nH, minf0, maxf0, f0et, maxhd,minFreq,maxFreq)
    
