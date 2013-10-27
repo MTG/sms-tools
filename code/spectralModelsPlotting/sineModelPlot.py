@@ -13,7 +13,6 @@ from numpy.fft import fft
 def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     ''' Analysis/synthesis of a sound using the short-time fourier transform
     x: input array sound, w: analysis window, N: FFT size, H: hop size
-    returns y: output array sound 
     YSpec: The STFT of x (Only the half spectrum is stored)'''
    
     hN = N/2                                                # size of positive spectrum
@@ -57,7 +56,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     plt.show()
     return YSpec
 
-# example call of stftPlot function
+# example call of sineModelPlot function
 if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/oboe.wav')
     w = np.hamming(511)

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
-from scipy.fftpack import fft, ifft
+from scipy.fftpack import fft, ifft, fftshift
 
 def genbh92lobe(x):
   # Calculate transform of the Blackman-Harris 92dB window
@@ -30,7 +30,7 @@ def D(x, N):
 
 iploc = np.array([20.5, 130.3, 200.2])
 ipmag = np.array([-2.2, -4.3, -8.2])
-ipphase = np.array([1.1, 3.2, 2.4])
+ipphase = np.array([1.1, 0.2, 2.4])
 
 N = 512
 hN = N/2
@@ -68,14 +68,19 @@ mY = 20 * np.log10( abs(Y) )                     # magnitude spectrum of positiv
 pY = np.unwrap( np.angle(Y) ) 
 
 plt.figure(1)
-plt.subplot(2,1,1)
-plt.plot(mY)
-plt.axis([0, N,-100,0])
-plt.title("mag spectrum")
+plt.subplot(3,1,1)
+plt.plot(np.arange(-hN, hN), fftshift(mY))
+plt.axis([-hN, hN,-100,0])
+plt.title("mag spectrum: fr = 20.5, 130.3, 200.2; Ar = -2.2, -4.3, -8.2")
 
-plt.subplot(2,1,2)
-plt.plot(pY)
-plt.axis([0, N,-3.14,3.14])
-plt.title("phase spectrum")
+plt.subplot(3,1,2)
+plt.plot(np.arange(-hN, hN), fftshift(pY))
+plt.axis([-hN, hN,-3.14,3.14])
+plt.title("phase spectrum: pr= 1.1, 0.2, 2.4")
+
+plt.subplot(3,1,3)
+plt.plot(np.arange(-hN, hN), 32*fftshift(ifft(Y)))
+plt.axis([-hN, hN,-1,1])
+plt.title("synthesize sound")
 
 plt.show()
