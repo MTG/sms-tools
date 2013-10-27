@@ -335,8 +335,8 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
 
 if __name__ == '__main__':
 
-    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
-    w = np.hamming(701)
+    (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
+    w = np.hamming(601)
     N = 1024
     t = -70
     maxnS = 30

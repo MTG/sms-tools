@@ -92,7 +92,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
 
 def defaultTest():
     str_time = time.time()    
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
     w = np.hamming(601)
     N = 1024
     t = -80
@@ -105,13 +105,13 @@ def defaultTest():
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
-    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
+    (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
     w = np.hamming(601)
     N = 1024
     t = -80
     nH = 30
     minf0 = 200
-    maxf0 = 500
+    maxf0 = 600
     f0et = 2
     maxhd = 0.2
     y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
