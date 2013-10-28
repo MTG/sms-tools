@@ -46,7 +46,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
         if frmNum == 0:                                       # Accumulate and store STFT
             YSpec = np.transpose(np.array([mX[firstBin:lastBin]]))
             ind1 = np.where(iploc>=firstBin)[0]
-            ind2 = np.where(iploc<=lastBin)[0]
+            ind2 = np.where(iploc<lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
             final_peaks = iploc[ind]
             parray = np.zeros([final_peaks.size,2])
@@ -56,7 +56,7 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
         else:
             YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
             ind1 = np.where(iploc>=firstBin)[0]
-            ind2 = np.where(iploc<=lastBin)[0]
+            ind2 = np.where(iploc<lastBin)[0]
             ind = list((set(ind1.tolist())&set(ind2.tolist())))
             final_peaks = iploc[ind]
             parray = np.zeros([final_peaks.size,2])
@@ -68,7 +68,8 @@ def sineModelPlot(x, fs, w, N, H, t, minFreq, maxFreq):
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
     plt.hold(True)
     plt.pcolormesh(frmTime,binFreq,YSpec)
-    plt.scatter(specPeaks[:,0], specPeaks[:,1])
+
+    plt.scatter(specPeaks[:,0]+(0.5*H/float(fs)), specPeaks[:,1], s=10, marker='x')
     plt.xlabel('Time(s)')
     plt.ylabel('Frequency(Hz)')
     plt.autoscale(tight=True)
