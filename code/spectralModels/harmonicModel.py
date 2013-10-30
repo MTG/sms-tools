@@ -106,13 +106,13 @@ def defaultTest():
 
 if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
-    w = np.hamming(601)
+    w = np.blackman(701)
     N = 1024
     t = -80
     nH = 30
-    minf0 = 200
-    maxf0 = 600
-    f0et = 2
+    minf0 = 400
+    maxf0 = 700
+    f0et = 10
     maxhd = 0.2
     y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
     wp.play(y, fs)
