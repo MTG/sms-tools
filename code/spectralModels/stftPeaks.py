@@ -1,13 +1,13 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import hamming
-from scipy.fftpack import fft, ifft
-import time
-import sys, os
+import time, os, sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
 import smsWavplayer as wp
+from scipy.io.wavfile import read
+from scipy.signal import hamming
+from scipy.fftpack import fft, ifft
+import math
 import smsPeakProcessing as PP 
 
 def stftPeaks(x, fs, w, N, H, t) :
@@ -16,10 +16,11 @@ def stftPeaks(x, fs, w, N, H, t) :
   # t: threshold in negative dB 
   # returns y: output array sound
 
-  hN = N/2                                                # size of positive spectrum
-  hM = (w.size+1)/2                                       # half analysis window size
-  pin = hM                                                # initialize sound pointer in middle of analysis window       
-  pend = x.size-hM                                        # last sample to start a frame
+  hN = N/2    
+  hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
+  hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
+  pin = hM1                                               # initialize sound pointer in middle of analysis window       
+  pend = x.size-hM1                                       # last sample to start a frame
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
   yw = np.zeros(w.size)                                   # initialize output sound frame
   y = np.zeros(x.size)                                    # initialize output array
@@ -28,10 +29,10 @@ def stftPeaks(x, fs, w, N, H, t) :
   while pin<pend:       
            
   #-----analysis-----             
-    xw = x[pin-hM:pin+hM-1] * w                           # window the input sound
-    fftbuffer = np.zeros(N)                               # reset buffer
-    fftbuffer[:hM] = xw[hM-1:]                            # zero-phase window in fftbuffer
-    fftbuffer[N-hM+1:] = xw[:hM-1]        
+    xw = x[pin-hM1:pin+hM2]*w                             # window the input sound
+    fftbuffer = np.zeros(N)                               # clean fft buffer
+    fftbuffer[:hM1] = xw[hM2:]                            # zero-phase window in fftbuffer
+    fftbuffer[N-hM2:] = xw[:hM2]        
     X = fft(fftbuffer)                                    # compute FFT
     mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies
     ploc = PP.peakDetection(mX, hN, t)                    # detect all peaks above a threshold
@@ -44,10 +45,10 @@ def stftPeaks(x, fs, w, N, H, t) :
     Y[ploc] = 10**(pmag/20) * np.exp(1j*pphase)           # generate positive freq.
     Y[N-ploc] = 10**(pmag/20) * np.exp(-1j*pphase)        # generate neg.freq.
     fftbuffer = np.real( ifft(Y) )                        # inverse FFT
-    yw[:hM-1] = fftbuffer[N-hM+1:]                        # undo zero-phase window
-    yw[hM-1:] = fftbuffer[:hM] 
-    y[pin-hM:pin+hM-1] += H*yw                            # overlap-add
-    pin += H                                              # advance sound pointer
+    yw[:hM2] = fftbuffer[N-hM2:]                          # undo zero-phase window
+    yw[hM2:] = fftbuffer[:hM1]
+    y[pin-hM1:pin+hM2] += H*yw                            # overlap-add
+    pin += H                                                # advance sound pointer
   
   return y
 
@@ -56,7 +57,7 @@ def defaultTest():
     
     str_time = time.time()
       
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe.wav'))
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
     w = np.hamming(801)
     N = 1024
     H = 200
@@ -67,7 +68,7 @@ def defaultTest():
   
 if __name__ == '__main__':   
       
-    (fs, x) = wp.wavread('../../sounds/oboe.wav')
+    (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
     wp.play(x, fs)
     w = np.hamming(801)
     N = 1024

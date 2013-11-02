@@ -3,14 +3,12 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import time
-
+import math
 import sys, os, functools
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
-#sys.path.append(os.path.realpath('../basicFunctions/'))
-#sys.path.append(os.path.realpath('../basicFunctions_C/'))
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
@@ -24,7 +22,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def sps(x, fs, w, N, t, maxnS, stocf) :
+def spsModel(x, fs, w, N, t, maxnS, stocf) :
   # Analysis/synthesis of a sound using the sinusoidal plus stochastic model
   # x: input sound, fs: sampling rate, w: analysis window (odd size), 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -89,7 +87,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
 
     sloc = (sloc!=0) * (sloc*Ns/N)                               # peak locations for synthesis
     lastidx = np.zeros(nS, dtype = int)
-    for i in range(0, nS) :  # find closest peak to create trajectories
+    for i in range(0, nS) :                                      # find closest peak to create trajectories
       idx = np.argmin(abs(sloc[i] - lastsloc[:lastnS]))  
       lastidx[i] = idx
 
@@ -182,30 +180,24 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
 def defaultTest():
   
   str_time = time.time()
-    
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
-  w = np.hamming(801)
+  w = np.blackman(701)
   N = 1024
-  t = -120
+  t = -90
   maxnS = 30
   stocf = 0.5
-  y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)
-
+  y, yh, ys = spsModel(x, fs, w, N, t, maxnS, stocf)
   print "time taken for computation " + str(time.time()-str_time)  
   
 
 if __name__ == '__main__':
-
   (fs, x) = wp.wavread('../../sounds/speech-female.wav')
-  # wp.play(x, fs)
-
-  # fig = plt.figure()
-  w = np.hamming(801)
+  w = np.blackman(701)
   N = 1024
-  t = -120
+  t = -90
   maxnS = 30
   stocf = 0.5
-  y, yh, ys = sps(x, fs, w, N, t, maxnS, stocf)
+  y, yh, ys = spsModel(x, fs, w, N, t, maxnS, stocf)
 
   wp.play(y, fs)
   wp.play(yh, fs)

@@ -24,12 +24,6 @@ except ImportError:
   print "[Error] problem while importing hprModel"
  
 try:
-  import hps
-  print "[Success] hps imported successfully....."
-except ImportError:
-  print "[Error] problem while importing hps"
- 
-try:
   import hpsModel
   print "[Success] hpsModel imported successfully....."
 except ImportError:
@@ -42,7 +36,7 @@ except ImportError:
   print "[Error] problem while importing sineModel"
  
 try:
-  import sps
+  import spsModel
   print "[Success] sps imported successfully....."
 except ImportError:
   print "[Error] problem while importing sps"
@@ -105,7 +99,7 @@ except ImportError:
   print "[Error] problem while running defaultTest function in hprModel"
  
 try:
-  hps.defaultTest()
+  hpsModel.defaultTest()
   print "[Success] hps ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in hps"
@@ -117,7 +111,7 @@ except ImportError:
   print "[Error] problem while running defaultTest function in sineModel"
  
 try:
-  sps.defaultTest()
+  spsModel.defaultTest()
   print "[Success] sps ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in sps"
