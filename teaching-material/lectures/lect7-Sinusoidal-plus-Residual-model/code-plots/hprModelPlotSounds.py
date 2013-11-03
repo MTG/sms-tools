@@ -5,8 +5,8 @@ from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../../code/basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../../code/basicFunctions_C/'))
 
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
@@ -112,34 +112,34 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   y = yh+yr                                                      # sum of harmonic and residual components
   return y, yh, yr
 
-
-def defaultTest():
-    str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
-    w = np.blackman(801)
-    N = 1024
-    t = -90
-    nH = 50
-    minf0 = 350
-    maxf0 = 700
-    f0et = 10
-    maxhd = 0.2
-    y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
-    print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
     
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
-    w = np.blackman(801)
-    N = 1024
-    t = -90
-    nH = 50
-    minf0 = 350
-    maxf0 = 700
-    f0et = 10
-    maxhd = 0.2
-    y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
+	(fs, x) = wp.wavread('../../../../sounds/sax-phrase-short.wav')
+	w = np.blackman(801)
+	N = 1024
+	t = -90
+	nH = 50
+	minf0 = 350
+	maxf0 = 700
+	f0et = 10
+	maxhd = 0.2
+	y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
 
-    wp.play(y, fs)
-    wp.play(yh, fs)
-    wp.play(yr, fs)
+	first = 10000
+	last = 11000
+	plt.figure(1)
+	plt.subplot(3,1,1)
+	plt.plot(np.arange(first, last)/float(fs), x[first:last])
+	plt.axis([first/float(fs), last/float(fs), min(x[first:last]), max(x[first:last])])
+	plt.title('x')
+	plt.subplot(3,1,2)
+	plt.plot(np.arange(first, last)/float(fs), yh[first:last])
+	plt.axis([first/float(fs), last/float(fs), min(yh[first:last]), max(yh[first:last])])
+	plt.title('yh')
+	plt.subplot(3,1,3)
+	plt.plot(np.arange(first, last)/float(fs), yr[first:last])
+	plt.axis([first/float(fs), last/float(fs), -3*max(yr[first:last]), 3*max(yr[first:last])])
+	plt.title('yr')
+	plt.show()
+

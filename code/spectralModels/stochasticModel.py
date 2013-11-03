@@ -9,11 +9,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
-#sys.path.append(os.path.realpath('../basicFunctions/'))
-#sys.path.append(os.path.realpath('../basicFunctions_C/'))
-import smsF0DetectionTwm as fd
 import smsWavplayer as wp
-import smsPeakProcessing as PP
 
 try:
   import basicFunctions_C as GS
@@ -38,9 +34,8 @@ def stochasticModel(x, w, N, H, stocf) :
   y = np.zeros(x.size)                                     # initialize output array
   w = w / sum(w)                                           # normalize analysis window
   ws = hanning(w.size)*2                                   # synthesis window
-
-  while pin<pend:       
-            
+  
+  while pin<pend:              
   #-----analysis-----             
     xw = x[pin-hM:pin+hM] * w                              # window the input sound
     X = fft(xw)                                            # compute FFT
@@ -50,7 +45,6 @@ def stochasticModel(x, w, N, H, stocf) :
   #-----synthesis-----
     mY = resample(mXenv, hN)                               # interpolate to original size
     pY = 2*np.pi*np.random.rand(hN)                      # generate phase random values
-    # pY = np.zeros(hN)
     Y = np.zeros(N, dtype = complex)
     Y[:hN] = 10**(mY/20) * np.exp(1j*pY)                   # generate positive freq.
     Y[hN+1:] = 10**(mY[:0:-1]/20) * np.exp(-1j*pY[:0:-1])  # generate negative freq.
@@ -62,26 +56,22 @@ def stochasticModel(x, w, N, H, stocf) :
   return y
 
 def defaultTest():
-    
-    str_time = time.time()
-    
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
-    w = np.hamming(512)
-    N = 512
-    H = 256
-    stocf = 0.5
-    y = stochasticModel(x, w, N, H, stocf)
-    print "time taken for computation " + str(time.time()-str_time)
+  str_time = time.time()
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/ocean.wav'))
+  w = np.hamming(512)
+  N = 512
+  H = 256
+  stocf = 0.5
+  y = stochasticModel(x, w, N, H, stocf)
+  print "time taken for computation " + str(time.time()-str_time)
     
     
+# example call of stochasticModel function
 if __name__ == '__main__':
-
-    (fs, x) = wp.wavread('../../sounds/speech-female.wav')
-    # wp.play(x, fs)
-    # fig = plt.figure()
-    w = np.hamming(512)
-    N = 512
-    H = 256
-    stocf = 0.5
-    y = stochasticModel(x, w, N, H, stocf)
-    wp.play(y, fs)
+  (fs, x) = wp.wavread('../../sounds/ocean.wav')
+  w = np.hamming(512)
+  N = 512
+  H = 256
+  stocf = 0.5
+  y = stochasticModel(x, w, N, H, stocf)
+  wp.play(y, fs)
