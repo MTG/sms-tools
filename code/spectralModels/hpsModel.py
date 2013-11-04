@@ -22,7 +22,7 @@ except ImportError:
   
 
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
-  # Analysis/synthesis of a sound using the harmonic plus stochastic model
+  # Analysis/synthesis of a sound using the harmonic plus stochastic model, prepared for transformations
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
   # nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
@@ -35,9 +35,9 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
   hN = N/2                                                      # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                               # half analysis window size by floor
-  Ns = 512                                                      # FFT size for synthesis (even)
+  Ns = 512                                                      # FFT size for synthesis
   H = Ns/4                                                      # Hop size used for analysis and synthesis
-  hNs = Ns/2      
+  hNs = Ns/2                                                    # half of FFT size for synthesis
   pin = max(hNs, hM1)                                           # initialize sound pointer in middle of analysis window          
   pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
   fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
@@ -64,20 +64,17 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
     fftbuffer[:hM1] = xw[hM2:]                                   # zero-phase window in fftbuffer
     fftbuffer[N-hM2:] = xw[:hM2]                           
     X = fft(fftbuffer)                                           # compute FFT
-    mX = 20 * np.log10( abs(X[:hN]) )                            # magnitude spectrum of positive frequencies
-    ploc = PP.peakDetection(mX, hN, t)                
-    pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
-    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)            # refine peak values 
-
+    mX = 20 * np.log10(abs(X[:hN]))                              # magnitude spectrum of positive frequencies
+    ploc = PP.peakDetection(mX, hN, t)                           # detect spectral peaks
+    pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.     
+    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values 
     f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
-
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
     hf = (f0>0) * (f0*np.arange(1, nH+1))                        # initialize harmonic frequencies
     hi = 0                                                       # initialize harmonic index
     npeaks = ploc.size                                           # number of peaks found
-    
     while f0>0 and hi<nH and hf[hi]<fs/2 :                       # find harmonic peaks
       dev = min(abs(iploc/N*fs - hf[hi]))
       pei = np.argmin(abs(iploc/N*fs - hf[hi]))                  # closest peak
@@ -86,7 +83,6 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
         hmag[hi] = ipmag[pei]                                    # harmonic magnitudes
         hphase[hi] = ipphase[pei]                                # harmonic phases
       hi += 1                                                    # increase harmonic index
-    
     hloc = (hloc!=0) * (hloc*Ns/N)                               # synth. locs
     
     ri = pin-hNs-1                                               # input sound pointer for residual analysis
@@ -95,27 +91,25 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
     fftbuffer[:hNs] = xw2[hNs:]                                  # zero-phase window in fftbuffer
     fftbuffer[hNs:] = xw2[:hNs]                            
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
-    
-    Xh = GS.genSpecSines(hloc, hmag, hphase, Ns)                    # generate sines
+    Xh = GS.genSpecSines(hloc, hmag, hphase, Ns)                 # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
-    mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
+    mXr = 20 * np.log10(abs(Xr[:hNs]))                           # magnitude spectrum of residual
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf
 
   #-----synthesis data-----
     yhloc = hloc                                                 # synthesis harmonics locs
     yhmag = hmag                                                 # synthesis harmonic amplitudes
     mYrenv = mXrenv                                              # synthesis residual envelope
-    yf0 = f0
+    yf0 = f0                                                     # synthesis fundamental frequency
 
   #-----synthesis-----
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
     lastyhloc = yhloc 
-    
     Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)              # generate spec sines 
     mYs = resample(mYrenv, hNs)                                  # interpolate to original size
     mYs = 10**(mYs/20)                                           # dB to linear magnitude  
     if f0>0:
-        mYs *= np.cos(np.pi*np.arange(0, hNs)/Ns*fs/yf0)**2      # filter residual
+      mYs *= np.cos(np.pi*np.arange(0, hNs)/Ns*fs/yf0)**2        # filter residual
     fc = 1+round(500.0/fs*Ns)                                    # 500 Hz
     mYs[:fc] *= (np.arange(0, fc)/(fc-1))**2                     # HPF
     pYs = 2*np.pi * np.random.rand(hNs)                          # generate phase random values
