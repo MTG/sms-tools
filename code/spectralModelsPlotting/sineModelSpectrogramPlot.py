@@ -4,17 +4,13 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
 import smsWavplayer as wp
+import smsPeakProcessing as PP
 from scipy import signal
 import matplotlib.pyplot as plt
 import math
 from numpy.fft import fft
 
-def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
-    ''' Analysis/synthesis of a sound using the short-time fourier transform
-    x: input array sound, w: analysis window, N: FFT size, H: hop size
-    returns y: output array sound 
-    YSpec: The STFT of x (Only the half spectrum is stored)'''
-   
+def sineModelSpectrogramPlot(x, fs, w, N, H, t, minFreq, maxFreq):  
     hN = N/2                                                # size of positive spectrum
     hM1 = int(math.floor((w.size+1)/2))                     # Ceil of half analysis window size
     hM2 = int(math.floor(w.size/2))                         # Floor of half analysis window size
@@ -30,6 +26,7 @@ def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
     firstBin = N*minFreq/float(fs)
     lastBin = N*maxFreq/float(fs)
     binFreq = np.arange(firstBin,lastBin)*float(fs)/N       # The bin frequencies
+    
     while pin<pend:                                         # while sound pointer is smaller than last sample    
         frmTime.append(pin/float(fs))         
         xw = x[pin-hM1:pin+hM2]*w                             # window the input sound
@@ -37,30 +34,52 @@ def stftPlot(x, fs, w, N, H, minFreq, maxFreq):
         fftbuffer[:hM1] = xw[hM2:]                            # zero-phase window in fftbuffer
         fftbuffer[N-hM2:] = xw[:hM2]        
         X = fft(fftbuffer)                                    # compute FFT
-        mX = 20 * np.log10( abs(X[firstBin:lastBin]) )        # magnitude spectrum of positive frequencies in dB     
-        pX = np.unwrap( np.angle(X[firstBin:lastBin]) )       # unwrapped phase spectrum of positive frequencies
+        mX = 20 * np.log10( abs(X[:hN]) )                     # magnitude spectrum of positive frequencies in dB     
+        pX = np.unwrap(np.angle(X[:hN]))                      # unwrapped phase spectrum of positive frequencies
+        ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
+        pmag = mX[ploc]                                       # get the magnitude of the peaks
+        iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
         if frmNum == 0:                                       # Accumulate and store STFT
-            YSpec = np.transpose(np.array([mX]))
+            YSpec = np.transpose(np.array([mX[firstBin:lastBin]]))
+            ind1 = np.where(iploc>=firstBin)[0]
+            ind2 = np.where(iploc<lastBin)[0]
+            ind = list((set(ind1.tolist())&set(ind2.tolist())))
+            final_peaks = iploc[ind]
+            parray = np.zeros([final_peaks.size,2])
+            parray[:,0]=pin/float(fs)
+            parray[:,1]=final_peaks*float(fs)/N
+            specPeaks = parray
         else:
-            YSpec = np.hstack((YSpec,np.transpose(np.array([mX]))))
+            YSpec = np.hstack((YSpec,np.transpose(np.array([mX[firstBin:lastBin]]))))
+            ind1 = np.where(iploc>=firstBin)[0]
+            ind2 = np.where(iploc<lastBin)[0]
+            ind = list((set(ind1.tolist())&set(ind2.tolist())))
+            final_peaks = iploc[ind]
+            parray = np.zeros([final_peaks.size,2])
+            parray[:,0]=pin/float(fs)
+            parray[:,1]=final_peaks*float(fs)/N
+            specPeaks = np.append(specPeaks, parray,axis=0)
         pin += H
         frmNum += 1
     frmTime = np.array(frmTime)                               # The time at the centre of the frames
+    plt.hold(True)
     plt.pcolormesh(frmTime,binFreq,YSpec)
-    plt.plot(3,2,'ro')
+
+    plt.scatter(specPeaks[:,0]+(0.5*H/float(fs)), specPeaks[:,1], s=10, marker='x')
     plt.xlabel('Time(s)')
     plt.ylabel('Frequency(Hz)')
     plt.autoscale(tight=True)
     plt.show()
     return YSpec
 
-# example call of stftPlot function
+# example call of sineModelPlot function
 if __name__ == '__main__':
-    (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
-    w = np.hamming(511)
-    N = 1024
-    H = 256
+    (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
+    w = np.hamming(501)
+    N = 2048
+    H = 500
+    t = -70
     minFreq = 0
-    maxFreq = fs/10.0
-    YSpec = stftPlot(x,fs,w,N,H,minFreq,maxFreq)
+    maxFreq = fs/15.0
+    YSpec = sineModelSpectrogramPlot(x[:40000],fs,w,N,H,t,minFreq,maxFreq)
    

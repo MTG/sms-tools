@@ -11,11 +11,7 @@ import matplotlib.pyplot as plt
 import math
 from numpy.fft import fft
 
-def harmonicModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
-    ''' Analysis/synthesis of a sound using the short-time fourier transform
-    x: input array sound, w: analysis window, N: FFT size, H: hop size
-    YSpec: The STFT of x (Only the half spectrum is stored)'''
-   
+def harmonicModelSpectrogramPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):  
     hN = N/2                                                      # size of positive spectrum
     hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
     hM2 = int(math.floor(w.size/2))                               # half analysis window size by floor
@@ -93,7 +89,7 @@ def harmonicModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
     plt.show()
     return YSpec
 
-# example call of sineModelPlot function
+# example call of sineModelSpectrogramPlot function
 if __name__ == '__main__':
     (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
     w = np.blackman(901)
@@ -105,5 +101,5 @@ if __name__ == '__main__':
     f0et = 4
     maxhd = 0.2
     maxFreq = fs/15.0
-    YSpec = harmonicModelPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq)
+    YSpec = harmonicModelSpectrogramPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq)
    
