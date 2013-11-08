@@ -12,6 +12,25 @@ print "This script tests if all the modules are importable and they atleast run.
 print "Check 1: Importing every module....."
 
 try:
+  import stft
+  print "[Success] harmonicModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing harmonicModel"
+
+try:
+  import stftPeaksModel
+  print "[Success] harmonicModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing harmonicModel"
+
+try:
+  import sinusoidalModel
+  print "[Success] harmonicModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing harmonicModel"
+
+
+try:
   import harmonicModel
   print "[Success] harmonicModel imported successfully....."
 except ImportError:
@@ -24,11 +43,29 @@ except ImportError:
   print "[Error] problem while importing hprModel"
  
 try:
+  import sprModel
+  print "[Success] hprModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing hprModel"
+
+try:
+  import stochasticModel
+  print "[Success] stochasticModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing stochasticModel"
+
+try:
   import hpsModel
   print "[Success] hpsModel imported successfully....."
 except ImportError:
   print "[Error] problem while importing hpsModel"
  
+try:
+  import spsModel
+  print "[Success] hpsModel imported successfully....."
+except ImportError:
+  print "[Error] problem while importing hpsModel"
+
 try:
   import sineModel
   print "[Success] sineModel imported successfully....."
@@ -40,25 +77,19 @@ try:
   print "[Success] sps imported successfully....."
 except ImportError:
   print "[Error] problem while importing sps"
- 
+
 try:
-  import stft
-  print "[Success] stft imported successfully....."
+  import hps
+  print "[Success] sps imported successfully....."
 except ImportError:
-  print "[Error] problem while importing stft"
- 
+  print "[Error] problem while importing sps"
+
 try:
-  import stftPeaks
-  print "[Success] stftPeaks imported successfully....."
+  import sps
+  print "[Success] sps imported successfully....."
 except ImportError:
-  print "[Error] problem while importing stftPeaks"
- 
-try:
-  import stochasticModel
-  print "[Success] stochasticModel imported successfully....."
-except ImportError:
-  print "[Error] problem while importing stochasticModel"
- 
+  print "[Error] problem while importing sps"
+
 try:
   import hpsModelParams
   print "[Success] hpsModelParams imported successfully....."
@@ -84,8 +115,24 @@ except ImportError:
 
 print "Check 2: Trying to run defaultTest function of each module......"
 
-
-
+try:
+  stft.defaultTest()
+  print "[Success] stft ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in stft"
+ 
+try:
+  stftPeaksModel.defaultTest()
+  print "[Success] stftPeaks ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in stftPeaks"
+ 
+try:
+  sineModel.defaultTest()
+  print "[Success] sineModel ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in sineModel"
+ 
 try:
   harmonicModel.defaultTest()
   print "[Success] harmonicModel ran successfully....."
@@ -99,43 +146,37 @@ except ImportError:
   print "[Error] problem while running defaultTest function in hprModel"
  
 try:
+  sprModel.defaultTest()
+  print "[Success] sps ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in sps"
+
+try:
+  stochasticModel.defaultTest()
+  print "[Success] stochasticModel ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in stochasticModel"
+
+try:
   hpsModel.defaultTest()
   print "[Success] hps ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in hps"
 
 try:
-  sineModel.defaultTest()
-  print "[Success] sineModel ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in sineModel"
- 
-try:
   spsModel.defaultTest()
   print "[Success] sps ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in sps"
- 
+  
 try:
-  stft.defaultTest()
-  print "[Success] stft ran successfully....."
+  sps.defaultTest()
+  print "[Success] sps ran successfully....."
 except ImportError:
-  print "[Error] problem while running defaultTest function in stft"
- 
+  print "[Error] problem while running defaultTest function in sps"
+
 try:
-  stftPeaks.defaultTest()
-  print "[Success] stftPeaks ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in stftPeaks"
- 
-try:
-  stochasticModel.defaultTest()
-  print "[Success] stochasticModel ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in stochasticModel"
- 
-try:
-  hpsMorph.defaultTest()
+  hps.defaultTest()
   print "[Success] hpsMorph ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in hpsMorph"

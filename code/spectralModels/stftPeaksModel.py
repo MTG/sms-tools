@@ -10,7 +10,7 @@ from scipy.fftpack import fft, ifft
 import math
 import smsPeakProcessing as PP 
 
-def stftPeaks(x, fs, w, N, H, t) :
+def stftPeaksModel(x, fs, w, N, H, t) :
   # Analysis/synthesis of a sound using the spectral peaks
   # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
   # t: threshold in negative dB 
@@ -62,17 +62,16 @@ def defaultTest():
     N = 1024
     H = 200
     t = -70
-    y = stftPeaks(x, fs, w, N, H, t)
+    y = stftPeaksModel(x, fs, w, N, H, t)
     print "time taken for computation " + str(time.time()-str_time)
     
   
 if __name__ == '__main__':   
       
     (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
-    wp.play(x, fs)
     w = np.hamming(801)
     N = 1024
     H = 200
     t = -70
-    y = stftPeaks(x, fs, w, N, H, t)
+    y = stftPeaksModel(x, fs, w, N, H, t)
     wp.play(y, fs)

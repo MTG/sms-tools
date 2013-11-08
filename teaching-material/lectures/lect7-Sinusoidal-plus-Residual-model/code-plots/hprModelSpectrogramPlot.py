@@ -128,6 +128,7 @@ def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
 	plt.xlabel('Time(s)')
 	plt.ylabel('Frequency(Hz)')
 	plt.autoscale(tight=True)
+	plt.title('X spectrogram + peaks ("sax-phrase-short.wav")')
 
 	plt.subplot(2,1,2)
 	plt.hold(True)
@@ -135,10 +136,9 @@ def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
 	plt.xlabel('Time(s)')
 	plt.ylabel('Frequency(Hz)')
 	plt.autoscale(tight=True)
-
+	plt.title('X residual spectrogram')
 
 	plt.show()
-	return YSpec
 
 # example call of hprModelPlot function
 if __name__ == '__main__':
@@ -152,5 +152,5 @@ if __name__ == '__main__':
     f0et = 4
     maxhd = 0.2
     maxFreq = 3000.0
-    YSpec = hprModelPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq)
+    hprModelPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq)
    

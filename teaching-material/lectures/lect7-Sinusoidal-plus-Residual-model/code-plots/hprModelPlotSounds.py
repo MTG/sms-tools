@@ -115,31 +115,47 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd):
   
 if __name__ == '__main__':
     
-	(fs, x) = wp.wavread('../../../../sounds/sax-phrase-short.wav')
-	w = np.blackman(801)
-	N = 1024
-	t = -90
-	nH = 50
-	minf0 = 350
-	maxf0 = 700
-	f0et = 10
-	maxhd = 0.2
-	y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
+  (fs, x) = wp.wavread('../../../../sounds/sax-phrase-short.wav')
+  w = np.blackman(801)
+  N = 1024
+  t = -90
+  nH = 50
+  minf0 = 350
+  maxf0 = 700
+  f0et = 10
+  maxhd = 0.2
+  y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd)
 
-	first = 10000
-	last = 11000
-	plt.figure(1)
-	plt.subplot(3,1,1)
-	plt.plot(np.arange(first, last)/float(fs), x[first:last])
-	plt.axis([first/float(fs), last/float(fs), min(x[first:last]), max(x[first:last])])
-	plt.title('x')
-	plt.subplot(3,1,2)
-	plt.plot(np.arange(first, last)/float(fs), yh[first:last])
-	plt.axis([first/float(fs), last/float(fs), min(yh[first:last]), max(yh[first:last])])
-	plt.title('yh')
-	plt.subplot(3,1,3)
-	plt.plot(np.arange(first, last)/float(fs), yr[first:last])
-	plt.axis([first/float(fs), last/float(fs), -3*max(yr[first:last]), 3*max(yr[first:last])])
-	plt.title('yr')
-	plt.show()
+  first = 0.2 * fs
+  last = 0.22 * fs
+  plt.figure(1)
+  plt.subplot(3,1,1)
+  plt.plot(np.arange(first, last)/float(fs), x[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), min(x[first:last]), max(x[first:last])])
+  plt.title('x ("sax-phrase-short.wav")')
+  plt.subplot(3,1,2)
+  plt.plot(np.arange(first, last)/float(fs), yh[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), min(yh[first:last]), max(yh[first:last])])
+  plt.title('yh')
+  plt.subplot(3,1,3)
+  plt.plot(np.arange(first, last)/float(fs), yr[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), -3*max(yr[first:last]), 3*max(yr[first:last])])
+  plt.title('yr')
+
+  first = 0 * fs
+  last = 0.45 * fs
+  plt.figure(2)
+  plt.subplot(3,1,1)
+  plt.plot(np.arange(first, last)/float(fs), x[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), min(x[first:last]), max(x[first:last])])
+  plt.title('x ("sax-phrase-short.wav")')
+  plt.subplot(3,1,2)
+  plt.plot(np.arange(first, last)/float(fs), yh[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), min(yh[first:last]), max(yh[first:last])])
+  plt.title('yh')
+  plt.subplot(3,1,3)
+  plt.plot(np.arange(first, last)/float(fs), yr[first:last], 'b')
+  plt.axis([first/float(fs), last/float(fs), -3*max(yr[first:last]), 3*max(yr[first:last])])
+  plt.title('yr')
+  plt.show()
 

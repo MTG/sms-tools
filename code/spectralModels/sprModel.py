@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris, resample
+from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
@@ -19,11 +19,12 @@ except ImportError:
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
-def spsModel(x, fs, w, N, t, stocf):
+
+  
+def sprModel(x, fs, w, N, t):
   # Analysis/synthesis of a sound using the sinusoidal plus residual model
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
-  # stocf: decimation factor of mag spectrum for stochastic analysis
   # y: output sound, ys: sinusoidal component, yr: residual component
 
   hN = N/2                                                      # size of positive spectrum
@@ -36,9 +37,9 @@ def spsModel(x, fs, w, N, t, stocf):
   pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
   fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
   ysw = np.zeros(Ns)                                            # initialize output sound frame
-  ystw = np.zeros(Ns)                                            # initialize output sound frame
+  yrw = np.zeros(Ns)                                            # initialize output sound frame
   ys = np.zeros(x.size)                                         # initialize output array
-  yst = np.zeros(x.size)                                         # initialize output array
+  yr = np.zeros(x.size)                                         # initialize output array
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H)                                              # overlapping window
@@ -71,16 +72,6 @@ def spsModel(x, fs, w, N, t, stocf):
   #-----synthesis-----
     Ys = GS.genSpecSines(iploc, ipmag, ipphase, Ns)              # generate spec of sinusoidal component          
     Yr = Xr-Ys;                                                  # get the residual complex spectrum
-    mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
-    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
-    mYst = resample(mXrenv, hNs)                                 # interpolate to original size
-    mYst = 10**(mYst/20)                                         # dB to linear magnitude  
-    fc = 1+round(500.0/fs*Ns)                                    # 500 Hz to bin location
-    mYst[:fc] *= (np.arange(0, fc)/(fc-1))**2                    # high pass filter the stochastic component
-    pYst = 2*np.pi*np.random.rand(hNs)                           # generate phase random values
-    Yst = np.zeros(Ns, dtype = complex)
-    Yst[:hNs] = mYst * np.exp(1j*pYst)                           # generate positive freq.
-    Yst[hNs+1:] = mYst[:0:-1] * np.exp(-1j*pYst[:0:-1])          # generate negative freq.
 
     fftbuffer = np.zeros(Ns)
     fftbuffer = np.real(ifft(Ys))                                # inverse FFT of sinusoidal spectrum
@@ -88,26 +79,25 @@ def spsModel(x, fs, w, N, t, stocf):
     ysw[hNs-1:] = fftbuffer[:hNs+1] 
     
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Yst))                                # inverse FFT of residual spectrum
-    ystw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
-    ystw[hNs-1:] = fftbuffer[:hNs+1]
+    fftbuffer = np.real(ifft(Yr))                                # inverse FFT of residual spectrum
+    yrw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
+    yrw[hNs-1:] = fftbuffer[:hNs+1]
     
     ys[ri:ri+Ns] += sw*ysw                                       # overlap-add for sines
-    yst[ri:ri+Ns] += sw*ystw                                       # overlap-add for residual
+    yr[ri:ri+Ns] += sw*yrw                                       # overlap-add for residual
     pin += H                                                     # advance sound pointer
   
-  y = ys+yst                                                      # sum of sinusoidal and residual components
-  return y, ys, yst
+  y = ys+yr                                                      # sum of sinusoidal and residual components
+  return y, ys, yr
 
 
 def defaultTest():
     str_time = time.time()
     (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
-    w = np.blackman(601)
-    N = 2048
+    w = np.blackman(901)
+    N = 1024
     t = -70
-    stocf = 0.2
-    y, ys, yst = spsModel(x, fs, w, N, t, stocf)
+    y, ys, yr = sprModel(x, fs, w, N, t)
     print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
@@ -116,9 +106,8 @@ if __name__ == '__main__':
     w = np.blackman(601)
     N = 2048
     t = -70
-    stocf = 0.2
-    y, ys, yst = spsModel(x, fs, w, N, t, stocf)
+    y, ys, yr = sprModel(x, fs, w, N, t)
 
     wp.play(y, fs)
     wp.play(ys, fs)
-    wp.play(yst, fs)
+    wp.play(yr, fs)
