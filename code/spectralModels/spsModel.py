@@ -71,9 +71,9 @@ def spsModel(x, fs, w, N, t, stocf):
   #-----synthesis-----
     Ys = GS.genSpecSines(iploc, ipmag, ipphase, Ns)              # generate spec of sinusoidal component          
     Yr = Xr-Ys;                                                  # get the residual complex spectrum
-    mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
-    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
-    mYst = resample(mXrenv, hNs)                                 # interpolate to original size
+    mYr = 20 * np.log10( abs(Yr[:hNs]) )                         # magnitude spectrum of residual
+    mYrenv = resample(np.maximum(-200, mYr), mYr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
+    mYst = resample(mYrenv, hNs)                                 # interpolate to original size
     mYst = 10**(mYst/20)                                         # dB to linear magnitude  
     fc = 1+round(500.0/fs*Ns)                                    # 500 Hz to bin location
     mYst[:fc] *= (np.arange(0, fc)/(fc-1))**2                    # high pass filter the stochastic component

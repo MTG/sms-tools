@@ -19,9 +19,8 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  
 
-  
+
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
   # Analysis/synthesis of a sound using the harmonic plus stochastic model
   # x: input sound, fs: sampling rate, w: analysis window, 
@@ -95,12 +94,17 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
   #-----synthesis-----
     Yh = GS.genSpecSines(hloc[:hi], hmag, hphase, Ns)            # generate spec sines of harmonic component          
     Yr = Xr-Yh;                                                  # get the residual complex spectrum
-    mXr = 20 * np.log10( abs(Xr[:hNs]) )                         # magnitude spectrum of residual
-    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
-    mYst = resample(mXrenv, hNs)                                 # interpolate to original size
+    mYr = 20 * np.log10(abs(Yr[:hNs]) )                          # magnitude spectrum of residual
+    mYrenv = resample(np.maximum(-200, mYr), mYr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                     
+    mYst = resample(mYrenv, hNs)                                 # interpolate to original size
     mYst = 10**(mYst/20)                                         # dB to linear magnitude  
     fc = 1+round(500.0/fs*Ns)                                    # 500 Hz to bin location
     mYst[:fc] *= (np.arange(0, fc)/(fc-1))**2                    # high pass filter the stochastic component
+    ## Adding a scaling factor for energy matching - Suppressed for now
+    #YrEnergy = np.sum((np.abs(Yr[:hNs]))**2)
+    #YstEnergy = np.sum(mYst**2)
+    #mYst = mYst*np.sqrt(YrEnergy/YstEnergy)
+    ##
     pYst = 2*np.pi*np.random.rand(hNs)                           # generate phase random values
     Yst = np.zeros(Ns, dtype = complex)
     Yst[:hNs] = mYst * np.exp(1j*pYst)                           # generate positive freq.
@@ -117,11 +121,11 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
     ystw[hNs-1:] = fftbuffer[:hNs+1]
     
     yh[ri:ri+Ns] += sw*yhw                                       # overlap-add for sines
-    yst[ri:ri+Ns] += sw*ystw*.3                                  # overlap-add for residual
+    yst[ri:ri+Ns] += sw*ystw                                     # overlap-add for residual
     pin += H                                                     # advance sound pointer
   
   y = yh+yst                                                     # sum of harmonic and residual components
-  return y, yh, yst
+  return y, yh, yst 
 
 
 def defaultTest():
