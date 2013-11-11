@@ -72,6 +72,6 @@ if __name__ == '__main__':
   w = np.hamming(512)
   N = 512
   H = 256
-  stocf = 0.5
+  stocf = 1
   y = stochasticModel(x, w, N, H, stocf)
   wp.play(y, fs)
