@@ -43,8 +43,11 @@ def wavread(filename):
 	# read a sound file and return an array with the sound and the sampling rate
 	
 	(fs, x) = read(filename)
-	
-	#scaling down and converting audio into floating point number between range -1 to 1
+    
+	if x.shape[1] >1:
+		print "WARNING: This audio file has stereo channels. As all spectral models are implemented for mono channel audio, convert it to single channel."
+    
+    #scaling down and converting audio into floating point number between range -1 to 1
 	x = np.float32(x)/norm_fact[x.dtype.name]
 	
 	return fs, x
