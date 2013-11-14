@@ -68,10 +68,10 @@ def defaultTest():
     
 # example call of stochasticModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/ocean.wav')
-  w = np.hamming(512)
-  N = 512
-  H = 256
-  stocf = 1
+  (fs, x) = wp.wavread('../../sounds/speech-male.wav')
+  w = np.hamming(1028)
+  N = 1028
+  H = 128
+  stocf = .05
   y = stochasticModel(x, w, N, H, stocf)
   wp.play(y, fs)

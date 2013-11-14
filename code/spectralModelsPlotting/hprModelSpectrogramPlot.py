@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 
-def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq): 
+def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq,maxnpeaks=10): 
 	hN = N/2                                                      # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                               # half analysis window size by floor
@@ -62,7 +62,7 @@ def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
 		pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
 		iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
     
-		f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+		f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaks)  # find f0
 		hloc = np.zeros(nH)                                          # initialize harmonic locations
 		hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
 		hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -136,7 +136,7 @@ def hprModelPlot(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq):
 	plt.xlabel('Time(s)')
 	plt.ylabel('Frequency(Hz)')
 	plt.autoscale(tight=True)
-	plt.title('X residual spectrogram')
+	plt.title('residual spectrogram')
 
 	plt.show()
 
@@ -149,8 +149,9 @@ if __name__ == '__main__':
     nH = 10
     minf0 = 300
     maxf0 = 650
-    f0et = 4
+    f0et = 5
     maxhd = 0.2
     maxFreq = 3000.0
-    hprModelPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq)
+    maxnpeaks=10
+    hprModelPlot(x,fs,w,N,t,nH, minf0, maxf0, f0et, maxhd, maxFreq, maxnpeaks)
    

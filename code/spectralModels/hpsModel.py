@@ -21,7 +21,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 
-def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
+def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
   # Analysis/synthesis of a sound using the harmonic plus stochastic model
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -30,6 +30,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
   # f0et: error threshold in the f0 detection (ex: 5),
   # maxhd: max. relative deviation in harmonic detection (ex: .2)
   # stocf: decimation factor of mag spectrum for stochastic analysis
+  # maxnpeaksTwm: maximum number of peaks used for F0 detection
   # y: output sound, yh: harmonic component, yr: residual component
 
   hN = N/2                                                      # size of positive spectrum
@@ -66,7 +67,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
     pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
     
-    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0)  # find f0
+    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -155,7 +156,8 @@ if __name__ == '__main__':
     f0et = 10
     maxhd = 0.2
     stocf = 0.5
-    y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
+    maxnpeaksTwm = 5
+    y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
     wp.play(y, fs)
     wp.play(yh, fs)
