@@ -13,7 +13,7 @@ def genSpecSines(iploc, ipmag, ipphase, N):
   for i in range(0, iploc.size):                   # generate all sine spectral lobes
     loc = iploc[i]                                 # it should be in range ]0,hN-1[
 
-    if loc<1 or loc>hN-1: continue
+    if loc==0 or loc>hN-1: continue
     binremainder = round(loc)-loc;
     lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
     lmag = GB.genBhLobe(lb) * 10**(ipmag[i]/20)  # lobe magnitudes of the complex exponential

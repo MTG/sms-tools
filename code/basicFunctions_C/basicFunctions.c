@@ -1045,7 +1045,7 @@ void genspecsines_C(double *iploc, double *ipmag, double *ipphase, int n_peaks, 
 				imag[ploc_int+jj] += mag*bh_92_1001[(int)((bin_remainder+jj)*100) + BH_SIZE_BY2]*sin(ipphase[ii]);
 			}
 		}
-		else if((loc>=1)&&(loc<5))
+		else if((loc>0)&&(loc<5))
 		{
 			mag = pow(10,(ipmag[ii]/20.0));
 			
