@@ -44,7 +44,7 @@ def wavread(filename):
 	
 	(fs, x) = read(filename)
     
-	if x.shape[1] >1:
+	if len(x.shape) ==2 :
 		print "WARNING: This audio file has stereo channels. As all spectral models are implemented for mono channel audio, convert it to single channel."
     
     #scaling down and converting audio into floating point number between range -1 to 1
