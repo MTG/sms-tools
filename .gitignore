@@ -1,5 +1,6 @@
 *.DS_Store
 *.so
 *.pyc
+*.o
 code/temp/*.*
  
