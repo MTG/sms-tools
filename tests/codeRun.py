@@ -89,12 +89,6 @@ try:
   print "[Success] sps imported successfully....."
 except ImportError:
   print "[Error] problem while importing sps"
-
-try:
-  import hpsModelParams
-  print "[Success] hpsModelParams imported successfully....."
-except ImportError:
-  print "[Error] problem while importing hpsModelParams"
  
 try:
   import hpsMorph
@@ -147,9 +141,9 @@ except ImportError:
  
 try:
   sprModel.defaultTest()
-  print "[Success] sps ran successfully....."
+  print "[Success] sprModel ran successfully....."
 except ImportError:
-  print "[Error] problem while running defaultTest function in sps"
+  print "[Error] problem while running defaultTest function in sprModel"
 
 try:
   stochasticModel.defaultTest()
@@ -161,13 +155,13 @@ try:
   hpsModel.defaultTest()
   print "[Success] hps ran successfully....."
 except ImportError:
-  print "[Error] problem while running defaultTest function in hps"
+  print "[Error] problem while running defaultTest function in hpsModel"
 
 try:
   spsModel.defaultTest()
   print "[Success] sps ran successfully....."
 except ImportError:
-  print "[Error] problem while running defaultTest function in sps"
+  print "[Error] problem while running defaultTest function in spsModel"
   
 try:
   sps.defaultTest()
@@ -177,6 +171,12 @@ except ImportError:
 
 try:
   hps.defaultTest()
+  print "[Success] hps ran successfully....."
+except ImportError:
+  print "[Error] problem while running defaultTest function in hps"
+
+try:
+  hpsMorph.defaultTest()
   print "[Success] hpsMorph ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in hpsMorph"

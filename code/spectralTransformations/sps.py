@@ -118,7 +118,7 @@ def sps(x, fs, w, N, t, maxnS, stocf) :
     # ysmag += np.interp(ysloc/Ns*fs, Filter[0,:],Filter[1,:])
 
     #-----frequency shift-----
-    # fshift = 100
+    # fshift = 100.0
     # ysloc = (ysloc>0) * (ysloc + fshift/fs*Ns)                 # frequency shift in Hz
      
     #-----frequency stretch-----
@@ -199,6 +199,7 @@ if __name__ == '__main__':
     stocf = 0.2
     y, ys, yst = sps(x, fs, w, N, t, maxnS, stocf)
 
+    wp.play(x, fs)
     wp.play(y, fs)
     wp.play(ys, fs)
     wp.play(yst, fs)

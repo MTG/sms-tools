@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
+from scipy.interpolate import interp1d
 import math
 import sys, os, time
 
@@ -21,7 +22,7 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   
 
-def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
+def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
   # Analysis/synthesis of a sound using the harmonic plus stochastic model, prepared for transformations
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -30,6 +31,7 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
   # f0et: error threshold in the f0 detection (ex: 5),
   # maxhd: max. relative deviation in harmonic detection (ex: .2)
   # stocf: decimation factor of mag spectrum for stochastic analysis
+  # maxnpeaksTwm: maximum number of peaks used for F0 detection
   # y: output sound, yh: harmonic component, ys: stochastic component
 
   hN = N/2                                                      # size of positive spectrum
@@ -101,6 +103,23 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf):
     yhmag = hmag                                                 # synthesis harmonic amplitudes
     mYrenv = mXrenv                                              # synthesis residual envelope
     yf0 = f0                                                     # synthesis fundamental frequency
+  #------transformations----
+    #-----clarinet effect, only odd harmonics-----
+    # yhmag[1::2] = 0											 # set even harmonic to 0 magnitude
+    
+  #-----pitch discretization to temperate scale-----
+    # if f0>0:
+    #  nst = round(12*np.log2(f0/55))                             # closest semitone
+    #  discpitch = 55*2**(nst/12)                                 # discretized pitch
+    #  fscale = discpitch/f0                                      # pitch transposition factor
+    #  yhloc = yhloc*fscale                                       # all harmonic corrected to discretized pitch
+
+  #-----pitch transposition with timbre preseervation -----
+    # fscale = 2
+    # if (f0>0):
+    # specEnvelope = interp1d(yhloc, yhmag, kind = 'cubic') 
+    # yhloc = yhloc*fscale
+    # yhmag = specEnvelope(yhloc)
 
   #-----synthesis-----
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
@@ -162,7 +181,8 @@ if __name__ == '__main__':
     f0et = 10
     maxhd = 0.2
     stocf = 0.5
-    y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
+    maxnpeaksTwm = 5
+    y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
     wp.play(y, fs)
     wp.play(yh, fs)
