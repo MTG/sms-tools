@@ -115,11 +115,16 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
     #  yhloc = yhloc*fscale                                       # all harmonic corrected to discretized pitch
 
   #-----pitch transposition with timbre preseervation -----
-    # fscale = 2
-    # if (f0>0):
-    # specEnvelope = interp1d(yhloc, yhmag, kind = 'cubic') 
-    # yhloc = yhloc*fscale
-    # yhmag = specEnvelope(yhloc)
+    """
+    fscale = 2
+    ind_valid = np.where(yhloc!=0)[0]
+    if (f0>0):
+        x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
+        y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
+        specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
+        yhloc = yhloc*fscale
+        yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
+    """        
 
   #-----synthesis-----
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
@@ -166,7 +171,8 @@ def defaultTest():
     f0et = 10
     maxhd = 0.2
     stocf = 0.5
-    y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
+    maxnpeaksTwm = 5
+    y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
     print "time taken for computation " + str(time.time()-str_time)
 
 
