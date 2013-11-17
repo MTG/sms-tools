@@ -109,22 +109,39 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
     
   #-----pitch discretization to temperate scale-----
     # if f0>0:
-    #  nst = round(12*np.log2(f0/55))                             # closest semitone
-    #  discpitch = 55*2**(nst/12)                                 # discretized pitch
-    #  fscale = discpitch/f0                                      # pitch transposition factor
-    #  yhloc = yhloc*fscale                                       # all harmonic corrected to discretized pitch
+    #  nst = round(12*np.log2(f0/55))                            # closest semitone
+    #  discpitch = 55*2**(nst/12)                                # discretized pitch
+    #  fscale = discpitch/f0                                     # pitch transposition factor
+    #  yhloc = yhloc*fscale                                      # all harmonic corrected to discretized pitch
 
   #-----pitch transposition with timbre preseervation -----
-    """
-    fscale = 2
-    ind_valid = np.where(yhloc!=0)[0]
-    if (f0>0):
-        x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
-        y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
-        specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
-        yhloc = yhloc*fscale
-        yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
-    """        
+
+    # fscale = 2                                                 # scale factor for pitch transposition
+    # ind_valid = np.where(yhloc!=0)[0]                          # using only those harmonic indices which have non zero frequency values
+    # if (f0>0):
+    #     x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
+    #    y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
+    #     specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
+    #     yhloc = yhloc*fscale
+    #     yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
+
+
+  #----- Pitch transposition, Vibrato and tremolo with timbre preseervation -----
+    # vtf = 5.0;                                                  # vibrato-tremolo frequency in Hz
+    # vd  = 50;                                                   # vibrato depth in cents
+    # td  = 3;                                                    # tremolo depth in dB
+    # fscale = 1                                                  # scale factor for pitch transposition
+    # modf = np.sin(2.0*np.pi*vtf*pin/fs)                         # modulation factor for both vibrato and tremolo (which has to be scaled later)
+    # sfscale = fscale*(2.0**(vd/1200.0*modf))                    # affective scale factor together with vibrato affect
+    # idx = np.where(yhloc!=0)[0]                                 # using only those harmonic indices which have non zero frequency values
+    # if (f0>0):
+    #     x_vals = np.append(np.append(0, yhloc[idx]),hNs)        # values of peak locations to be considered for interpolation
+    #     y_vals = np.append(np.append(yhmag[0], yhmag[idx]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
+    #     specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
+    #     yhloc = yhloc*sfscale
+    #     yhmag[idx] = specEnvelope(yhloc[idx])
+    #     yhmag[idx] = yhmag[idx] + td*modf                       # tremolo
+
 
   #-----synthesis-----
     yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
