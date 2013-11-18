@@ -116,11 +116,11 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
 
   #-----pitch transposition with timbre preseervation -----
 
-    # fscale = 2                                                 # scale factor for pitch transposition
+    # fscale = .5                                                # scale factor for pitch transposition
     # ind_valid = np.where(yhloc!=0)[0]                          # using only those harmonic indices which have non zero frequency values
     # if (f0>0):
     #     x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
-    #    y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
+    #     y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
     #     specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
     #     yhloc = yhloc*fscale
     #     yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
@@ -194,17 +194,17 @@ def defaultTest():
 
 
 if __name__ == '__main__':
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
-    w = np.blackman(801)
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
+    w = np.blackman(901)
     N = 1024
     t = -90
-    nH = 50
-    minf0 = 350
-    maxf0 = 700
-    f0et = 10
+    nH = 40
+    minf0 = 120
+    maxf0 = 400
+    f0et = 5
     maxhd = 0.2
     stocf = 0.5
-    maxnpeaksTwm = 5
+    maxnpeaksTwm = 10
     y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
     wp.play(y, fs)
