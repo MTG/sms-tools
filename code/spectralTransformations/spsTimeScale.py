@@ -50,8 +50,8 @@ def spsTimescale(x, fs, w, N, t, maxnS, stocf) :
   tm = np.arange(0.01, 0.94, 0.01)
   in_time = np.concatenate( (np.array([0]), tm+0.05*np.sin(8.6*np.pi*tm), np.array([1])) ) # input time --> keep end value
   out_time = np.concatenate( (np.array([0]),                 tm           , np.array([1])) ) # output time
-  timemapping = np.asarray( (in_time, out_time) ) 
-  # timemapping = np.array( [[0, 1], [0, 2]] )                  # input time (sec), output time (sec)                      
+  # timemapping = np.asarray( (in_time, out_time) ) 
+  timemapping = np.array( [[0, 1], [0, 2]] )                  # input time (sec), output time (sec)                      
   timemapping = timemapping * x.size/fs
   outsoundlength = round(timemapping[1, -1]*fs)                 # length of output sound
   pend = outsoundlength - max(hNs, hM)                          # last sample to start a frame
