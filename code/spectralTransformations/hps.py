@@ -85,8 +85,8 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
         hmag[hi] = ipmag[pei]                                    # harmonic magnitudes
         hphase[hi] = ipphase[pei]                                # harmonic phases
       hi += 1                                                    # increase harmonic index
-    hloc = (hloc!=0) * (hloc*Ns/N)                               # synth. locs
     
+    hloc[:hi] = (hloc[:hi]!=0) * (hloc[:hi]*Ns/N)                # synth. locs
     ri = pin-hNs-1                                               # input sound pointer for residual analysis
     xw2 = x[ri:ri+Ns]*wr                                         # window the input sound                                       
     fftbuffer = np.zeros(Ns)                                     # reset buffer
@@ -99,13 +99,13 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
     mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf
 
   #-----synthesis data-----
-    yhloc = hloc                                                 # synthesis harmonics locs
-    yhmag = hmag                                                 # synthesis harmonic amplitudes
+    yhloc = hloc                                            # synthesis harmonics locs
+    yhmag = hmag                                           # synthesis harmonic amplitudes
     mYrenv = mXrenv                                              # synthesis residual envelope
     yf0 = f0                                                     # synthesis fundamental frequency
   #------transformations----
     #-----clarinet effect, only odd harmonics-----
-    # yhmag[1::2] = 0											 # set even harmonic to 0 magnitude
+    # yhloc[1::2] = 0											 # set even harmonic to 0 magnitude
     
   #-----pitch discretization to temperate scale-----
     # if f0>0:
@@ -116,14 +116,14 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
 
   #-----pitch transposition with timbre preseervation -----
 
-    # fscale = .5                                                # scale factor for pitch transposition
-    # ind_valid = np.where(yhloc!=0)[0]                          # using only those harmonic indices which have non zero frequency values
-    # if (f0>0):
-    #     x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
-    #     y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
-    #     specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
-    #     yhloc = yhloc*fscale
-    #     yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
+    fscale = .5                                                # scale factor for pitch transposition
+    ind_valid = np.where(yhloc!=0)[0]                          # using only those harmonic indices which have non zero frequency values
+    if (f0>0):
+        x_vals = np.append(np.append(0, yhloc[ind_valid]),hNs)      # values of peak locations to be considered for interpolation
+        y_vals = np.append(np.append(yhmag[0], yhmag[ind_valid]),yhmag[-1])     # values of peak magnitudes to be considered for interpolation
+        specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
+        yhloc = yhloc*fscale
+        yhmag[ind_valid] = specEnvelope(yhloc[ind_valid])
 
 
   #----- Pitch transposition, Vibrato and tremolo with timbre preseervation -----
@@ -178,7 +178,7 @@ def hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
 
 def defaultTest():
     str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/speech-female.wav'))
     w = np.blackman(801)
     N = 1024
     t = -90
@@ -199,12 +199,12 @@ if __name__ == '__main__':
     N = 1024
     t = -90
     nH = 40
-    minf0 = 120
+    minf0 = 100
     maxf0 = 400
-    f0et = 5
-    maxhd = 0.2
+    f0et = 3
+    maxhd = 0.1
     stocf = 0.5
-    maxnpeaksTwm = 10
+    maxnpeaksTwm = 5
     y, yh, ys = hps(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
     wp.play(y, fs)

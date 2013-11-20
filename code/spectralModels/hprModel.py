@@ -140,7 +140,7 @@ if __name__ == '__main__':
     f0et = 10
     maxhd = 0.2
     maxnpeaksTwm = 5
-    y, yh, yr = hprModel(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
+    y, yh, yr = hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
 
     wp.play(y, fs)
     wp.play(yh, fs)
