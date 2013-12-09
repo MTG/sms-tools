@@ -103,8 +103,8 @@ def defaultTest():
 if __name__ == '__main__':
     
     (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
-    w = np.blackman(601)
-    N = 2048
+    w = np.blackman(901)
+    N = 1024
     t = -70
     y, ys, yr = sprModel(x, fs, w, N, t)
 

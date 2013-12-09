@@ -136,13 +136,14 @@ def defaultTest():
     f0et = 10
     maxhd = 0.2
     stocf = 0.2
-    y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf)
+    maxnpeaksTwm = 5
+    y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
     print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
     
     (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
-    w = np.blackman(801)
+    w = np.hamming(801)
     N = 1024
     t = -90
     nH = 50
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     maxf0 = 700
     f0et = 10
     maxhd = 0.2
-    stocf = 0.5
+    stocf = 0.2
     maxnpeaksTwm = 5
     y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
