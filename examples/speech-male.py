@@ -27,8 +27,8 @@ if __name__ == '__main__':
     end = x.size
     maxnpeaksTwm = 5
     stocf = .2
-    #y, yh, yr = hprModel.hprModel(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
-    hprModelSpectrogramPlot.hprModelPlot(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq, maxnpeaksTwm)
+    y, yh, yr = hprModel.hprModel(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
+    # hprModelSpectrogramPlot.hprModelPlot(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq, maxnpeaksTwm)
 
     # wp.play(y, fs)
     # wp.play(yh, fs)
