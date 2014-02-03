@@ -32,7 +32,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=
   # maxhd: max. relative deviation in harmonic detection (ex: .2)
   # stocf: decimation factor of mag spectrum for stochastic analysis
   # maxnpeaksTwm: maximum number of peaks used for F0 detection
-  # y: output sound, yh: harmonic component, yr: residual component
+  # returns y: output sound, yh: harmonic component, yst: stochastic component
 
   hN = N/2                                                      # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
@@ -102,15 +102,15 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=
     yhw[hNs-1:] = fftbuffer[:hNs+1] 
 
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Yst))                                # inverse FFT of residual spectrum
+    fftbuffer = np.real(ifft(Yst))                                # inverse FFT of stochastic spectrum
     ystw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
     ystw[hNs-1:] = fftbuffer[:hNs+1]
 
     yh[ri:ri+Ns] += sw*yhw                                       # overlap-add for sines
-    yst[ri:ri+Ns] += sws*ystw                                    # overlap-add for residual
+    yst[ri:ri+Ns] += sws*ystw                                    # overlap-add for stochastic
     pin += H                                                     # advance sound pointer
   
-  y = yh+yst                                                     # sum of harmonic and residual components
+  y = yh+yst                                                     # sum of harmonic and stochastic components
   return y, yh, yst
 
 def defaultTest():
