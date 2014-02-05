@@ -1,7 +1,7 @@
 import sys, os, time
 
-sys.path.append(os.path.realpath('../code/spectralModels/'))
-sys.path.append(os.path.realpath('../code/spectralTransformations/'))
+sys.path.append(os.path.realpath('../models/'))
+sys.path.append(os.path.realpath('../transformations/'))
 
 print "This script tests if all the modules are importable and they atleast run. This script doesn't check how good is the output"
 
@@ -13,21 +13,21 @@ print "Check 1: Importing every module....."
 
 try:
   import stft
-  print "[Success] harmonicModel imported successfully....."
+  print "[Success] stft imported successfully....."
 except ImportError:
-  print "[Error] problem while importing harmonicModel"
+  print "[Error] problem while importing stft"
 
 try:
   import stftPeaksModel
-  print "[Success] harmonicModel imported successfully....."
+  print "[Success] stftPeaksModel imported successfully....."
 except ImportError:
-  print "[Error] problem while importing harmonicModel"
+  print "[Error] problem while importing stftPeaksModel"
 
 try:
-  import sinusoidalModel
-  print "[Success] harmonicModel imported successfully....."
+  import sineModel
+  print "[Success] sineModel imported successfully....."
 except ImportError:
-  print "[Error] problem while importing harmonicModel"
+  print "[Error] problem while importing sineModel"
 
 
 try:
@@ -44,9 +44,9 @@ except ImportError:
  
 try:
   import sprModel
-  print "[Success] hprModel imported successfully....."
+  print "[Success] sprModel imported successfully....."
 except ImportError:
-  print "[Error] problem while importing hprModel"
+  print "[Error] problem while importing sprModel"
 
 try:
   import stochasticModel
@@ -62,9 +62,9 @@ except ImportError:
  
 try:
   import spsModel
-  print "[Success] hpsModel imported successfully....."
+  print "[Success] spsModel imported successfully....."
 except ImportError:
-  print "[Error] problem while importing hpsModel"
+  print "[Error] problem while importing spsModel"
 
 try:
   import sineModel
@@ -74,33 +74,21 @@ except ImportError:
  
 try:
   import spsModel
-  print "[Success] sps imported successfully....."
+  print "[Success] spsModel imported successfully....."
 except ImportError:
-  print "[Error] problem while importing sps"
+  print "[Error] problem while importing spsModel"
 
 try:
-  import hps
-  print "[Success] sps imported successfully....."
+  import hpsAnal
+  print "[Success] hpsAnal imported successfully....."
 except ImportError:
-  print "[Error] problem while importing sps"
-
-try:
-  import sps
-  print "[Success] sps imported successfully....."
-except ImportError:
-  print "[Error] problem while importing sps"
+  print "[Error] problem while importing hpsAnal"
  
 try:
-  import hpsMorph
-  print "[Success] hpsMorph imported successfully....."
+  import hpsTimeScale
+  print "[Success] hpsTimeScale imported successfully....."
 except ImportError:
-  print "[Error] problem while importing hpsMorph"
-
-try:
-  import spsTimeScale
-  print "[Success] harmonicModel imported successfully....."
-except ImportError:
-  print "[Error] problem while importing spsTimeScale"
+  print "[Error] problem while importing hpsTimeScale"
 
 
 ########################################################################################################
@@ -153,39 +141,21 @@ except ImportError:
 
 try:
   hpsModel.defaultTest()
-  print "[Success] hps ran successfully....."
+  print "[Success] hpsModel ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in hpsModel"
 
 try:
   spsModel.defaultTest()
-  print "[Success] sps ran successfully....."
+  print "[Success] spsModel ran successfully....."
 except ImportError:
   print "[Error] problem while running defaultTest function in spsModel"
   
 try:
-  sps.defaultTest()
-  print "[Success] sps ran successfully....."
+  hpsTimeScale.defaultTest()
+  print "[Success] hpsTimeScale ran successfully....."
 except ImportError:
-  print "[Error] problem while running defaultTest function in sps"
-
-try:
-  hps.defaultTest()
-  print "[Success] hps ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in hps"
-
-try:
-  hpsMorph.defaultTest()
-  print "[Success] hpsMorph ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in hpsMorph"
-
-try:
-  spsTimeScale.defaultTest()
-  print "[Success] spsTimeScale ran successfully....."
-except ImportError:
-  print "[Error] problem while running defaultTest function in spsTimeScale"
+  print "[Error] problem while running defaultTest function in hpsTimeScale"
 
 
 print "Testing completed..."

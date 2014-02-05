@@ -1,7 +1,7 @@
 sms-tools
 =========
 
-spectral modelling synthesis tools for sound and music applications
+spectral modelling analysis and synthesis tools for sound and music applications
 
 <h3>Requirements:</h3>
 <ul>
@@ -16,10 +16,12 @@ spectral modelling synthesis tools for sound and music applications
 
 <hr>
 
-<h3>How to execute the codes:</h3>
+All the basic models for analysis and synthesis are in software/models
 
-<p> In your terminal: <code>python hpsGui.py</code> </p>
-<p> Inside iPython --pylab: <code>run hpsGui</code> </p>
+<h3>How to execute the software:</h3>
+
+<p> In your terminal: <code>python hpsModel.py</code> </p>
+<p> Inside iPython --pylab: <code>run hpsModel</code> </p>
 
 <h3>How to compile UtilityFunctions:</h3>
 

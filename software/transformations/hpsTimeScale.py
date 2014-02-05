@@ -45,6 +45,25 @@ def hpsTimeScale(hloc, hmag, stocEnv, inTime, outTime):
     ystocEnv = np.vstack((ystocEnv, stocEnv[round(l),:]))
   return yhloc, yhmag, ystocEnv, indexes
 
+def defaultTest():
+    str_time = time.time()    
+    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
+    w = np.blackman(801)
+    N = 1024
+    t = -90
+    nH = 50
+    minf0 = 350
+    maxf0 = 700
+    f0et = 5
+    maxhd = 0.2
+    stocf = 0.2
+    hloc, hmag, stocEnv, Ns, H = hpsAnal.hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
+    inTime = np.array([0, 0.165, 0.595, 0.850, 1.15, 2.15, 2.81, 3.285, 4.585, 4.845, 5.1, 6.15, 6.825, 7.285, 8.185, 8.830])
+    outTime = np.array([0, 0.165, 0.595, 0.850, .9+1.15, .2+2.15, 2.81, 3.285, 4.585, .6+4.845, .4+5.1, 6.15, 6.825, 7.285, 8.185, 8.830])            
+    yhloc, yhmag, ystocEnv, indexes = hpsTimeScale(hloc, hmag, stocEnv, inTime, outTime)
+    y, yh, yst = hpsSynth.hpsSynth(yhloc, yhmag, ystocEnv, Ns, H, fs)   
+    print "time taken for computation " + str(time.time()-str_time)
+
 if __name__ == '__main__':
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
   w = np.blackman(801)
