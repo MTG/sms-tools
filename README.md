@@ -1,29 +1,18 @@
 sms-tools
 =========
 
-spectral modelling analysis and synthesis tools for sound and music applications
+<p>Spectral modeling analysis and synthesis tools written in python and C for sound and music applications.</p>
 
-<h3>Requirements:</h3>
-<ul>
-<li>iPython</li>
-<li>Matplotlib</li>
-<li>Numpy</li>
-<li>Scipy</li>
-<li>PyAudio</li>
-<li>PySide</li>
-<li>Cython</li>
+
+<p> In order o use them you have to install: iPython, Matplotlib, Numpy, Scipy, PyAudio, PySide, Cython.</p>
 </ul>
 
-<hr>
+The basic analysis/synthesis models are the directory software/models. The best way to execute the models is from inside iPython and type
+<p> <code>run hpsModel</code> </p>
 
-All the basic models for analysis and synthesis are in software/models
+<p>There are examples, sounds, and lecture material to understand the concepts used.</p>
 
-<h3>How to execute the software:</h3>
-
-<p> In your terminal: <code>python hpsModel.py</code> </p>
-<p> Inside iPython --pylab: <code>run hpsModel</code> </p>
-
-<h3>How to compile UtilityFunctions:</h3>
+<p>In order to use the C functions and thus run the code faster you need to compile UtilityFunctions by:</p>
 
 <ol>
 <li>Install cython (<code>easy_install cython</code>) </li>
