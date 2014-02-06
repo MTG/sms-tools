@@ -7,7 +7,7 @@ sms-tools
 <p> In order to use them you have to install: iPython, Matplotlib, Numpy, Scipy, PyAudio, PySide, Cython.</p>
 </ul>
 
-The basic analysis/synthesis models are in the directory software/models. The best way to execute the models is from inside iPython, for example to run the hpsModel:
+The basic analysis/synthesis models are in the directory software/models. The best way to execute the models is from inside iPython. For example to run the hpsModel you have to go to the software/models directory and type:
 
 <p> <code>run hpsModel</code> </p>
 
