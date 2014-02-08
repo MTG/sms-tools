@@ -1,13 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris
-from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../code/spectralModels/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../code/basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../code/spectralModelsPlotting/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/basicFunctions/'))
 
 import hprModel, hpsModel, hprModelSpectrogramPlot
 import smsWavplayer as wp
@@ -29,8 +26,7 @@ if __name__ == '__main__':
     stocf = .2
     y, yh, yr = hprModel.hprModel(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
     y, yh, yst = hpsModel.hpsModel(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
-    # hprModelSpectrogramPlot.hprModelPlot(x[start:end], fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxFreq, maxnpeaksTwm)
-
+ 
     # wp.play(y, fs)
     # wp.play(yh, fs)
     # wp.play(yr, fs)

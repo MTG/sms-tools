@@ -8,8 +8,9 @@ sms-tools
 <p> <code> sudo apt-get install python2.7 </code></p>
 <p> <code> sudo apt-get install python-pip python-dev python-scipy python-numpy python-matplotlib python-pyaudio python-pyside cython </code></p>
 
+For Windows and Mac we recommend to install the anaconda distribution (https://store.continuum.io/cshop/anaconda/)
 
-The basic analysis/synthesis models are in the directory software/models. The best way to execute the models is from inside iPython. For example to run the hpsModel you have to go to the software/models directory and write <code>run hpsModel</code> </p>
+The basic analysis/synthesis models are in the directory software/models. You can run the code from inside iPython or on the Terminal, going to the software/models directory and write <code>python hpsModel.py</code> </p>
 
 <p>There are examples of analysis/transformation/synthesis in the examples directory, all the sounds used in the examples are in the sounds directory, and there are class slides in the lectures directory to understand the concepts used.</p>
 

@@ -1,6 +1,6 @@
 import wave
 import pyaudio
-import os, copy
+import os, copy, sys
 from scipy.io.wavfile import write
 from scipy.io.wavfile import read
 import numpy as np
@@ -45,7 +45,8 @@ def wavread(filename):
 	(fs, x) = read(filename)
     
 	if len(x.shape) ==2 :
-		print "WARNING: This audio file has stereo channels. As all spectral models are implemented for mono channel audio, convert it to single channel."
+		print "ERROR: Input audio file is stereo. This software only works for mono audio files."
+		sys.exit()
     
     #scaling down and converting audio into floating point number between range -1 to 1
 	x = np.float32(x)/norm_fact[x.dtype.name]

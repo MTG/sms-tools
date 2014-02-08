@@ -77,8 +77,8 @@ if __name__ == '__main__':
   stocf = 0.2
   maxnpeaksTwm = 5
   hloc, hmag, stocEnv, Ns, H = hpsAnal.hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
-  inTime = np.array([0, 0.165, 0.595, 0.850, 1.15, 2.15, 2.81, 3.285, 4.585, 4.845, 5.1, 6.15, 6.825, 7.285, 8.185, 8.830])
-  outTime = np.array([0, 0.165, 0.595, 0.850, .9+1.15, .2+2.15, 2.81, 3.285, 4.585, .6+4.845, .4+5.1, 6.15, 6.825, 7.285, 8.185, 8.830])            
+  inTime = np.array([0, 1])
+  outTime = np.array([0, 2])            
   yhloc, yhmag, ystocEnv, indexes = hpsTimeScale(hloc, hmag, stocEnv, inTime, outTime)
   y, yh, yst = hpsSynth.hpsSynth(yhloc, yhmag, ystocEnv, Ns, H, fs)
   wp.play(y, fs)

@@ -495,7 +495,7 @@ if __name__ == '__main__':
   app = QApplication.instance()
   if app == None: app = QApplication(sys.argv)
   
-  (fs, x) = wp.wavread('../../sounds/oboe.wav')
+  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
 
   form = MainWindow(x, fs)
   form.show()
