@@ -5,7 +5,6 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
 import smsWavplayer as wp
-from scipy.io.wavfile import read
 from scipy.fftpack import fft, ifft
 import math
 
@@ -43,7 +42,6 @@ if __name__ == '__main__':
   plt.plot(np.arange(-hM1, hM2), x1)
   plt.axis([-hM1, hM2, min(x1), max(x1)])
   plt.ylabel('amplitude')
-  plt.ylabel('time samples')
   plt.title('input signal: x')
 
   plt.subplot(3,1,2)
@@ -51,13 +49,11 @@ if __name__ == '__main__':
   plt.axis([0,N/2,min(mX),max(mX)])
   plt.title ('magnitude spectrum: mX')
   plt.ylabel('amplitude (dB)')
-  plt.ylabel('frequency samples')
 
   plt.subplot(3,1,3)
   plt.plot(np.arange(N/2), pX, 'c')
   plt.axis([0,N/2,min(pX),max(pX)])
   plt.title ('phase spectrum: pX')
   plt.ylabel('phase (radians)')
-  plt.ylabel('frequency samples')
 
   plt.show()

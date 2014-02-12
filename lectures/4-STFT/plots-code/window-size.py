@@ -1,48 +1,60 @@
+import math
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.io.wavfile import read
-from scipy.fftpack import fft, ifft
+import time, os, sys
 
-(fs, x) = read('oboe.wav')
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
+
+import dftAnal, dftSynth
+import smsWavplayer as wp
+from scipy.io.wavfile import read
+
+
+(fs, x) = wp.wavread('../../../sounds/oboe-A4.wav')
 N = 128
-start = .8*fs
-xw = x[start:start+N] * np.hamming(N)
+start = .81*fs
+x1 = x[start:start+N] 
 plt.figure(1)
 plt.subplot(321)
-plt.plot(np.arange(start, (start+N), 1.0)/fs, xw)
-plt.axis([start/fs, (start+N)/fs, min(xw), max(xw)])
+plt.plot(np.arange(start, (start+N), 1.0)/fs, x1*np.hamming(N), 'b')
+plt.axis([start/fs, (start+N)/fs, min(x1*np.hamming(N)), max(x1*np.hamming(N))])
+plt.title('x1, M = 128')
 plt.xlabel('time (sec)')
-plt.ylabel('amplitude')
-X = fft(xw)
-mX = 20 * np.log10(abs(X)/N)        
-pX = np.unwrap(np.angle(X)) 
+
+mX, pX = dftAnal.dftAnal(x1, np.hamming(N), N)
 plt.subplot(323)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX[0:N/2])
-plt.axis([0,fs/2.0,0,max(mX)])
+plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r')
+plt.axis([0,fs/2.0,-90,max(mX)])
+plt.title('mX1')
 plt.xlabel('frequency (Hz)')
-plt.ylabel('amplitude (dB)')
+
 plt.subplot(325)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX[:N/2])
-plt.axis([0,fs/2.0,-28,max(pX)])
+plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX, 'c')
+plt.axis([0,fs/2.0,min(pX),max(pX)])
+plt.title('pX1')
 plt.xlabel('frequency (Hz)')
-plt.ylabel('phase (radians)')
 
 N = 1024
-start = .8*fs
-xw = x[start:start+N] * np.hamming(N)
+start = .81*fs
+x2 = x[start:start+N]
+mX, pX = dftAnal.dftAnal(x2, np.hamming(N), N)
+
 plt.subplot(322)
-plt.plot(np.arange(start, (start+N), 1.0)/fs, xw)
-plt.axis([start/fs, (start+N)/fs, min(xw), max(xw)])
+plt.plot(np.arange(start, (start+N), 1.0)/fs, x2*np.hamming(N), 'b')
+plt.axis([start/fs, (start+N)/fs, min(x2), max(x2)])
+plt.title('x2, M = 1024')
 plt.xlabel('time (sec)')
-X = fft(xw)
-mX = 20 * np.log10(abs(X)/N)        
-pX = np.unwrap(np.angle(X)) 
+
 plt.subplot(324)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX[0:N/2])
-plt.axis([0,fs/2.0,0,max(mX)])
+plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r')
+plt.axis([0,fs/2.0,-90,max(mX)])
+plt.title('mX2')
 plt.xlabel('frequency (Hz)')
+
 plt.subplot(326)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX[:N/2])
-plt.axis([0,fs/2.0,-28,max(pX)])
+plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX, 'c')
+plt.axis([0,fs/2.0,min(pX),max(pX)])
+plt.title('pX2')
 plt.xlabel('frequency (Hz)')
 plt.show()

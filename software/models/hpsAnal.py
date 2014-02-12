@@ -78,7 +78,7 @@ def hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=1
     Xh = GS.genSpecSines(hloc, hmag, hphase, Ns)                 # generate sines
     Xr = X2-Xh                                                   # get the residual complex spectrum
     mXr = 20 * np.log10(abs(Xr[:hNs]))                           # magnitude spectrum of residual
-    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the magnitude spectrum and avoid -Inf                                                  
+    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)     # decimate the mag spectrum                                                  
     if pin == hM1: 
       xhloc = np.array([hloc])
       xhmag = np.array([hmag])
@@ -90,6 +90,22 @@ def hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=1
     pin += H                                                     # advance sound pointer
   return xhloc, xhmag, xmXrenv, Ns, H
 
+def defaultTest():
+  str_time = time.time()
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+  w = np.blackman(801)
+  N = 1024
+  t = -90
+  nH = 50
+  minf0 = 350
+  maxf0 = 700
+  f0et = 10
+  maxhd = 0.2
+  stocf = .2
+  maxnpeaksTwm = 5
+  hloc, hmag, mXrenv, Ns, H = hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
+  print "time taken for computation " + str(time.time()-str_time)  
+  
 
 if __name__ == '__main__':
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))

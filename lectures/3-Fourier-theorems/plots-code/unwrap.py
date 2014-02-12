@@ -1,39 +1,43 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftshift
+import time, os, sys
 
-N = 41
-nsines = 20
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../software/basicFunctions/'))
+
+import smsWavplayer as wp
+
+(fs, x) = wp.wavread('../../../sounds/soprano-E4.wav')
+N = 1024
+x1 = np.blackman(N)*x[40000:40000+N]
 
 plt.figure(1)
-
 X = np.array([])
-x = np.zeros(N)
-for k in range(1,nsines):
-	x = x + (1.0/k)*np.sin(2*np.pi*k/N*np.arange(-(N-1)/2.0-5, (N+1)/2.0-5))
-plt.subplot(4,1,1)
-plt.title ('x[n]')
-plt.plot(np.arange(-(N-1)/2.0,(N+1)/2), x)
-plt.axis([-(N-1)/2.0,(N+1)/2-1,min(x),max(x)])
+x2 = np.zeros(N)
 
-for k in range(N):
-	s = np.exp(1j*2*np.pi*k/N*np.arange(-(N-1)/2.0, (N+1)/2.0))
-	X = np.append(X, sum(x*np.conjugate(s)))
+plt.subplot(4,1,1)
+plt.title ('x = wavread(soprano-E4.wav)')
+plt.plot(x1)
+plt.axis([0,N,min(x1),max(x1)])
+
+X = fft(fftshift(x1))
+mX = 20*np.log10(np.abs(X[0:N/2]))
+pX = np.angle(X[0:N/2])
 
 plt.subplot(4,1,2)
-plt.title ('magnitude spectrum: abs(X)')
-plt.plot(np.arange(-(N-1)/2.0,(N+1)/2), abs(fftshift(X))/N, 'ro')
-plt.axis([-(N-1)/2.0,1+(N-1)/2.0-1,0,max(abs(X)/N)])
+plt.title ('mX = magnitude spectrum')
+plt.plot(mX, 'r')
+plt.axis([0,N/2,min(mX), max(mX)])
 
 plt.subplot(4,1,3)
-plt.title ('phase spectrum: angle(X)')
-plt.plot(np.arange(-(N-1)/2.0,(N+1)/2), np.angle(fftshift(X)), 'bo')
-plt.axis([-(N-1)/2.0,1+(N-1)/2.0-1,min(np.angle(fftshift(X))),max(np.angle(fftshift(X)))])
+plt.title ('pX1 = phase spectrum')
+plt.plot(pX, 'c')
+plt.axis([0,N/2,min(pX),max(pX)])
 
+pX1 = np.unwrap(pX)
 plt.subplot(4,1,4)
-plt.title ('phase spectrum: unwrap(angle(X))')
-plt.plot(np.arange(-(N-1)/2.0,(N+1)/2), np.unwrap(np.angle(fftshift(X))), 'bo')
-plt.axis([-(N-1)/2.0,1+(N-1)/2.0-1,min(np.unwrap(np.angle(fftshift(X)))),max(np.unwrap(np.angle(fftshift(X))))])
-
+plt.title ('pX2: unwrapped phase spectrum')
+plt.plot(pX1, 'c')
+plt.axis([0,N/2,min(pX1),max(pX1)])
 
 plt.show()

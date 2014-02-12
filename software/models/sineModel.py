@@ -29,7 +29,6 @@ def sineModel(x, fs, w, N, t):
   # x: input array sound, w: analysis window, N: size of complex spectrum,
   # t: threshold in negative dB 
   # returns y: output array sound
-
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
