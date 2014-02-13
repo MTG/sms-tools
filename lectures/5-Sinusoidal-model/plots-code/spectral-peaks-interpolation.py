@@ -1,87 +1,47 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
-from scipy.io.wavfile import read
+import math
 
-def peak_interp(mX, pX, ploc):
-  # mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
-  # iploc, ipmag, ipphase: interpolated values
-  
-  val = mX[ploc]                                          # magnitude of peak bin 
-  lval = mX[ploc-1]                                       # magnitude of bin at left
-  rval = mX[ploc+1]                                       # magnitude of bin at right
-  iploc = ploc + 0.5*(lval-rval)/(lval-2*val+rval)        # center of parabola
-  ipmag = val - 0.25*(lval-rval)*(iploc-ploc)             # magnitude of peaks
-  ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks
+import sys, os, functools, time
 
-  return iploc, ipmag, ipphase
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-def peak_detection(mX, hN, t):
-  # mX: magnitude spectrum, hN: half number of samples, t: threshold
-  # to be a peak it has to accomplish three conditions: 
+import dftAnal
+import smsF0DetectionTwm as fd
+import smsWavplayer as wp
+import smsPeakProcessing as PP
 
-  thresh = np.where(mX[1:hN-1]>t, mX[1:hN-1], 0);
-  next_minor = np.where(mX[1:hN-1]>mX[2:], mX[1:hN-1], 0)
-  prev_minor = np.where(mX[1:hN-1]>mX[:hN-2], mX[1:hN-1], 0)
-  ploc = thresh * next_minor * prev_minor
-  ploc = ploc.nonzero()[0] + 1
+(fs, x) = wp.wavread('../../../sounds/oboe-A4.wav')
+N = 512*2
+M = 511
+t = -60
+w = np.hamming(M)
+start = .8*fs
+plt.figure(1)
+hN = N/2
+hM = (M+1)/2
 
-  return ploc
+x1 = x[start:start+M]
+mX, pX = dftAnal.dftAnal(x1, w, N)
+ploc = PP.peakDetection(mX, hN, t)
+iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc) 
+pmag = mX[ploc]
+freqaxis = fs*np.arange(N/2)/float(N)
 
 plt.figure(1)
-
-(fs, x) = read('oboe.wav')
-N = 512
-M = 511
-t = 30
-w = np.hamming(M)
-start = .8*fs
-hN = N/2                                                # size of positive spectrum
-hM = (M+1)/2
-xw = x[start:start+M] * w                           # window the input sound
-fftbuffer = np.zeros(N)                               # reset buffer
-fftbuffer[:hM] = xw[hM-1:]                            # zero-phase window in fftbuffer
-fftbuffer[N-hM+1:] = xw[:hM-1]        
-X = fft(fftbuffer)                                    # compute FFT
-mX = 20 * np.log10( abs(X[:hN]/M) )                     # magnitude spectrum of positive frequencies
-ploc = peak_detection(mX, hN, t)
-pmag = mX[ploc]
-pX = np.unwrap( np.angle(X[:hN]) )
-iploc, ipmag, ipphase = peak_interp(mX, pX, ploc)
-freq = np.arange(0, fs/2, fs/N)                     # frequency axis in Hz
-freq = freq[:freq.size-1] 
 plt.subplot (2,1,1)
-plt.plot(freq, mX)
-plt.plot(freq[ploc], pmag, 'ro')   
-plt.plot(np.float32(iploc)/N*fs, ipmag, 'b*') 
-plt.axis([300,2400,0,max(mX)+2])
-plt.title('Spectral peaks: M=511, N=512')
+plt.plot(freqaxis,mX,'r')
+plt.axis([300,2500,-70,max(mX)])
+plt.plot(fs * iploc / N, ipmag, marker='x', color='b', linestyle='') 
+plt.title('Spectral peaks: magnitude (oboe-A4.wav), zero padding = 2')      
 
-
-N = 1024
-M = 511
-t = 30
-w = np.hamming(M)
-start = .8*fs
-hN = N/2                                                # size of positive spectrum
-hM = (M+1)/2
-xw = x[start:start+M] * w                           # window the input sound
-fftbuffer = np.zeros(N)                               # reset buffer
-fftbuffer[:hM] = xw[hM-1:]                            # zero-phase window in fftbuffer
-fftbuffer[N-hM+1:] = xw[:hM-1]        
-X = fft(fftbuffer)                                    # compute FFT
-mX = 20 * np.log10( abs(X[:hN]/M) )                     # magnitude spectrum of positive frequencies
-pX = np.unwrap( np.angle(X[:hN]) )
-ploc = peak_detection(mX, hN, t)
-pmag = mX[ploc]
-iploc, ipmag, ipphase = peak_interp(mX, pX, ploc)
-freq = np.arange(0, fs/2, fs/N)                     # frequency axis in Hz
-freq = freq[:freq.size-1]
 plt.subplot (2,1,2)
-plt.plot(freq, mX)
-plt.axis([300,2400,0,max(mX)+2])
-plt.title('Spectral peaks: M=511, N=1024')
-plt.plot(freq[ploc], pmag, 'ro')    
-plt.plot(np.float32(iploc)/N*fs, ipmag, 'b*')   
- 
+plt.plot(freqaxis,pX,'c')
+plt.axis([300,2500,min(pX),-6])
+plt.plot(fs * iploc / N, ipphase, marker='x', color='b', linestyle='')   
+plt.title('Spectral peaks: phase') 
 plt.show()
+

@@ -22,13 +22,14 @@ maxplotbin = int(N*800.0/fs)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:maxplotbin+1],axis=1)))
 plt.autoscale(tight=True)
   
 peaks = ploc*np.less(ploc,maxplotbin)*float(fs)/N
 peaks[peaks==0] = np.nan
 numFrames = int(ploc[:,0].size)
 plt.plot(frmTime, peaks, 'x', color='k')
+plt.plot(frmTime, peaks, 'x', color='k')
 plt.autoscale(tight=True)
-plt.title('spectral peaks on spectrogram (bendir.wav)')
+plt.title('spectral peaks on phase spectrogram (bendir.wav)')
 plt.show()

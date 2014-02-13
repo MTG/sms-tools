@@ -10,15 +10,15 @@ import stftAnal, sineModelAnal
 import smsWavplayer as wp
 
 
-(fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/bendir.wav'))
-w = np.hamming(2001)
-N = 2048
+(fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/flute-A4.wav'))
+w = np.hamming(601)
+N = 1024
 H = 1000
-t = -80
+t = -60
 mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
 ploc, pmag, pphase = sineModelAnal.sineModelAnal(x, fs, w, N, H, t)
 
-maxplotbin = int(N*800.0/fs)
+maxplotbin = int(N*3000.0/fs)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
@@ -30,5 +30,5 @@ peaks[peaks==0] = np.nan
 numFrames = int(ploc[:,0].size)
 plt.plot(frmTime, peaks, 'x', color='k')
 plt.autoscale(tight=True)
-plt.title('spectral peaks on spectrogram (bendir.wav)')
+plt.title('spectral peaks on spectrogram (flute-A4.wav)')
 plt.show()

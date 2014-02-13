@@ -59,7 +59,7 @@ def sineModelAnal(x, fs, w, N, H, t):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.blackman(801)
   N = 1024
   H = 400
@@ -69,24 +69,24 @@ def defaultTest():
   
 # example call of sineModelAnal function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
-  w = np.blackman(801)
-  N = 1024
-  H = 400
-  t = -40
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  w = np.hamming(2001)
+  N = 2048
+  H = 1000
+  t = -80
   mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
   ploc, pmag, pphase = sineModelAnal(x, fs, w, N, H, t)
+
+  maxplotbin = int(N*800.0/fs)
   numFrames = int(mX[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
-  binFreq = np.arange(N/2)*float(fs)/N                         
-  plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
+  binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
+  plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
   plt.autoscale(tight=True)
   
+  ploc[ploc==0] = np.nan
   numFrames = int(ploc[:,0].size)
-  frmTime = H*np.arange(numFrames)/float(fs)
-  plt.plot(frmTime, ploc*float(fs)/N, 'x', color='k', ms=3, alpha=.4)
-  plt.xlabel('Time(s)')
-  plt.ylabel('Frequency(Hz)')
+  plt.plot(frmTime, ploc*np.less(ploc,maxplotbin)*float(fs)/N, 'x', color='k')
   plt.autoscale(tight=True)
-  plt.title('spectral peaks')
+  plt.title('spectral peaks on spectrogram')
   plt.show()
