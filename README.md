@@ -10,7 +10,7 @@ sms-tools
 
 <p>For Windows and Mac we recommend to install the anaconda distribution (https://store.continuum.io/cshop/anaconda/)</p>
 
-<p>The code for the basic analysis/synthesis models are in the directory software/models. You can run the code from inside iPython, for example by typing <code>run hpsModel.py</code>, or from the Terminal, for example going to the software/models directory and typing <code>python hpsModel.py</code> </p>
+<p>The code for the basic analysis/synthesis models is in the directory software/models. You can run the code from inside iPython, for example by typing <code>run hpsModel.py</code>, or from the Terminal, for example going to the software/models directory and typing <code>python hpsModel.py</code> </p>
 
 <p>There are examples of analysis/transformation/synthesis in the examples directory. All the sounds used in the examples are in the sounds directory.</p>
 
