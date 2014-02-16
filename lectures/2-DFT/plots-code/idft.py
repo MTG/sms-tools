@@ -20,12 +20,12 @@ y = dftSynth.dftSynth(mX, pX, N)
 
 plt.figure(1)
 plt.subplot(311)
-plt.title('positive freq. magnitude spectrum: abs(X)')
+plt.title('positive freq. magnitude spectrum in dB: mX')
 plt.plot(np.arange(0, N/2), mX, 'r')
 plt.axis([0,N/2,min(mX),max(mX)+1])
 
 plt.subplot(312)
-plt.title('positive freq. phase spectrum: angle(X)')
+plt.title('positive freq. phase spectrum: pX')
 plt.plot(np.arange(0, N/2), pX, 'c')
 plt.axis([0,N/2,-np.pi,np.pi])
 

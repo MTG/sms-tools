@@ -23,7 +23,6 @@ plt.plot(np.arange(-N/2.0,N/2), mX, 'r')
 plt.axis([-N/2,N/2-1,0,max(mX)])
 
 powerX = sum(mX**2) / N
-
 print powerX
 
 plt.show()

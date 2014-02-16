@@ -25,7 +25,7 @@ def dftSynth(mX, pX, M):
   Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                    # generate positive frequencies
   Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1])   # generate negative frequencies
   fftbuffer = np.real(ifft(Y))                            # compute inverse FFT
-  y[:hM2] = fftbuffer[N-hM2:]                            # undo zero-phase window
+  y[:hM2] = fftbuffer[N-hM2:]                             # undo zero-phase window
   y[hM2:] = fftbuffer[:hM1]
   return y
 
