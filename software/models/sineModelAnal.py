@@ -9,7 +9,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ba
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
 import dftAnal, stftAnal
-import smsF0DetectionTwm as fd
 import smsWavplayer as wp
 import smsPeakProcessing as PP
 
@@ -22,14 +21,14 @@ except ImportError:
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 def sineModelAnal(x, fs, w, N, H, t):
-  # Analysis/synthesis of a sound using the sinusoidal model
+  # Analysis of a sound using the sinusoidal model
   # x: input array sound, w: analysis window, N: size of complex spectrum,
-  # t: threshold in negative dB 
+  # H: hop-size, t: threshold in negative dB 
   # returns xploc: peak locations, xpmag: peak magnitudes, xpphase: peak phases
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
-  maxnpeaks=150
+  maxnpeaks=150                                           # set a maximum number of peaks
   pin = hM1                                               # initialize sound pointer in middle of analysis window       
   pend = x.size - hM1                                     # last sample to start a frame
   w = w / sum(w)                                          # normalize analysis window
@@ -39,7 +38,7 @@ def sineModelAnal(x, fs, w, N, H, t):
     ploc = PP.peakDetection(mX, hN, t)                    # detect locations of peaks
     pmag = mX[ploc]                                       # get the magnitude of the peaks
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
-    npeaks = min(maxnpeaks,iploc.size) 
+    npeaks = min(maxnpeaks,iploc.size)                    # number of peaks of current frame
     jploc = np.zeros(maxnpeaks)   
     jploc[:npeaks]=iploc[:npeaks] 
     jpmag=np.zeros(maxnpeaks) 
@@ -51,7 +50,7 @@ def sineModelAnal(x, fs, w, N, H, t):
       xpmag = jpmag
       xpphase = jpphase
     else:
-      xploc = np.vstack((xploc,jploc))
+      xploc = np.vstack((xploc, jploc))
       xpmag = np.vstack((xpmag, jpmag))
       xpphase = np.vstack((xpphase, jpphase))
     pin += H                                              # advance sound pointer
@@ -60,10 +59,10 @@ def sineModelAnal(x, fs, w, N, H, t):
 def defaultTest():
   str_time = time.time()
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
-  w = np.blackman(801)
-  N = 1024
-  H = 400
-  t = -40
+  w = np.hamming(2001)
+  N = 2048
+  H = 1000
+  t = -80
   ploc, pmag, pphase = sineModelAnal(x, fs, w, N, H, t)
   print "time taken for computation " + str(time.time()-str_time)  
   
@@ -84,9 +83,9 @@ if __name__ == '__main__':
   plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
   plt.autoscale(tight=True)
   
-  ploc[ploc==0] = np.nan
-  numFrames = int(ploc[:,0].size)
-  plt.plot(frmTime, ploc*np.less(ploc,maxplotbin)*float(fs)/N, 'x', color='k')
+  peaks = ploc*np.less(ploc,maxplotbin)*float(fs)/N
+  peaks[peaks==0] = np.nan
+  plt.plot(frmTime, peaks, 'x', color='k')
   plt.autoscale(tight=True)
   plt.title('spectral peaks on spectrogram')
   plt.show()

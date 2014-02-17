@@ -28,57 +28,57 @@ def hpsSynth(hloc, hmag, mXrenv, Ns, H, fs):
   # hloc: harmonic locations, hmag:harmonic amplitudes, mXrenv: residual envelope
   # Ns: synthesis FFT size, H: hop size, fs: sampling rate 
   # y: output sound, yh: harmonic component, yst: stochastic component
-  hNs = Ns/2                                                   # half of FFT size for synthesis
-  l = 0                                                        # frame index
-  L = hloc[:,0].size                                           # number of analysis frames
-  nH = hloc[0,:].size                                          # number of harmonics
-  pout = 0                                                     # initialize output sound pointer         
-  ysize = H*(L+3)                                              # last sample to start a frame
-  yhw = np.zeros(Ns)                                           # initialize output sound frame
-  ysw = np.zeros(Ns)                                           # initialize output sound frame
-  yh = np.zeros(ysize)                                         # initialize output array
-  ys = np.zeros(ysize)                                         # initialize output array
+  hNs = Ns/2                                                # half of FFT size for synthesis
+  l = 0                                                     # frame index
+  L = hloc[:,0].size                                        # number of frames
+  nH = hloc[0,:].size                                       # number of harmonics
+  pout = 0                                                  # initialize output sound pointer         
+  ysize = H*(L+3)                                           # output sound size
+  yhw = np.zeros(Ns)                                        # initialize output sound frame
+  ysw = np.zeros(Ns)                                        # initialize output sound frame
+  yh = np.zeros(ysize)                                      # initialize output array
+  ys = np.zeros(ysize)                                      # initialize output array
   sw = np.zeros(Ns)     
-  ow = triang(2*H)                                             # overlapping window
+  ow = triang(2*H)                                          # overlapping window
   sw[hNs-H:hNs+H] = ow      
-  bh = blackmanharris(Ns)                                       # synthesis window
-  bh = bh / sum(bh)                                             # normalize synthesis window
-  wr = bh                                                       # window for residual
-  sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]           # synthesis window for harmonic component
-  sws = H*hanning(Ns)/2                                         # synthesis window for stochastic component
-  lastyhloc = np.zeros(nH)                                      # initialize synthesis harmonic locations
-  yhphase = 2*np.pi * np.random.rand(nH)                        # initialize synthesis harmonic phases     
+  bh = blackmanharris(Ns)                                   # synthesis window
+  bh = bh / sum(bh)                                         # normalize synthesis window
+  wr = bh                                                   # window for residual
+  sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]       # synthesis window for harmonic component
+  sws = H*hanning(Ns)/2                                     # synthesis window for stochastic component
+  lastyhloc = np.zeros(nH)                                  # initialize synthesis harmonic locations
+  yhphase = 2*np.pi * np.random.rand(nH)                    # initialize synthesis harmonic phases     
   while l<L:
-    yhloc = hloc[l,:]                                           # synthesis harmonics locs
-    yhmag = hmag[l,:]                                           # synthesis harmonic amplitudes
-    mYrenv = mXrenv[l,:]                                        # synthesis residual envelope
+    yhloc = hloc[l,:]                                       # synthesis harmonics locs
+    yhmag = hmag[l,:]                                       # synthesis harmonic amplitudes
+    mYrenv = mXrenv[l,:]                                    # synthesis residual envelope
     f0 = yhloc[0]
     yf0 = f0
-    yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H                # propagate phases
+    yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H           # propagate phases
     lastyhloc = yhloc 
-    Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)              # generate spec sines 
-    mYs = resample(mYrenv, hNs)                                  # interpolate to original size
-    mYs = 10**(mYs/20)                                           # dB to linear magnitude  
-    pYs = 2*np.pi * np.random.rand(hNs)                          # generate phase random values
+    Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)         # generate spec sines 
+    mYs = resample(mYrenv, hNs)                             # interpolate to original size
+    mYs = 10**(mYs/20)                                      # dB to linear magnitude  
+    pYs = 2*np.pi * np.random.rand(hNs)                     # generate phase random values
     
     Ys = np.zeros(Ns, dtype = complex)
-    Ys[:hNs] = mYs * np.exp(1j*pYs)                              # generate positive freq.
-    Ys[hNs+1:] = mYs[:0:-1] * np.exp(-1j*pYs[:0:-1])             # generate negative freq.
+    Ys[:hNs] = mYs * np.exp(1j*pYs)                         # generate positive freq.
+    Ys[hNs+1:] = mYs[:0:-1] * np.exp(-1j*pYs[:0:-1])        # generate negative freq.
 
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Yh))                                # inverse FFT of harmonic spectrum                        
-    yhw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zer-phase window
+    fftbuffer = np.real(ifft(Yh))                          # inverse FFT of harm spectrum                        
+    yhw[:hNs-1] = fftbuffer[hNs+1:]                         # undo zer-phase window
     yhw[hNs-1:] = fftbuffer[:hNs+1] 
 
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Ys))                                # inverse FFT of stochastic approximation spectrum
-    ysw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
+    fftbuffer = np.real(ifft(Ys))                           # inverse FFT of stochastic approximation spectrum
+    ysw[:hNs-1] = fftbuffer[hNs+1:]                         # undo zero-phase window
     ysw[hNs-1:] = fftbuffer[:hNs+1]
-    yh[pout:pout+Ns] += sw*yhw                                   # overlap-add for sines
-    ys[pout:pout+Ns] += sws*ysw                                  # overlap-add for stoch
-    l += 1                                                       # advance frame pointer
-    pout += H                                                  # advance sound pointer
-  y = yh+ys                                                      # sum harmonic and stochastic components
+    yh[pout:pout+Ns] += sw*yhw                              # overlap-add for sines
+    ys[pout:pout+Ns] += sws*ysw                             # overlap-add for stoch
+    l += 1                                                  # advance frame pointer
+    pout += H                                               # advance sound pointer
+  y = yh+ys                                                 # sum harmonic and stochastic components
   return y, yh, ys
 
 if __name__ == '__main__':

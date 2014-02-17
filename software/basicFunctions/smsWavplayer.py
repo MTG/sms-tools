@@ -19,7 +19,8 @@ def play(y, fs):
 	
 	x *= INT16_FAC	#scaling floating point -1 to 1 range signal to int16 range
 	x = np.int16(x)	#converting to int16 type
-	
+	if (fs != 44100): 
+	  print('WARNING: currently it seems to only work for fs = 44100')
 	CHUNK = 1024
 	write('temp_file.wav', fs, x)
 	wf = wave.open('temp_file.wav', 'rb')
