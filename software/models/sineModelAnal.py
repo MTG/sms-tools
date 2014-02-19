@@ -5,20 +5,19 @@ from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import dftAnal, stftAnal
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  EH.printWarning(1)
 
 def sineModelAnal(x, fs, w, N, H, t):
   # Analysis of a sound using the sinusoidal model
@@ -58,7 +57,7 @@ def sineModelAnal(x, fs, w, N, H, t):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(2001)
   N = 2048
   H = 1000
@@ -68,8 +67,13 @@ def defaultTest():
   
 # example call of sineModelAnal function
 if __name__ == '__main__':
+<<<<<<< HEAD
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(1201)
+=======
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  w = np.hamming(2001)
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
   N = 2048
   H = 1000
   t = -80

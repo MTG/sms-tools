@@ -6,21 +6,21 @@ import time
 import math
 import sys, os, functools
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import smsF0DetectionTwm as fd
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
+  import twm_C as TWM
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  
+  import genSpecSines as GS
+  import twm as TWM
+  EH.printWarning(1)
+
 
 def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10):
   # Analysis/synthesis of a sound using the sinusoidal harmonic model
@@ -64,7 +64,12 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10
     ploc = PP.peakDetection(mX, hN, t)                           # detect peak locations
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
+<<<<<<< HEAD
     f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
+=======
+    
+    f0 = TWM.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -91,7 +96,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10
 
 def defaultTest():
     str_time = time.time()    
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
     w = np.blackman(701)
     N = 1024
     t = -80
@@ -105,7 +110,7 @@ def defaultTest():
 
 
 if __name__ == '__main__':
-    (fs, x) = wp.wavread('../../sounds/sax-phrase-short.wav')
+    (fs, x) = WIO.wavread('../../sounds/sax-phrase-short.wav')
     w = np.blackman(901)
     N = 1024
     t = -90
@@ -116,4 +121,8 @@ if __name__ == '__main__':
     maxhd = 0.2
     maxnpeaksTwm = 5
     y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
+<<<<<<< HEAD
     wp.play(y, fs)
+=======
+    WIO.play(y, fs)
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081

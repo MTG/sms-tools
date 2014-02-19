@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import dftAnal
-import smsWavplayer as wp
+import waveIO as WIO
 from scipy.io.wavfile import read
 from scipy.fftpack import fft, ifft
 import math
@@ -31,7 +31,7 @@ def dftSynth(mX, pX, M):
 
 # example call of dftSynth function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
+  (fs, x) = WIO.wavread('../../sounds/oboe-A4.wav')
   w = np.blackman(511)
   N = 1024
   pin = 5000

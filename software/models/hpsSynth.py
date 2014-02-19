@@ -7,20 +7,20 @@ import math
 import sys, os, time
 import hpsAnal
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import smsF0DetectionTwm as fd
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
+  import twm_C as fd
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  import twm as fd
+  EH.printWarning(1)
   
 
 def hpsSynth(hloc, hmag, mXrenv, Ns, H, fs):
@@ -82,7 +82,7 @@ def hpsSynth(hloc, hmag, mXrenv, Ns, H, fs):
   return y, yh, ys
 
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90
@@ -95,8 +95,8 @@ if __name__ == '__main__':
   maxnpeaksTwm = 5
   hloc, hmag, mXrenv, Ns, H = hpsAnal.hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
   y, yh, yst = hpsSynth(hloc, hmag, mXrenv, Ns, H, fs)
-  wp.play(y, fs)
-  wp.play(yh, fs)
-  wp.play(yst, fs)
+  WIO.play(y, fs)
+  WIO.play(yh, fs)
+  WIO.play(yst, fs)
 
 

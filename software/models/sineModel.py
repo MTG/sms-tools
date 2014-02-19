@@ -5,20 +5,26 @@ from scipy.fftpack import fft, ifft
 import math
 import sys, os, functools, time
 
+<<<<<<< HEAD
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+=======
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
+
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
 import dftAnal
-import smsF0DetectionTwm as fd
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
+  import twm _C as fd
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  import twm as fd
+  EH.printWarning(1)
   
 
 def sineModel(x, fs, w, N, t):
@@ -63,18 +69,32 @@ def sineModel(x, fs, w, N, t):
 
 def defaultTest():
   str_time = time.time()
+<<<<<<< HEAD
   (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(1001)
   N = 2048
   t = -80
+=======
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
+  w = np.hamming(511)
+  N = 1024
+  t = -60
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
   y = sineModel(x, fs, w, N, t)
   print "time taken for computation " + str(time.time()-str_time)  
   
 # example call of sineModel function
 if __name__ == '__main__':
+<<<<<<< HEAD
   (fs, x) = wp.wavread('../../sounds/bendir.wav')
   w = np.blackman(1201)
   N = 2048
   t = -90
+=======
+  (fs, x) = WIO.wavread('../../sounds/oboe-A4.wav')
+  w = np.hamming(511)
+  N = 1024
+  t = -60
+>>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
   y = sineModel(x, fs, w, N, t)
-  wp.play(y, fs)
+  WIO.play(y, fs)

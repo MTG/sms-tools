@@ -6,19 +6,18 @@ import math
 
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import sineModelAnal
-import smsWavplayer as wp
+import waveIO as WIO
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  EH.printWarning(1)
   
 
 def sineModelSynth(ploc, pmag, pphase, N, Ns, H):
@@ -55,7 +54,7 @@ def sineModelSynth(ploc, pmag, pphase, N, Ns, H):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(511)
   N = 1024
   t = -60
@@ -67,7 +66,7 @@ def defaultTest():
   
 # example call of sineModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/bendir.wav')
+  (fs, x) = WIO.wavread('../../sounds/bendir.wav')
   w = np.hamming(1001)
   N = 2048
   t = -80
@@ -75,4 +74,4 @@ if __name__ == '__main__':
   H = Ns/4
   ploc, pmag, pphase = sineModelAnal.sineModelAnal(x, fs, w, N, H, t)
   y = sineModelSynth(ploc, pmag, pphase, N, Ns, H)
-  wp.play(y, fs)
+  WIO.play(y, fs)

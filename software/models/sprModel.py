@@ -5,19 +5,18 @@ from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  EH.printWarning(1)
   
 
   
@@ -93,7 +92,7 @@ def sprModel(x, fs, w, N, t):
 
 def defaultTest():
     str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
     w = np.blackman(901)
     N = 1024
     t = -70
@@ -102,12 +101,12 @@ def defaultTest():
   
 if __name__ == '__main__':
     
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
     w = np.blackman(901)
     N = 1024
     t = -70
     y, ys, yr = sprModel(x, fs, w, N, t)
 
-    wp.play(y, fs)
-    wp.play(ys, fs)
-    wp.play(yr, fs)
+    WIO.play(y, fs)
+    WIO.play(ys, fs)
+    WIO.play(yr, fs)

@@ -5,21 +5,21 @@ from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import dftAnal, dftSynth
-import smsF0DetectionTwm as fd
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
+  import twm_C as TWM
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  import genSpecSines as GS
+  import twm as TWM
+  EH.printWarning(1)
 
 
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=10):
@@ -62,7 +62,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=
     mX, pX = dftAnal.dftAnal(x1, w, N)                           # compute dft
     ploc = PP.peakDetection(mX, hN, t)                           # find peaks                
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
-    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
+    f0 = TWM.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -115,7 +115,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=
 
 def defaultTest():
     str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
     w = np.blackman(801)
     N = 1024
     t = -90
@@ -130,7 +130,7 @@ def defaultTest():
     print "time taken for computation " + str(time.time()-str_time)
   
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90
@@ -143,6 +143,6 @@ if __name__ == '__main__':
   maxnpeaksTwm = 5
   y, yh, yst = hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
 
-  wp.play(y, fs)
-  wp.play(yh, fs)
-  wp.play(yst, fs)
+  WIO.play(y, fs)
+  WIO.play(yh, fs)
+  WIO.play(yst, fs)

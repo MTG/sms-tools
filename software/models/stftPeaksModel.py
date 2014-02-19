@@ -1,15 +1,15 @@
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import dftAnal
-import smsWavplayer as wp
+import waveIO as WIO
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
 import math
-import smsPeakProcessing as PP 
+import peakProcessing as PP 
 
 def stftPeaksModel(x, fs, w, N, H, t) :
   # Analysis/synthesis of a sound using the spectral peaks
@@ -51,7 +51,7 @@ def stftPeaksModel(x, fs, w, N, H, t) :
 
 def defaultTest():
     str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
     w = np.hamming(801)
     N = 1024
     H = 200
@@ -62,10 +62,10 @@ def defaultTest():
   
 if __name__ == '__main__':   
       
-    (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
+    (fs, x) = WIO.wavread('../../sounds/oboe-A4.wav')
     w = np.hamming(801)
     N = 1024
     H = 200
     t = -70
     y = stftPeaksModel(x, fs, w, N, H, t)
-    wp.play(y, fs)
+    WIO.play(y, fs)
