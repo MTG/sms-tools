@@ -16,7 +16,7 @@ import waveIO as wp
 import peakProcessing as PP
 
 try:
-  import utilFunctions_C as GS
+  import basicFunctions_C as GS
 except ImportError:
   import genSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"

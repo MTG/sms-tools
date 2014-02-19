@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 import waveIO as wp
 
 try:
-  import utilFunctions_C as GS
+  import basicFunctions_C as GS
 except ImportError:
   import genSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
