@@ -4,7 +4,6 @@ from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import time
 import math
-
 import sys, os, functools
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
@@ -65,7 +64,6 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10
     ploc = PP.peakDetection(mX, hN, t)                           # detect peak locations
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
-    
     f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes

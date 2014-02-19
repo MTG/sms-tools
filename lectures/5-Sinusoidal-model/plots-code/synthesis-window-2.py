@@ -50,15 +50,25 @@ sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]
 plt.figure(1)
 
 plt.subplot(3,1,1)
-plt.plot(np.arange(hNs), mY, 'r')
-plt.axis([0, hNs,-90,max(mY)+2])
-plt.title("mY; Blackman-Harris; Ns = 512")
-
-plt.subplot(3,1,2)
 plt.plot(np.arange(-hNs,hNs), y, 'b')
 plt.plot(np.arange(-hNs,hNs), max(y)*bh/max(bh), 'k', alpha=.5)
 plt.axis([-hNs, hNs,min(y),max(y)+.1])
-plt.title("y; size = Ns = 512 (Blackman-Harris window)")
+plt.title("y; size = Ns = 512 (Blackman-Harris)")
+
+plt.subplot(3,3,4)
+plt.plot(np.arange(-hNs,hNs), bh/max(bh), 'k', alpha=.9)
+plt.axis([-hNs, hNs,0,1])
+plt.title("Blackman-Harris")
+
+plt.subplot(3,3,5)
+plt.plot(np.arange(-hNs/2,hNs/2), ow/max(ow), 'k', alpha=.9)
+plt.axis([-hNs/2, hNs/2,0,1])
+plt.title("triangular")
+
+plt.subplot(3,3,6)
+plt.plot(np.arange(-hNs/2,hNs/2), sw[hNs-H:hNs+H]/max(sw), 'k', alpha=.9)
+plt.axis([-hNs/2, hNs/2,0,1])
+plt.title("triangular / Blackman-Harris")
 
 yw = y * sw / max(sw)
 plt.subplot(3,1,3)

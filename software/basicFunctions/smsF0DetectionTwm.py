@@ -9,14 +9,14 @@ def f0DetectionTwm(ploc, pmag, N, fs, ef0max, minf0, maxf0, maxnpeaks=10):
   
   nPeaks = ploc.size                                  # number of peaks available
   f0 = 0                                              # initialize output
-  maxnpeaks = min (maxnpeaks, nPeaks)                        # maximum number of peaks to use
+  maxnpeaks = min (maxnpeaks, nPeaks)                 # maximum number of peaks to use
   if maxnpeaks > 3 :                                  # only find fundamental if 3 peaks exist
     pfreq = ploc/N*fs                                 # frequency in Hertz of peaks
     zvalue = min(pfreq)
     zindex = np.argmin(pfreq)
 
     if zvalue == 0 :                                  # avoid zero frequency peak
-      pfreq[zindex] = 1
+      pfreq[zindex] = 0
       pmag[zindex] = -100
 
     pmag_temp = copy.deepcopy(pmag)

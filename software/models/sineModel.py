@@ -3,13 +3,10 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import math
-
-
 import sys, os, functools, time
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
-
 import dftAnal
 import smsF0DetectionTwm as fd
 import smsWavplayer as wp
@@ -35,7 +32,7 @@ def sineModel(x, fs, w, N, t):
   Ns = 512                                                # FFT size for synthesis (even)
   H = Ns/4                                                # Hop size used for analysis and synthesis
   hNs = Ns/2                                              # half of synthesis FFT size
-  pin = max(hNs, hM1)                                     # initialize sound pointer in middle of analysis window       
+  pin = max(hNs, hM1)                                     # init sound pointer in middle of anal window       
   pend = x.size - max(hNs, hM1)                           # last sample to start a frame
   fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
   yw = np.zeros(Ns)                                       # initialize output sound frame
@@ -55,9 +52,9 @@ def sineModel(x, fs, w, N, t):
     pmag = mX[ploc]                                       # get the magnitude of the peaks
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
   #-----synthesis-----
-    plocs = iploc*Ns/N;                                   # adapt peak locations to size of synthesis FFT
+    plocs = iploc*Ns/N                                    # adapt peak locations to size of synthesis FFT
     Y = GS.genSpecSines(plocs, ipmag, ipphase, Ns)        # generate sines in the spectrum         
-    fftbuffer = np.real( ifft(Y) )                        # compute inverse FFT
+    fftbuffer = np.real(ifft(Y))                          # compute inverse FFT
     yw[:hNs-1] = fftbuffer[hNs+1:]                        # undo zero-phase window
     yw[hNs-1:] = fftbuffer[:hNs+1] 
     y[pin-hNs:pin+hNs] += sw*yw                           # overlap-add and apply a synthesis window
@@ -66,18 +63,18 @@ def sineModel(x, fs, w, N, t):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
-  w = np.hamming(511)
-  N = 1024
-  t = -60
+  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  w = np.hamming(1001)
+  N = 2048
+  t = -80
   y = sineModel(x, fs, w, N, t)
   print "time taken for computation " + str(time.time()-str_time)  
   
 # example call of sineModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
-  w = np.hamming(511)
-  N = 1024
-  t = -60
+  (fs, x) = wp.wavread('../../sounds/bendir.wav')
+  w = np.blackman(1201)
+  N = 2048
+  t = -90
   y = sineModel(x, fs, w, N, t)
   wp.play(y, fs)
