@@ -13,7 +13,7 @@ import sineModelAnal
 import waveIO as wp
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
 except ImportError:
   import genSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
