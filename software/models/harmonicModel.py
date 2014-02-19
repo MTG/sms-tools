@@ -12,6 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 
 import waveIO as wp
 import peakProcessing as PP
+import errorHandler as EH
 
 try:
   import genSpecSines_C as GS
@@ -19,10 +20,8 @@ try:
 except ImportError:
   import genSpecSines as GS
   import twm as fd
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  
+  EH.printWarning(1)
+
 
 def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10):
   # Analysis/synthesis of a sound using the sinusoidal harmonic model

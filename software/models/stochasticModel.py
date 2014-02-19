@@ -10,14 +10,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import waveIO as wp
-
+import errorHandler as EH
 try:
   import genSpecSines_C as GS
 except ImportError:
   import genSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  EH.printWarning(1)
   
 
 def stochasticModel(x, w, N, H, stocf) :

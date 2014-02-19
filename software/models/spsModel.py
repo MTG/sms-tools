@@ -10,14 +10,13 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 
 import waveIO as wp
 import peakProcessing as PP
+import errorHandler as EH
 
 try:
   import genSpecSines_C as GS
 except ImportError:
   import genSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  EH.printWarning(1)
   
 def spsModel(x, fs, w, N, t, stocf):
   # Analysis/synthesis of a sound using the sinusoidal plus residual model
