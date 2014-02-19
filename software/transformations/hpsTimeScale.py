@@ -2,25 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
-from scipy.interpolate import interp1d
 import math
-import sys, os, time
+import sys, os, functools, time
+from scipy.interpolate import interp1d
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
 import hpsAnal, hpsSynth
-import smsWavplayer as wp
+import waveIO as WIO
+import peakProcessing as PP
+import errorHandler as EH
 
 try:
-  import basicFunctions_C as GS
+  import genSpecSines_C as GS
+  import twm_C as TWM
 except ImportError:
-  import smsGenSpecSines as GS
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
-  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  
+  import genSpecSines as GS
+  import twm as TWM
+  EH.printWarning(1)
 
 def hpsTimeScale(hloc, hmag, stocEnv, inTime, outTime):
   # Synthesis of a sound using the harmonic plus stochastic model
@@ -65,7 +66,7 @@ def defaultTest():
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90
@@ -81,6 +82,6 @@ if __name__ == '__main__':
   outTime = np.array([0, 2])            
   yhloc, yhmag, ystocEnv, indexes = hpsTimeScale(hloc, hmag, stocEnv, inTime, outTime)
   y, yh, yst = hpsSynth.hpsSynth(yhloc, yhmag, ystocEnv, Ns, H, fs)
-  wp.play(y, fs)
+  WIO.play(y, fs)
 
 

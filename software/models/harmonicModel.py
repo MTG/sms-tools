@@ -64,12 +64,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm=10
     ploc = PP.peakDetection(mX, hN, t)                           # detect peak locations
     pX = np.unwrap( np.angle(X[:hN]) )                           # unwrapped phase spect. of positive freq.     
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
-<<<<<<< HEAD
-    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
-=======
-    
     f0 = TWM.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
->>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -121,8 +116,4 @@ if __name__ == '__main__':
     maxhd = 0.2
     maxnpeaksTwm = 5
     y = harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, maxnpeaksTwm)
-<<<<<<< HEAD
-    wp.play(y, fs)
-=======
     WIO.play(y, fs)
->>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081

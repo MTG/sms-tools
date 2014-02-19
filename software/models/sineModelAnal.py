@@ -67,13 +67,8 @@ def defaultTest():
   
 # example call of sineModelAnal function
 if __name__ == '__main__':
-<<<<<<< HEAD
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
-  w = np.hamming(1201)
-=======
   (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(2001)
->>>>>>> 17e9ead9f94eaaefd1e6c1fe83ad981a05f94081
   N = 2048
   H = 1000
   t = -80
