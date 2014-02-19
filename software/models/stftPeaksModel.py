@@ -4,12 +4,12 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
 
 import dftAnal
-import smsWavplayer as wp
+import waveIO as wp
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
 import math
-import smsPeakProcessing as PP 
+import peakProcessing as PP 
 
 def stftPeaksModel(x, fs, w, N, H, t) :
   # Analysis/synthesis of a sound using the spectral peaks

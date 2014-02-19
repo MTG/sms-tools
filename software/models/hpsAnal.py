@@ -9,14 +9,14 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ba
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
 import dftAnal
-import smsF0DetectionTwm as fd
-import smsWavplayer as wp
-import smsPeakProcessing as PP
+import twm as fd
+import waveIO as wp
+import peakProcessing as PP
 
 try:
   import basicFunctions_C as GS
 except ImportError:
-  import smsGenSpecSines as GS
+  import genSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"

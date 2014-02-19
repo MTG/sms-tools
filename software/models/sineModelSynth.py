@@ -10,12 +10,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ba
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions_C/'))
 
 import sineModelAnal
-import smsWavplayer as wp
+import waveIO as wp
 
 try:
   import basicFunctions_C as GS
 except ImportError:
-  import smsGenSpecSines as GS
+  import genSpecSines as GS
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   print "NOTE: Cython modules for some functions were not imported, the processing will be slow"
   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
