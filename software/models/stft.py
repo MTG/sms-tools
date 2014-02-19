@@ -4,7 +4,7 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import dftAnal, dftSynth
-import waveIO as wp
+import waveIO as WIO
 from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft, ifft
@@ -34,7 +34,7 @@ def stft(x, fs, w, N, H):
 
 def defaultTest():
   str_time = time.time()    
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/oboe-A4.wav'))
   w = np.blackman(511)
   N = 1024
   H = 128
@@ -43,11 +43,11 @@ def defaultTest():
 
 # example call of stft function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
+  (fs, x) = WIO.wavread('../../sounds/oboe-A4.wav')
   w = np.blackman(511)
   N = 1024
   H = 128
   y = stft(x, fs, w, N, H)
-  wp.play(y, fs)
+  WIO.play(y, fs)
   error = -(20*np.log10(2**15) - 20*np.log10(sum(abs(x[N:x.size-N]-y[N:x.size-N]))))
   print "output/input error (in dB) =", error

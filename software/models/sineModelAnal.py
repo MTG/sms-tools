@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import dftAnal, stftAnal
-import waveIO as wp
+import waveIO as WIO
 import peakProcessing as PP
 import errorHandler as EH
 
@@ -57,7 +57,7 @@ def sineModelAnal(x, fs, w, N, H, t):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(2001)
   N = 2048
   H = 1000
@@ -67,7 +67,7 @@ def defaultTest():
   
 # example call of sineModelAnal function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(2001)
   N = 2048
   H = 1000

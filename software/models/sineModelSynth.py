@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import sineModelAnal
-import waveIO as wp
+import waveIO as WIO
 import errorHandler as EH
 
 try:
@@ -54,7 +54,7 @@ def sineModelSynth(ploc, pmag, pphase, N, Ns, H):
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(511)
   N = 1024
   t = -60
@@ -66,7 +66,7 @@ def defaultTest():
   
 # example call of sineModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/bendir.wav')
+  (fs, x) = WIO.wavread('../../sounds/bendir.wav')
   w = np.hamming(1001)
   N = 2048
   t = -80
@@ -74,4 +74,4 @@ if __name__ == '__main__':
   H = Ns/4
   ploc, pmag, pphase = sineModelAnal.sineModelAnal(x, fs, w, N, H, t)
   y = sineModelSynth(ploc, pmag, pphase, N, Ns, H)
-  wp.play(y, fs)
+  WIO.play(y, fs)

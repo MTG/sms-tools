@@ -9,7 +9,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import waveIO as wp
+import waveIO as WIO
 import errorHandler as EH
 try:
   import genSpecSines_C as GS
@@ -55,7 +55,7 @@ def stochasticModel(x, w, N, H, stocf) :
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/ocean.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/ocean.wav'))
   w = np.hamming(512)
   N = 512
   H = 256
@@ -66,10 +66,10 @@ def defaultTest():
     
 # example call of stochasticModel function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/speech-male.wav')
+  (fs, x) = WIO.wavread('../../sounds/speech-male.wav')
   w = np.hamming(1028)
   N = 1028
   H = 128
   stocf = .05
   y = stochasticModel(x, w, N, H, stocf)
-  wp.play(y, fs)
+  WIO.play(y, fs)

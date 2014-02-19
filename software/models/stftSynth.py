@@ -4,7 +4,7 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import stftAnal, dftSynth
-import waveIO as wp
+import waveIO as WIO
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import read
 from scipy.signal import hamming
@@ -28,7 +28,7 @@ def stftSynth(mY, pY, M, H) :
 
 def defaultTest():
   str_time = time.time()    
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/piano.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/piano.wav'))
   w = np.hamming(1024)
   N = 1024
   H = 512
@@ -37,12 +37,12 @@ def defaultTest():
 
 # example call of stftSynth function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/piano.wav')
+  (fs, x) = WIO.wavread('../../sounds/piano.wav')
   w = np.hamming(1024)
   N = 1024
   H = 512
   mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
   y = stftSynth(mX, pX, w.size, H)
-  wp.play(y, fs)   
+  WIO.play(y, fs)   
   
   

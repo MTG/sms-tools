@@ -9,16 +9,16 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../ut
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import dftAnal
-import waveIO as wp
+import waveIO as WIO
 import peakProcessing as PP
 import errorHandler as EH
 
 try:
   import genSpecSines_C as GS
-  import twm_C as fd
+  import twm_C as TWM
 except ImportError:
   import genSpecSines as GS
-  import twm as fd
+  import twm as TWM
   EH.printWarning(1)
   
 
@@ -53,7 +53,7 @@ def hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=1
     mX, pX = dftAnal.dftAnal(x1, w, N)                           # compute dft
     ploc = PP.peakDetection(mX, hN, t)                           # detect spectral peaks
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values 
-    f0 = fd.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
+    f0 = TWM.f0DetectionTwm(iploc, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
     hloc = np.zeros(nH)                                          # initialize harmonic locations
     hmag = np.zeros(nH)-100                                      # initialize harmonic magnitudes
     hphase = np.zeros(nH)                                        # initialize harmonic phases
@@ -92,7 +92,7 @@ def hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm=1
 
 def defaultTest():
   str_time = time.time()
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90
@@ -108,7 +108,7 @@ def defaultTest():
   
 
 if __name__ == '__main__':
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase-short.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90

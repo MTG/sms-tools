@@ -4,7 +4,7 @@ import time, os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import dftAnal
-import waveIO as wp
+import waveIO as WIO
 import matplotlib.pyplot as plt
 from scipy.io.wavfile import read
 from scipy.signal import hamming
@@ -37,7 +37,7 @@ def stftAnal(x, fs, w, N, H) :
 
 def defaultTest():
   str_time = time.time()    
-  (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/piano.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/piano.wav'))
   w = np.hamming(512)
   N = 512
   H = 128
@@ -46,7 +46,7 @@ def defaultTest():
 
 # example call of stftAnal function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/piano.wav')
+  (fs, x) = WIO.wavread('../../sounds/piano.wav')
   w = np.hamming(1024)
   N = 1024
   H = 512

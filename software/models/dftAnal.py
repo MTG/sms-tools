@@ -4,7 +4,7 @@ import time, os, sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
-import waveIO as wp
+import waveIO as WIO
 from scipy.fftpack import fft, ifft
 import math
 
@@ -28,7 +28,7 @@ def dftAnal(x, w, N):
 
 # example call of dftAnal function
 if __name__ == '__main__':
-  (fs, x) = wp.wavread('../../sounds/oboe-A4.wav')
+  (fs, x) = WIO.wavread('../../sounds/oboe-A4.wav')
   w = np.hamming(511)
   N = 512
   pin = 5000

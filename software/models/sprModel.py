@@ -8,7 +8,7 @@ import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import waveIO as wp
+import waveIO as WIO
 import peakProcessing as PP
 import errorHandler as EH
 
@@ -92,7 +92,7 @@ def sprModel(x, fs, w, N, t):
 
 def defaultTest():
     str_time = time.time()
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
     w = np.blackman(901)
     N = 1024
     t = -70
@@ -101,12 +101,12 @@ def defaultTest():
   
 if __name__ == '__main__':
     
-    (fs, x) = wp.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
+    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
     w = np.blackman(901)
     N = 1024
     t = -70
     y, ys, yr = sprModel(x, fs, w, N, t)
 
-    wp.play(y, fs)
-    wp.play(ys, fs)
-    wp.play(yr, fs)
+    WIO.play(y, fs)
+    WIO.play(ys, fs)
+    WIO.play(yr, fs)
