@@ -26,7 +26,7 @@ np_lib = os.path.dirname(numpy.__file__)
 np_inc = [os.path.join(np_lib, 'core/include')]
 ext_inc = os
 
-sourcefiles = ["genSpecSines.c", "cgenSpecSines.pyx"]
+sourcefiles = ["tables.c", "genSpecSines.c", "cgenSpecSines.pyx"]
 
 setup(
     cmdclass = {'build_ext': build_ext},
