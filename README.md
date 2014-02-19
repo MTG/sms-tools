@@ -14,7 +14,7 @@ sms-tools
 
 <p>There are examples of analysis/transformation/synthesis in the examples directory. All the sounds used in the examples are in the sounds directory.</p>
 
-<p>In order to use the C functions, which will run most the code faster, you need to compile basicFunctions_C. Once Cython is installed, in the Terminal go to the directory software/basicFunctions_C and write <code> python compileModule.py build_ext --inplace </code> (don't bother if it appears a warning) </p>
+<p>In order to use the C functions, which will run most the code faster, you need to compile basicFunctions_C. Once Cython is installed, in the Terminal go to the directory software/utilFunctions_C and write <code> python compileModule.py build_ext --inplace </code> (don't bother if it appears a warning) </p>
 
 <p>All this code is used in several classes that I teach. The slides and demo code I use in class is available in the lectures directory.</p>
 
