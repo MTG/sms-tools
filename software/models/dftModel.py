@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
 import waveIO as wp
 from scipy.io.wavfile import read
