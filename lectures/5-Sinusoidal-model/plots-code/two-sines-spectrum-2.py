@@ -3,12 +3,12 @@ import numpy as np
 import time, os, sys
 import math
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import smsWavplayer as wp
+import waveIO as WIO
 import dftAnal as DF
-(fs, x) = wp.wavread('../../../sounds/sine-440+490.wav')
+(fs, x) = WIO.wavread('../../../sounds/sine-440+490.wav')
 w = np.hamming(3529)
 N = 16384
 pin = 4850

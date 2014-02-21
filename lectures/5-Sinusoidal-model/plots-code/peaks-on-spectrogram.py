@@ -30,5 +30,5 @@ peaks[peaks==0] = np.nan
 numFrames = int(ploc[:,0].size)
 plt.plot(frmTime, peaks, 'x', color='k')
 plt.autoscale(tight=True)
-plt.title('spectral peaks on spectrogram (bendir.wav)')
+plt.title('spectral peaks on spectrogram')
 plt.show()
