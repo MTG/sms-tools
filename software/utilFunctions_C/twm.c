@@ -33,7 +33,7 @@ void minValArg(double *data, int dLen, double *min_val, int*min_ind)
 
 
 
-double f0DetectionTwm_C(double *ploc, double *pmag, int nPeaks, int N, int fs, double ef0max, double minf0, double maxf0, int maxnpeaks)
+double f0DetectionTwm_C(double *pfreq1, double *pmag, int nPeaks, int N, int fs, double ef0max, double minf0, double maxf0, int maxnpeaks)
 {
     double f0=0, f0error;
     int ii,jj, min_ind, max_ind, f0CandCnt=0;
@@ -42,7 +42,7 @@ double f0DetectionTwm_C(double *ploc, double *pmag, int nPeaks, int N, int fs, d
     double *f0Cands, f0down;
 
     pfreq = (double*)malloc(sizeof(double)*nPeaks);
-    pmag_temp = (double*)malloc(sizeof(double)*nPeaks);
+	pmag_temp = (double*)malloc(sizeof(double)*nPeaks);
     f0Cands = (double*)malloc(sizeof(double)*F0NUMPEAK*F0CANDPERPEAK);
     
     maxnpeaks = min(maxnpeaks, nPeaks);                        //maximum number of peaks to use
@@ -51,8 +51,8 @@ double f0DetectionTwm_C(double *ploc, double *pmag, int nPeaks, int N, int fs, d
     {
         for(ii=0;ii<nPeaks;ii++)
         {
-            pfreq[ii] = fs*ploc[ii]/N;
-            pmag_temp[ii] = pmag[ii];
+            pfreq[ii] = pfreq1[ii];
+			pmag_temp[ii] = pmag[ii];
         }
         
         minValArg(pfreq, nPeaks, &min_val, &min_ind);

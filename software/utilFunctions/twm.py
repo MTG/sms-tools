@@ -1,17 +1,16 @@
 import numpy as np
 import copy
 
-def f0DetectionTwm(ploc, pmag, N, fs, ef0max, minf0, maxf0, maxnpeaks=10):
+def f0DetectionTwm(pfreq, pmag, N, fs, ef0max, minf0, maxf0, maxnpeaks=10):
   # Fundamental frequency detection function from a series of spectral peak values
-  # ploc, pmag: peak loc and mag, N: size of complex spectrum, fs: sampling rate,
+  # ploc, pmag: peak freq and mag, N: size of complex spectrum, fs: sampling rate,
   # ef0max: maximum error allowed, minf0: minimum f0, maxf0: maximum f0
   # returns f0: fundamental frequency in Hz
   
-  nPeaks = ploc.size                                  # number of peaks available
+  nPeaks = pfreq.size                                  # number of peaks available
   f0 = 0                                              # initialize output
   maxnpeaks = min (maxnpeaks, nPeaks)                 # maximum number of peaks to use
   if maxnpeaks > 3 :                                  # only find fundamental if 3 peaks exist
-    pfreq = ploc/N*fs                                 # frequency in Hertz of peaks
     zvalue = min(pfreq)
     zindex = np.argmin(pfreq)
 

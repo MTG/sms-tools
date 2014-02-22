@@ -1,37 +1,31 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
-from scipy.interpolate import interp1d
 import math
 import sys, os, time
-import hpsAnal
+import hpsModelAnal
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import waveIO as WIO
-import peakProcessing as PP
 import errorHandler as EH
 
 try:
   import genSpecSines_C as GS
-  import twm_C as fd
 except ImportError:
   import genSpecSines as GS
-  import twm as fd
   EH.printWarning(1)
-  
 
-def hpsSynth(hloc, hmag, mXrenv, Ns, H, fs):
+def hpsModelSynth(hfreq, hmag, mXrenv, Ns, H, fs):
   # Synthesis of a sound using the harmonic plus stochastic model
-  # hloc: harmonic locations, hmag:harmonic amplitudes, mXrenv: residual envelope
+  # hfreq: harmonic frequencies, hmag:harmonic amplitudes, mXrenv: residual envelope
   # Ns: synthesis FFT size, H: hop size, fs: sampling rate 
   # y: output sound, yh: harmonic component, yst: stochastic component
   hNs = Ns/2                                                # half of FFT size for synthesis
   l = 0                                                     # frame index
-  L = hloc[:,0].size                                        # number of frames
-  nH = hloc[0,:].size                                       # number of harmonics
+  L = hfreq[:,0].size                                       # number of frames
+  nH = hfreq[0,:].size                                      # number of harmonics
   pout = 0                                                  # initialize output sound pointer         
   ysize = H*(L+3)                                           # output sound size
   yhw = np.zeros(Ns)                                        # initialize output sound frame
@@ -46,30 +40,25 @@ def hpsSynth(hloc, hmag, mXrenv, Ns, H, fs):
   wr = bh                                                   # window for residual
   sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]       # synthesis window for harmonic component
   sws = H*hanning(Ns)/2                                     # synthesis window for stochastic component
-  lastyhloc = np.zeros(nH)                                  # initialize synthesis harmonic locations
-  yhphase = 2*np.pi * np.random.rand(nH)                    # initialize synthesis harmonic phases     
+  lastyhfreq = hfreq[0,:]                                   # initialize synthesis harmonic locations
+  yhphase = 2*np.pi*np.random.rand(nH)                      # initialize synthesis harmonic phases     
   while l<L:
-    yhloc = hloc[l,:]                                       # synthesis harmonics locs
+    yhfreq = hfreq[l,:]                                     # synthesis harmonics frequencies
     yhmag = hmag[l,:]                                       # synthesis harmonic amplitudes
     mYrenv = mXrenv[l,:]                                    # synthesis residual envelope
-    f0 = yhloc[0]
-    yf0 = f0
-    yhphase += 2*np.pi * (lastyhloc+yhloc)/2/Ns*H           # propagate phases
-    lastyhloc = yhloc 
-    Yh = GS.genSpecSines(yhloc, yhmag, yhphase, Ns)         # generate spec sines 
+    yhphase += (np.pi*(lastyhfreq+yhfreq)/fs)*H             # propagate phases
+    lastyhfreq = yhfreq
+    Yh = GS.genSpecSines(Ns*yhfreq/fs, yhmag, yhphase, Ns)  # generate spec sines 
     mYs = resample(mYrenv, hNs)                             # interpolate to original size
     mYs = 10**(mYs/20)                                      # dB to linear magnitude  
-    pYs = 2*np.pi * np.random.rand(hNs)                     # generate phase random values
-    
+    pYs = 2*np.pi*np.random.rand(hNs)                       # generate phase random values
     Ys = np.zeros(Ns, dtype = complex)
     Ys[:hNs] = mYs * np.exp(1j*pYs)                         # generate positive freq.
     Ys[hNs+1:] = mYs[:0:-1] * np.exp(-1j*pYs[:0:-1])        # generate negative freq.
-
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Yh))                          # inverse FFT of harm spectrum                        
+    fftbuffer = np.real(ifft(Yh))                           # inverse FFT of harm spectrum
     yhw[:hNs-1] = fftbuffer[hNs+1:]                         # undo zer-phase window
     yhw[hNs-1:] = fftbuffer[:hNs+1] 
-
     fftbuffer = np.zeros(Ns)
     fftbuffer = np.real(ifft(Ys))                           # inverse FFT of stochastic approximation spectrum
     ysw[:hNs-1] = fftbuffer[hNs+1:]                         # undo zero-phase window
@@ -93,8 +82,8 @@ if __name__ == '__main__':
   maxhd = 0.2
   stocf = 0.2
   maxnpeaksTwm = 5
-  hloc, hmag, mXrenv, Ns, H = hpsAnal.hpsAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, maxhd, stocf, maxnpeaksTwm)
-  y, yh, yst = hpsSynth(hloc, hmag, mXrenv, Ns, H, fs)
+  hfreq, hmag, mXrenv, Ns, H = hpsModelAnal.hpsModelAnal(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf, maxnpeaksTwm)
+  y, yh, yst = hpsModelSynth(hfreq, hmag, mXrenv, Ns, H, fs)
   WIO.play(y, fs)
   WIO.play(yh, fs)
   WIO.play(yst, fs)
