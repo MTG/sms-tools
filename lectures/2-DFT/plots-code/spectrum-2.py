@@ -1,16 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
-
-from scipy.io.wavfile import read
 import math
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import smsWavplayer as wp
+import waveIO as WIO
 import dftAnal as DF
-(fs, x) = wp.wavread('../../../sounds/violin-B3.wav')
+
+(fs, x) = WIO.wavread('../../../sounds/violin-B3.wav')
 w = np.hamming(1024)
 N = 1024
 pin = 5000

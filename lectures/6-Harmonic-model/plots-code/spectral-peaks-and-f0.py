@@ -28,16 +28,12 @@ pmag = mX[ploc]
 freqaxis = fs*np.arange(N/2)/float(N)
 
 plt.figure(1)
-plt.subplot (2,1,1)
 plt.plot(freqaxis,mX,'r')
 plt.axis([0,7000,-80,max(mX)+1])
 plt.plot(fs * iploc / N, ipmag, marker='x', color='b', linestyle='') 
+harms = np.arange(1,20)*440.0
+plt.vlines(harms, -80, max(mX)+1, color='g')
 plt.title('Magnitude spectrum + peaks (oboe-A4.wav)')      
 
-plt.subplot (2,1,2)
-plt.plot(freqaxis,pX,'c')
-plt.axis([0,7000,min(pX),10])
-plt.plot(fs * iploc / N, ipphase, marker='x', color='b', linestyle='')   
-plt.title('Phase spectrum + peaks') 
 plt.show()
 
