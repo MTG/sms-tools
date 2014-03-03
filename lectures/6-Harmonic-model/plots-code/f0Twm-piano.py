@@ -25,19 +25,21 @@ except ImportError:
   EH.printWarning(1)
 
 
-(fs, x) = WIO.wavread('../../../sounds/vignesh.wav')
-w = np.blackman(1201)
+(fs, x) = WIO.wavread('../../../sounds/piano.wav')
+w = np.blackman(1501)
 N = 2048
 t = -90
-minf0 = 130
+minf0 = 100
 maxf0 = 300
-f0et = 7
+f0et = 1
 maxnpeaksTwm = 4
 H = 128
+x1 = x[1.5*fs:1.8*fs]
 
 mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
 f0 = f0Twm.f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et, maxnpeaksTwm)
-maxplotfreq = 2000.0
+f0[f0==0] = np.nan
+maxplotfreq = 800.0
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
@@ -46,6 +48,6 @@ plt.autoscale(tight=True)
   
 plt.plot(frmTime, f0, linewidth=2, color='k')
 plt.autoscale(tight=True)
-plt.title('f0 on spectrogram')
+plt.title('f0 on spectrogram; TWM; (piano.wav)')
 plt.show()
 

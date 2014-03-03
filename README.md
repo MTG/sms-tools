@@ -3,12 +3,9 @@ sms-tools
 
 <p>Spectral modeling analysis and synthesis tools written in python and C for sound and music applications, plus some complementary material.</p>
 
-<p> In order to use all the software you have to install version 2.7 of python and the following modules: iPython, Matplotlib, Numpy, Scipy, PyAudio, PySide, Cython.In Ubuntu/debian all this is as easy as to write in a Terminal:
+<p> In order to use all the software you have to install version 2.7 of python and the following modules: iPython, Matplotlib, Numpy, Scipy, PyAudio, PySide, Cython. Some of the code also requires to install the <a href="http://essentia.upf.edu/"> Essentia library</a>.  </p>
 
-<p> <code> sudo apt-get install python2.7 </code></p>
-<p> <code> sudo apt-get install python-pip python-dev python-scipy python-numpy python-matplotlib python-pyaudio python-pyside cython </code></p>
-
-<p>For Windows and Mac we recommend to install the anaconda distribution (https://store.continuum.io/cshop/anaconda/)</p>
+<p>For information on how to install python and the needed modules we refer to the <a href="http://essentia.upf.edu/documentation/installing.html"> documentation</a> to install Essentia, which covers all this.</p>
 
 <p>The code for the basic analysis/synthesis models is in the directory software/models. You can run the code from inside iPython, for example by typing <code>run hpsModel.py</code>, or from the Terminal, for example going to the software/models directory and typing <code>python hpsModel.py</code> </p>
 

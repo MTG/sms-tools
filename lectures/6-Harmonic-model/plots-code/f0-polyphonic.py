@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 import waveIO as WIO
 import stftAnal, dftAnal, f0Yin, f0Twm
 
-(fs, x) = WIO.wavread('../../../sounds/carnatic-2.wav')
+(fs, x) = WIO.wavread('../../../sounds/carnatic.wav')
 N = 2048
 minf0 = 130
 maxf0 = 300
