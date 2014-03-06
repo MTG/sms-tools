@@ -75,10 +75,10 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf, maxnpeaksTwm=10):
     X2 = fft(fftbuffer)                                  # compute FFT for residual analysis
   #-----synthesis-----
     Yh = GS.genSpecSines(Ns*hfreq/fs, hmag, hphase, Ns)  # generate spec sines of harmonic component          
-    Yr = X2-Yh;                                          # get the residual complex spectrum
-    mYr = 20 * np.log10(abs(Yr[:hNs]))                   # magnitude spectrum of residual
-    mYrenv = resample(np.maximum(-200, mYr), mYr.size*stocf) # decimate the magnitude spectrum and avoid -Inf                     
-    mYst = resample(mYrenv, hNs)                         # interpolate to original size
+    Xr = X2-Yh;                                          # get the residual complex spectrum
+    mXr = 20 * np.log10(abs(Xr[:hNs]))                   # magnitude spectrum of residual
+    mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf) # decimate the magnitude spectrum and avoid -Inf                     
+    mYst = resample(mXrenv, hNs)                         # interpolate to original size
     mYst = 10**(mYst/20)                                 # dB to linear magnitude  
     pYst = 2*np.pi*np.random.rand(hNs)                   # generate phase random values
     Yst = np.zeros(Ns, dtype = complex)

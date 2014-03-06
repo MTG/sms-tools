@@ -24,7 +24,7 @@ def sprModel(x, fs, w, N, t):
   # Analysis/synthesis of a sound using the sinusoidal plus residual model
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
-  # y: output sound, ys: sinusoidal component, yr: residual component
+  # y: output sound, ys: sinusoidal component, xr: residual component
 
   hN = N/2                                                      # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
@@ -36,9 +36,9 @@ def sprModel(x, fs, w, N, t):
   pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
   fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
   ysw = np.zeros(Ns)                                            # initialize output sound frame
-  yrw = np.zeros(Ns)                                            # initialize output sound frame
+  xrw = np.zeros(Ns)                                            # initialize output sound frame
   ys = np.zeros(x.size)                                         # initialize output array
-  yr = np.zeros(x.size)                                         # initialize output array
+  xr = np.zeros(x.size)                                         # initialize output array
   w = w / sum(w)                                                # normalize analysis window
   sw = np.zeros(Ns)     
   ow = triang(2*H)                                              # overlapping window
@@ -47,7 +47,6 @@ def sprModel(x, fs, w, N, t):
   bh = bh / sum(bh)                                             # normalize synthesis window
   wr = bh                                                       # window for residual
   sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]
-
   while pin<pend:  
   #-----analysis-----             
     xw = x[pin-hM1:pin+hM2] * w                                  # window the input sound
@@ -59,35 +58,29 @@ def sprModel(x, fs, w, N, t):
     ploc = PP.peakDetection(mX, hN, t)                
     pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
-        
     iploc = (iploc!=0) * (iploc*Ns/N)                            # synth. locs
     ri = pin-hNs-1                                               # input sound pointer for residual analysis
-    xr = x[ri:ri+Ns]*wr                                          # window the input sound                                       
+    xw2 = x[ri:ri+Ns]*wr                                          # window the input sound                                       
     fftbuffer = np.zeros(Ns)                                     # reset buffer
-    fftbuffer[:hNs] = xr[hNs:]                                   # zero-phase window in fftbuffer
-    fftbuffer[hNs:] = xr[:hNs]                           
-    Xr = fft(fftbuffer)                                          # compute FFT for residual analysis
-  
+    fftbuffer[:hNs] = xw2[hNs:]                                   # zero-phase window in fftbuffer
+    fftbuffer[hNs:] = xw2[:hNs]                           
+    X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
   #-----synthesis-----
     Ys = GS.genSpecSines(iploc, ipmag, ipphase, Ns)              # generate spec of sinusoidal component          
-    Yr = Xr-Ys;                                                  # get the residual complex spectrum
-
+    Xr = X2-Ys;                                                  # get the residual complex spectrum
     fftbuffer = np.zeros(Ns)
     fftbuffer = np.real(ifft(Ys))                                # inverse FFT of sinusoidal spectrum
     ysw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
     ysw[hNs-1:] = fftbuffer[:hNs+1] 
-    
     fftbuffer = np.zeros(Ns)
-    fftbuffer = np.real(ifft(Yr))                                # inverse FFT of residual spectrum
-    yrw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
-    yrw[hNs-1:] = fftbuffer[:hNs+1]
-    
+    fftbuffer = np.real(ifft(Xr))                                # inverse FFT of residual spectrum
+    xrw[:hNs-1] = fftbuffer[hNs+1:]                              # undo zero-phase window
+    xrw[hNs-1:] = fftbuffer[:hNs+1]
     ys[ri:ri+Ns] += sw*ysw                                       # overlap-add for sines
-    yr[ri:ri+Ns] += sw*yrw                                       # overlap-add for residual
+    xr[ri:ri+Ns] += sw*xrw                                       # overlap-add for residual
     pin += H                                                     # advance sound pointer
-  
-  y = ys+yr                                                      # sum of sinusoidal and residual components
-  return y, ys, yr
+  y = ys+xr                                                      # sum of sinusoidal and residual components
+  return y, ys, xr
 
 
 def defaultTest():
@@ -105,8 +98,8 @@ if __name__ == '__main__':
     w = np.blackman(901)
     N = 1024
     t = -70
-    y, ys, yr = sprModel(x, fs, w, N, t)
+    y, ys, xr = sprModel(x, fs, w, N, t)
 
     WIO.play(y, fs)
     WIO.play(ys, fs)
-    WIO.play(yr, fs)
+    WIO.play(xr, fs)
