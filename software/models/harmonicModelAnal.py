@@ -15,6 +15,7 @@ import peakProcessing as PP
 import harmonicDetection as HD
 import errorHandler as EH
 import stftAnal, dftAnal
+import sineTracking as ST
 
 try:
   import genSpecSines_C as GS
@@ -24,7 +25,7 @@ except ImportError:
   import twm as TWM
   EH.printWarning(1)
 
-def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxnpeaksTwm=10):
+def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.01, maxnpeaksTwm=10, minSineDur=.02):
   # Analysis of a sound using the sinusoidal harmonic model
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
@@ -48,7 +49,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxnpeaksTwm=10
     iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
     f0 = TWM.f0DetectionTwm(ipfreq, ipmag, N, fs, f0et, minf0, maxf0, maxnpeaksTwm)  # find f0
-    hfreq, hmag, hphase = HD.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs) # find harmonics
+    hfreq, hmag, hphase = HD.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope) # find harmonics
     hfreqp = hfreq
     if pin == hM1: 
       xhfreq = np.array([hfreq])
@@ -59,6 +60,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxnpeaksTwm=10
       xhmag = np.vstack((xhmag, np.array([hmag])))
       xhphase = np.vstack((xhphase, np.array([hphase])))
     pin += H                                              # advance sound pointer
+  xhfreq = ST.cleaningSineTracks(xhfreq, round(fs*minSineDur/H))
   return xhfreq, xhmag, xhphase
 
 if __name__ == '__main__':
@@ -73,9 +75,11 @@ if __name__ == '__main__':
   maxnpeaksTwm = 4
   Ns = 512
   H = Ns/4
+  minSineDur = .1
+  harmDevSlope = 0.01
 
   mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
-  hfreq, hmag, hphase = harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxnpeaksTwm)
+  hfreq, hmag, hphase = harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, maxnpeaksTwm, minSineDur)
   maxplotfreq = 20000.0
   numFrames = int(mX[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             

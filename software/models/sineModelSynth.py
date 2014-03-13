@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
-from scipy.fftpack import fft, ifft
+from scipy.fftpack import ifft
 import math
 
 import sys, os, functools, time
@@ -9,7 +9,7 @@ import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import sineModelAnal
+import sineModelAnal as SA
 import waveIO as WIO
 import errorHandler as EH
 
@@ -20,34 +20,34 @@ except ImportError:
   EH.printWarning(1)
   
 
-def sineModelSynth(ploc, pmag, pphase, N, Ns, H):
+def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   # Synthesis of a sound using the sinusoidal model
-  # ploc: peak locations, pmag: peak magnitudes, pphase: peak phases, N: analysis FFT size,
-  # Ns: synthesis FFT size, H: hop size, 
+  # tfreq,tmag, tphase: frequencies, magnitudes and phases of sinusoids,
+  # N: synthesis FFT size, H: hop size, 
   # returns y: output array sound
-  hNs = Ns/2                                              # half of FFT size for synthesis
+  hN = N/2                                                # half of FFT size for synthesis
   l = 0                                                   # frame index
-  L = ploc[:,0].size                                      # number of frames
-  nPeaks = ploc[0,:].size                                 # number of peaks
+  L = tfreq[:,0].size                                     # number of frames
+  nTracks = tfreq[0,:].size                               # number of sinusoidal tracks
   pout = 0                                                # initialize output sound pointer         
   ysize = H*(L+3)                                         # output sound size
-  yw = np.zeros(Ns)                                       # initialize output sound frame
+  yw = np.zeros(N)                                        # initialize output sound frame
   y = np.zeros(ysize)                                     # initialize output array
-  sw = np.zeros(Ns)                                       # initialize synthesis window
+  sw = np.zeros(N)                                        # initialize synthesis window
   ow = triang(2*H);                                       # triangular window
-  sw[hNs-H:hNs+H] = ow                                    # add triangular window
-  bh = blackmanharris(Ns)                                 # blackmanharris window
+  sw[hN-H:hN+H] = ow                                      # add triangular window
+  bh = blackmanharris(N)                                  # blackmanharris window
   bh = bh / sum(bh)                                       # normalized blackmanharris window
-  sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H]/bh[hNs-H:hNs+H]       # normalized synthesis window
+  sw[hN-H:hN+H] = sw[hN-H:hN+H]/bh[hN-H:hN+H]             # normalized synthesis window
   while l<L:                                              # iterate over all frames
-    yploc = ploc[l,:]*Ns/N                                # synthesis peak locs
-    ypmag = pmag[l,:]                                     # synthesis peak amplitudes
-    ypphase = pphase[l,:]                                 # synthesis residual envelope
-    Y = GS.genSpecSines(yploc, ypmag, ypphase, Ns)        # generate sines in the spectrum         
+    ytloc = N*tfreq[l,:]/fs                               # synthesis peak locs
+    ytmag = tmag[l,:]                                     # synthesis peak amplitudes
+    ytphase = tphase[l,:]                                 # synthesis residual envelope
+    Y = GS.genSpecSines(ytloc, ytmag, ytphase, N)         # generate sines in the spectrum         
     fftbuffer = np.real(ifft(Y))                          # compute inverse FFT
-    yw[:hNs-1] = fftbuffer[hNs+1:]                        # undo zero-phase window
-    yw[hNs-1:] = fftbuffer[:hNs+1] 
-    y[pout:pout+Ns] += sw*yw                              # overlap-add and apply a synthesis window
+    yw[:hN-1] = fftbuffer[hN+1:]                          # undo zero-phase window
+    yw[hN-1:] = fftbuffer[:hN+1] 
+    y[pout:pout+N] += sw*yw                               # overlap-add and apply a synthesis window
     l += 1                                                # advance frame pointer
     pout += H                                             # advance sound pointer
   return y
@@ -55,23 +55,31 @@ def sineModelSynth(ploc, pmag, pphase, N, Ns, H):
 def defaultTest():
   str_time = time.time()
   (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
-  w = np.hamming(511)
-  N = 1024
-  t = -60
+  w = np.blackman(2001)
+  N = 2048
+  H = 500
+  t = -90
+  minSineDur = .01
+  maxnSines = 150
   Ns = 512
   H = Ns/4
-  ploc, pmag, pphase = sineModelAnal.sineModelAnal(x, fs, w, N, H, t)
-  y = sineModelSynth(ploc, pmag, pphase, N, Ns, H)
+  tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur)
+  y = sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
   print "time taken for computation " + str(time.time()-str_time)  
   
-# example call of sineModel function
+# example call of sineModelSynth function
 if __name__ == '__main__':
   (fs, x) = WIO.wavread('../../sounds/bendir.wav')
-  w = np.hamming(1001)
+  w = np.blackman(2001)
   N = 2048
-  t = -80
+  H = 500
+  t = -90
+  minSineDur = .01
+  maxnSines = 150
+  freqDevOffset = 20
+  freqDevSlope = 0.02
   Ns = 512
   H = Ns/4
-  ploc, pmag, pphase = sineModelAnal.sineModelAnal(x, fs, w, N, H, t)
-  y = sineModelSynth(ploc, pmag, pphase, N, Ns, H)
+  tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+  y = sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
   WIO.play(y, fs)

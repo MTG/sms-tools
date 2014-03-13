@@ -9,44 +9,42 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../utilFunctions_C/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import sineModelAnal, sineModelSynth
 import waveIO as WIO
-import peakProcessing as PP
-import errorHandler as EH
-
-try:
-  import genSpecSines_C as GS
-except ImportError:
-  import genSpecSines as GS
-  EH.printWarning(1)
-
+import sineModelAnal as SA
+import sineModelSynth as SS
 
 (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/bendir.wav'))
-w = np.hamming(1001)
+x1 = x[0:50000]
+w = np.blackman(2001)
 N = 2048
-t = -60
-Ns = 1024
+H = 500
+t = -90
+minSineDur = .01
+maxnSines = 150
+freqDevOffset = 20
+freqDevSlope = 0.02
+Ns = 512
 H = Ns/4
-x1=x[0:50000]
-ploc, pmag, pphase = sineModelAnal.sineModelAnal(x1, fs, w, N, H, t)
-yploc = Ns * ploc / N
-y = sineModelSynth.sineModelSynth(ploc, pmag, pphase, N, Ns, H)
-numFrames = int(ploc[:,0].size)
+tfreq, tmag, tphase = SA.sineModelAnal(x1, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+y = SS.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+
+numFrames = int(tfreq[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)
+maxplotfreq = 3000.0
 
 plt.figure(1)
 
 plt.subplot(3,1,1)
 plt.plot(np.arange(x1.size)/float(fs), x1, 'b')
 plt.axis([0,x1.size/float(fs),min(x1),max(x1)])
-plt.title('x = wavread("bendir.wav")')                        
+plt.title('x (bendir.wav)')                        
 
 plt.subplot(3,1,2)
-yploc = ploc
-yploc[ploc==0] = np.nan
-plt.plot(frmTime, fs*yploc/Ns, 'x', color='k')
-plt.axis([0,y.size/float(fs),0,4000])
-plt.title('spectral peak locations')
+tracks = tfreq*np.less(tfreq, maxplotfreq)
+tracks[tracks<=0] = np.nan
+plt.plot(frmTime, tracks, color='k', lw=1.5)
+plt.autoscale(tight=True)
+plt.title('sine frequencies')  
 
 plt.subplot(3,1,3)
 plt.plot(np.arange(y.size)/float(fs), y, 'b')

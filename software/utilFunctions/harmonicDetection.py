@@ -1,6 +1,6 @@
 import numpy as np
 
-def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs):
+def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs, harmDevSlope=0.01):
   # detection of the harmonics from a set of spectral peaks, finds the peaks that are closer
   # to the ideal harmonic series built on top of a fundamental frequency
   # pfreq: peak frequencies, pmag: peak magnitudes, pphase: peak phases
@@ -18,10 +18,10 @@ def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs):
     pei = np.argmin(abs(pfreq - hf[hi]))               # closest peak
     dev1 = abs(pfreq[pei] - hf[hi])                    # deviation from perfect harmonic
     dev2 = (abs(pfreq[pei] - hfreqp[hi]) if hfreqp[hi]>0 else fs) # deviation from previous frame
-    if dev1<f0/3 or dev2<f0/3:                         # accept peak of deviation is small
+    threshold = f0/3 + harmDevSlope * pfreq[pei]
+    if ((dev1<threshold) or (dev2<threshold)):         # accept peak if deviation is small
       hfreq[hi] = pfreq[pei]                           # harmonic frequencies
       hmag[hi] = pmag[pei]                             # harmonic magnitudes
       hphase[hi] = pphase[pei]                         # harmonic phases
     hi += 1                                            # increase harmonic index
   return hfreq, hmag, hphase
-

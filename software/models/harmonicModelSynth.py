@@ -7,7 +7,7 @@ import sys, os, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
-import harmonicModelAnal as HMA
+import harmonicModelAnal as HA
 import waveIO as WIO
 import peakProcessing as PP
 import errorHandler as EH
@@ -63,8 +63,10 @@ if __name__ == '__main__':
   maxnpeaksTwm = 4
   Ns = 512
   H = Ns/4
+  minSineDur = .1
+  harmDevSlope = 0.01
 
-  hfreq, hmag, hphase = HMA.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, maxnpeaksTwm)
+  hfreq, hmag, hphase = HA.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, maxnpeaksTwm, minSineDur)
   y = harmonicModelSynth(hfreq, hmag, hphase, fs)
   WIO.play(y, fs)
 

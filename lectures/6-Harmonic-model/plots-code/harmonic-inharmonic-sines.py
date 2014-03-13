@@ -13,20 +13,19 @@ import waveIO as WIO
 
 plt.figure(1)
 plt.subplot(211)
-(fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/carnatic.wav'))
-x1 = x[4.35*fs:]
-w = np.blackman(1301)
-N = 2048
-H = 250
-t = -70
+(fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/vibraphone-C6.wav'))
+w = np.blackman(401)
+N = 512
+H = 100
+t = -100
 minSineDur = .02
 maxnSines = 150
 freqDevOffset = 20
-freqDevSlope = 0.02
+freqDevSlope = 0.01
 mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
 tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
-maxplotfreq = 3000.0
+maxplotfreq = 10000.0
 maxplotbin = int(N*maxplotfreq/fs)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -38,7 +37,7 @@ tracks = tfreq*np.less(tfreq, maxplotfreq)
 tracks[tracks<=0] = np.nan
 plt.plot(frmTime, tracks, color='k')
 plt.autoscale(tight=True)
-plt.title('voice+violin+tambura (carnatic.wav)')
+plt.title('sinusoids on spectrogram (vibraphone-C6.wav)')
 
 plt.subplot(212)
 (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/vignesh.wav'))
@@ -53,7 +52,7 @@ freqDevSlope = 0.02
 mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
 tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
-maxplotfreq = 3000.0
+maxplotfreq = 5000.0
 maxplotbin = int(N*maxplotfreq/fs)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -65,5 +64,5 @@ tracks = tfreq*np.less(tfreq, maxplotfreq)
 tracks[tracks<=0] = np.nan
 plt.plot(frmTime, tracks, color='k')
 plt.autoscale(tight=True)
-plt.title('voice (vignesh.wav)')
+plt.title('sinusoids on spectrogram (vignesh.wav)')
 plt.show()
