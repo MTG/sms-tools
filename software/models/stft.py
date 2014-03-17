@@ -8,9 +8,9 @@ import waveIO as WIO
 import math
 
 def stft(x, fs, w, N, H):
-  ''' Analysis/synthesis of a sound using the short-time fourier transform
-  x: input array sound, w: analysis window, N: FFT size, H: hop size
-  returns y: output array sound '''
+# Analysis/synthesis of a sound using the short-time fourier transform
+# x: input array sound, w: analysis window, N: FFT size, H: hop size
+# returns y: output array sound
 
   M = w.size                                     # size of analysis window
   hM1 = int(math.floor((M+1)/2))                 # half analysis window size by rounding

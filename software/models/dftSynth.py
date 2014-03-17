@@ -11,9 +11,9 @@ from scipy.fftpack import fft, ifft
 import math
 
 def dftSynth(mX, pX, M):
-  ''' Synthesis of a signal using the discrete fourier transform
-  mX: magnitude spectrum, pX: phase spectrum, M: window size
-  returns y: output signal'''
+# Synthesis of a signal using the discrete fourier transform
+# mX: magnitude spectrum, pX: phase spectrum, M: window size
+# returns y: output signal
 
   N = mX.size*2
   hN = N/2                                                # size of positive spectrum

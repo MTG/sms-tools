@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
-from scipy.fftpack import ifft
+from scipy.fftpack import ifft, fftshift
 import math
 
 import sys, os, functools, time
@@ -26,12 +26,10 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   # N: synthesis FFT size, H: hop size, 
   # returns y: output array sound
   hN = N/2                                                # half of FFT size for synthesis
-  l = 0                                                   # frame index
   L = tfreq[:,0].size                                     # number of frames
   nTracks = tfreq[0,:].size                               # number of sinusoidal tracks
   pout = 0                                                # initialize output sound pointer         
   ysize = H*(L+3)                                         # output sound size
-  yw = np.zeros(N)                                        # initialize output sound frame
   y = np.zeros(ysize)                                     # initialize output array
   sw = np.zeros(N)                                        # initialize synthesis window
   ow = triang(2*H);                                       # triangular window
@@ -39,16 +37,10 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   bh = blackmanharris(N)                                  # blackmanharris window
   bh = bh / sum(bh)                                       # normalized blackmanharris window
   sw[hN-H:hN+H] = sw[hN-H:hN+H]/bh[hN-H:hN+H]             # normalized synthesis window
-  while l<L:                                              # iterate over all frames
-    ytloc = N*tfreq[l,:]/fs                               # synthesis peak locs
-    ytmag = tmag[l,:]                                     # synthesis peak amplitudes
-    ytphase = tphase[l,:]                                 # synthesis residual envelope
-    Y = GS.genSpecSines(ytloc, ytmag, ytphase, N)         # generate sines in the spectrum         
-    fftbuffer = np.real(ifft(Y))                          # compute inverse FFT
-    yw[:hN-1] = fftbuffer[hN+1:]                          # undo zero-phase window
-    yw[hN-1:] = fftbuffer[:hN+1] 
+  for l in range(L):                                      # iterate over all frames
+    Y = GS.genSpecSines(N*tfreq[l,:]/fs, tmag[l,:], tphase[l,:], N)  # generate sines in the spectrum         
+    yw = np.real(fftshift(ifft(Y)))                       # compute inverse FFT
     y[pout:pout+N] += sw*yw                               # overlap-add and apply a synthesis window
-    l += 1                                                # advance frame pointer
     pout += H                                             # advance sound pointer
   return y
 

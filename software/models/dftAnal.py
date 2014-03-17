@@ -9,9 +9,9 @@ from scipy.fftpack import fft, ifft
 import math
 
 def dftAnal(x, w, N):
-  ''' Analysis of a signal using the discrete fourier transform
-  x: input signal, w: analysis window, N: FFT size, 
-  returns mX: magnitude spectrum, pX: phase spectrum'''
+# Analysis of a signal using the discrete fourier transform
+# x: input signal, w: analysis window, N: FFT size, 
+# returns mX: magnitude spectrum, pX: phase spectrum
 
   hN = N/2                                  # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))       # half analysis window size by rounding

@@ -23,6 +23,8 @@ def stochasticModelAnal(x, w, N, H, stocf) :
   # returns xmXenv: stochastic envelope
   hN = N/2                                                 # size of positive spectrum
   hM = (w.size)/2                                          # half analysis window size
+  x = np.append(np.zeros(hM),x)                            # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(hM))                            # add zeros at the end to analyze last sample
   pin = hM                                                 # initialize sound pointer in middle of analysis window       
   pend = x.size-hM                                         # last sample to start a frame
   fftbuffer = np.zeros(N)                                  # initialize buffer for FFT

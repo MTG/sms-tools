@@ -12,18 +12,19 @@ from scipy.fftpack import fft
 import math
 
 def stftSynth(mY, pY, M, H) :
-  ''' Synthesis of a sound using the short-time fourier transform
-  mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
-  returns y: output sound '''
+# Synthesis of a sound using the short-time fourier transform
+# mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
+# returns y: output sound
   hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
   hM2 = int(math.floor(M/2))                              # half analysis window size by floor
-  nFrames = int(mY[1,:].size)                             # number of frames
+  nFrames = int(mY[:,0].size)                             # number of frames
   y = np.zeros(nFrames*H + hM1 + hM2)                     # initialize output array
   pin = hM1                  
   for i in range(nFrames):                                # iterate over all frames      
-    y1 = dftSynth.dftSynth(mY[:,i], pY[:,i], M)                     # compute idft
+    y1 = dftSynth.dftSynth(mY[i,:], pY[i,:], M)           # compute idft
     y[pin-hM1:pin+hM2] += H*y1                            # overlap-add to generate output sound
     pin += H                                              # advance sound pointer
+  y = np.delete(y, range(hM2))                            # delete half of first window which was added in stftAnal
   return y
 
 def defaultTest():

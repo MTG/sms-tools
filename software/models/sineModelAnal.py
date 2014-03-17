@@ -25,6 +25,8 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
+  x = np.append(np.zeros(hM2),x)                          # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(hM2))                          # add zeros at the end to analyze last sample
   pin = hM1                                               # initialize sound pointer in middle of analysis window       
   pend = x.size - hM1                                     # last sample to start a frame
   w = w / sum(w)                                          # normalize analysis window

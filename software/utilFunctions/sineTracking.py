@@ -17,7 +17,7 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
                 & (trackFreqs[1:] <=0))[0] + 1
     if trackFreqs[nFrames-1]>0:
       trackEnds = np.append(trackEnds, nFrames-1)
-    trackLengths = trackEnds - trackBegs                 # lengths of trach contours
+    trackLengths = 1 + trackEnds - trackBegs             # lengths of trach contours
     for i,j in zip(trackBegs, trackLengths):             # delete short track contours
       if j <= minTrackLength:
         trackFreqs[i:i+j] = 0
