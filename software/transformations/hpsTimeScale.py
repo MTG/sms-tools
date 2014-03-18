@@ -66,7 +66,7 @@ def defaultTest():
     print "time taken for computation " + str(time.time()-str_time)
 
 if __name__ == '__main__':
-  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
+  (fs, x) = WIO.wavread(os.path.join(os.path.dirnamºe(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
   w = np.blackman(801)
   N = 1024
   t = -90

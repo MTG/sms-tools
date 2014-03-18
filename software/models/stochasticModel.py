@@ -17,53 +17,51 @@ except ImportError:
   EH.printWarning(1)
   
 
-def stochasticModel(x, w, N, H, stocf) :
-  # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
+def stochasticModel(x, H, stocf) :
+  # x: input array sound, H: hop size, 
   # stocf: decimation factor of mag spectrum for stochastic analysis
   # returns y: output sound
-  hN = N/2                                                 # size of positive spectrum
-  hM = (w.size)/2                                          # half analysis window size
-  pin = hM                                                 # initialize sound pointer in middle of analysis window       
-  pend = x.size-hM                                         # last sample to start a frame
-  fftbuffer = np.zeros(N)                                  # initialize buffer for FFT
-  yw = np.zeros(w.size)                                    # initialize output sound frame
+  N = H*2                                                  # FFT size                                             # size of positive spectrum
+  w = hanning (N)
+  x = np.append(np.zeros(H),x)                             # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(H))                             # add zeros at the end to analyze last sample
+  pin = 0                                                  # initialize sound pointer in middle of analysis window       
+  pend = x.size-N                                          # last sample to start a frame
   y = np.zeros(x.size)                                     # initialize output array
   w = w / sum(w)                                           # normalize analysis window
   ws = hanning(w.size)*2                                   # synthesis window
-  while pin<pend:              
+  while pin<=pend:              
   #-----analysis-----             
-    xw = x[pin-hM:pin+hM] * w                              # window the input sound
+    xw = x[pin:pin+N] * w                                  # window the input sound
     X = fft(xw)                                            # compute FFT
-    mX = 20 * np.log10(abs(X[:hN]))                        # magnitude spectrum of positive frequencies
-    mXenv = resample(np.maximum(-200, mX), mX.size*stocf)  # decimate the mag spectrum     
+    mX = 20 * np.log10(abs(X[:H]))                         # magnitude spectrum of positive frequencies
+    mYst = resample(np.maximum(-200, mX), mX.size*stocf)  # decimate the mag spectrum     
   #-----synthesis-----
-    mY = resample(mXenv, hN)                               # interpolate to original size
-    pY = 2*np.pi*np.random.rand(hN)                        # generate phase random values
+    mY = resample(mYst, H)                                 # interpolate to original size
+    pY = 2*np.pi*np.random.rand(H)                         # generate phase random values
     Y = np.zeros(N, dtype = complex)
-    Y[:hN] = 10**(mY/20) * np.exp(1j*pY)                   # generate positive freq.
-    Y[hN+1:] = 10**(mY[:0:-1]/20) * np.exp(-1j*pY[:0:-1])  # generate negative freq.
-    fftbuffer = np.real( ifft(Y) )                         # inverse FFT
-    y[pin-hM:pin+hM] += H*ws*fftbuffer                     # overlap-add
-    pin += H                                               # advance sound pointer
+    Y[:H] = 10**(mY/20) * np.exp(1j*pY)                    # generate positive freq.
+    Y[H+1:] = 10**(mY[:0:-1]/20) * np.exp(-1j*pY[:0:-1])   # generate negative freq.
+    fftbuffer = np.real(ifft(Y))                           # inverse FFT
+    y[pin:pin+N] += H*ws*fftbuffer                         # overlap-add
+    pin += H  
+  y = np.delete(y, range(H))                            # delete half of first window which was added 
+  y = np.delete(y, range(y.size-H, y.size))             # delete half of first window which was added                                            # advance sound pointer
   return y
 
 def defaultTest():
   str_time = time.time()
   (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/ocean.wav'))
-  w = np.hamming(512)
-  N = 512
   H = 128
   stocf = 0.2
-  y = stochasticModel(x, w, N, H, stocf)
+  y = stochasticModel(x, H, stocf)
   print "time taken for computation " + str(time.time()-str_time)
     
     
 # example call of stochasticModel function
 if __name__ == '__main__':
   (fs, x) = WIO.wavread('../../sounds/ocean.wav')
-  w = np.hamming(512)
-  N = 512
   H = 256
   stocf = .2
-  y = stochasticModel(x, w, N, H, stocf)
+  y = stochasticModel(x, H, stocf)
   WIO.play(y, fs)

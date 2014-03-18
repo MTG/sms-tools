@@ -32,7 +32,9 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
 	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
 	# maxf0: maximim f0 frequency in Hz, 
 	# f0et: error threshold in the f0 detection (ex: 5),
+	# harmDevSlope: slope of harmonic deviation
 	# maxnpeaksTwm: maximum number of peaks used for F0 detection
+	# minSineDur: minimum length of harmonics
 	# returns xhfreq, xhmag, xhphase: harmonic frequencies, magnitudes and phases
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding

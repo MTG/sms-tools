@@ -21,7 +21,6 @@ def harmonicModelSynth(hfreq, hmag, hphase, N, H, fs):
 	# Synthesis of a sound using the sinusoidal harmonic model
 	# hfreq, hmag, hphase: harmonic frequencies, magnitudes and phases
 	# returns y: output array sound
-	
 	hN = N/2      
 	pin = 0                                                 # initialize output sound pointer 
 	L = hfreq[:,0].size                                     # number of frames   

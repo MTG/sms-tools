@@ -3,68 +3,54 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, resample
 from scipy.fftpack import fft, ifft
 import time
-import sys, os
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 
 import waveIO as WIO
-import errorHandler as EH
-try:
-  import genSpecSines_C as GS
-except ImportError:
-  import genSpecSines as GS
-  EH.printWarning(1)
-  
 
-def stochasticModelAnal(x, w, N, H, stocf) :
-  # x: input array sound, w: analysis window, N: FFT size, H: hop size, 
+def stochasticModelAnal(x, H, stocf) :
+  # x: input array sound, H: hop size, 
   # stocf: decimation factor of mag spectrum for stochastic analysis
-  # returns xmXenv: stochastic envelope
-  hN = N/2                                                 # size of positive spectrum
-  hM = (w.size)/2                                          # half analysis window size
-  x = np.append(np.zeros(hM),x)                            # add zeros at beginning to center first window at sample 0
-  x = np.append(x,np.zeros(hM))                            # add zeros at the end to analyze last sample
-  pin = hM                                                 # initialize sound pointer in middle of analysis window       
-  pend = x.size-hM                                         # last sample to start a frame
-  fftbuffer = np.zeros(N)                                  # initialize buffer for FFT
+  # returns mYst: stochastic envelope
+  N = H*2                                                  # FFT size                                             # size of positive spectrum
+  w = hanning (N)
+  x = np.append(np.zeros(H),x)                             # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(H))                             # add zeros at the end to analyze last sample
+  pin = 0                                                  # initialize sound pointer in middle of analysis window       
+  pend = x.size-N                                          # last sample to start a frame
+  y = np.zeros(x.size)                                     # initialize output array
   w = w / sum(w)                                           # normalize analysis window
-  while pin<pend:              
+  ws = hanning(w.size)*2                                   # synthesis window
+  while pin<=pend:              
   #-----analysis-----             
-    xw = x[pin-hM:pin+hM] * w                              # window the input sound
+    xw = x[pin:pin+N] * w                                  # window the input sound
     X = fft(xw)                                            # compute FFT
-    mX = 20 * np.log10(abs(X[:hN]))                        # magnitude spectrum of positive frequencies
-    mXenv = resample(np.maximum(-200, mX), mX.size*stocf)  # decimate the mag spectrum     
-    if pin == hM:
-      xmXenv = np.array([mXenv])
+    mX = 20 * np.log10(abs(X[:H]))                         # magnitude spectrum of positive frequencies
+    mY = resample(np.maximum(-200, mX), mX.size*stocf)     # decimate the mag spectrum 
+    if pin == 0:
+      mYst = np.array([mY])
     else:
-      xmXenv = np.vstack((xmXenv, np.array([mXenv])))
+      mYst = np.vstack((mYst, np.array([mY])))
     pin += H                                               # advance sound pointer
-  return xmXenv
+  return mYst
 
 def defaultTest():
   str_time = time.time()
   (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/ocean.wav'))
-  w = np.hamming(512)
-  N = 512
   H = 256
   stocf = 0.2
-  mXenv = stochasticModelAnal(x, w, N, H, stocf)
+  mYst = stochasticModelAnal(x, H, stocf)
   print "time taken for computation " + str(time.time()-str_time)
     
     
 # example call of stochasticModelAnal function
 if __name__ == '__main__':
   (fs, x) = WIO.wavread('../../sounds/ocean.wav')
-  w = np.hamming(512)
-  N = 512
   H = 256
   stocf = .2
-  mXenv = stochasticModelAnal(x, w, N, H, stocf)
-  numFrames = int(mXenv[:,0].size)
+  mYst = stochasticModelAnal(x, H, stocf)
+  numFrames = int(mYst[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
-  binFreq = np.arange(stocf*N/2)*float(fs)/(stocf*N)                       
-  plt.pcolormesh(frmTime, binFreq, np.transpose(mXenv))
+  binFreq = np.arange(stocf*H)*float(fs)/(stocf*2*H)                       
+  plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
   plt.xlabel('Time(s)')
   plt.ylabel('Frequency(Hz)')
   plt.autoscale(tight=True)

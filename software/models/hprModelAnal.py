@@ -6,7 +6,7 @@ import sys, os, time
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 
-import stftAnal
+import stftAnal as STFT
 import waveIO as WIO
 import harmonicModelAnal as HA
 import sineSubtraction as SS
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 	H = Ns/4
 	hfreq, hmag, hphase = HA.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, maxnpeaksTwm, minSineDur)
 	xr = SS.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
-	mXr, pXr = stftAnal.stftAnal(xr, fs, hamming(Ns), Ns, H)
+	mXr, pXr = STFT.stftAnal(xr, fs, hamming(Ns), Ns, H)
 
 	maxplotfreq = 20000.0
 	numFrames = int(mXr[:,0].size)

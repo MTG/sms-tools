@@ -17,7 +17,7 @@ def stftSynth(mY, pY, M, H) :
 # returns y: output sound
   hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
   hM2 = int(math.floor(M/2))                              # half analysis window size by floor
-  nFrames = int(mY[:,0].size)                             # number of frames
+  nFrames = mY[:,0].size                                  # number of frames
   y = np.zeros(nFrames*H + hM1 + hM2)                     # initialize output array
   pin = hM1                  
   for i in range(nFrames):                                # iterate over all frames      
@@ -25,6 +25,7 @@ def stftSynth(mY, pY, M, H) :
     y[pin-hM1:pin+hM2] += H*y1                            # overlap-add to generate output sound
     pin += H                                              # advance sound pointer
   y = np.delete(y, range(hM2))                            # delete half of first window which was added in stftAnal
+  y = np.delete(y, range(y.size-hM1, y.size))             # add zeros at the end to analyze last sample
   return y
 
 def defaultTest():

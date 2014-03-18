@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris
+from scipy.signal import hamming, triang, blackmanharris, resample
 import math
 from scipy.fftpack import fft, ifft, fftshift
 import sys, os, functools, time
@@ -31,6 +31,7 @@ minSineDur = .1
 harmDevSlope = 0.01
 Ns = 512
 H = Ns/4
+stocf = .2
 x1 = x[pos-hM1:pos+hM2]
 x2 = x[pos-Ns/2-1:pos+Ns/2-1]
 
@@ -43,57 +44,32 @@ hfreqp = []
 hfreq, hmag, hphase = HD.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
 Yh = GS.genSpecSines(Ns*hfreq/fs, hmag, hphase, Ns) 
 mYh = 20 * np.log10(abs(Yh[:Ns/2]))     
-pYh = np.unwrap(np.angle(Yh[:Ns/2])) 
 bh=blackmanharris(Ns)
 X2 = fft(fftshift(x2*bh/sum(bh)))        
 Xr = X2-Yh 
-mXr = 20 * np.log10(abs(Xr[:Ns/2]))     
-pXr = np.unwrap(np.angle(Xr[:Ns/2])) 
-xrw = np.real(fftshift(ifft(Xr))) * H * 2
-yhw = np.real(fftshift(ifft(Yh))) * H * 2
+mXr = 20 * np.log10(abs(Xr[:Ns/2])) 
+mYst = resample(np.maximum(-200, mXr), mXr.size*stocf)  # decimate the mag spectrum                        
+
 
 maxplotfreq = 8000.0
 plt.figure(1)
-plt.subplot(3,2,1)
-plt.plot(np.arange(M), x[pos-hM1:pos+hM2]*w, lw=1.5)
-plt.axis([0, M, min(x[pos-hM1:pos+hM2]*w), max(x[pos-hM1:pos+hM2]*w)])
-plt.title('x (flute-A4.wav)')
-
-plt.subplot(3,2,3)
+plt.subplot(2,1,1)
 binFreq = (fs/2.0)*np.arange(mX.size)/(mX.size) 
 plt.plot(binFreq,mX,'r', lw=1.5)
-plt.axis([0,maxplotfreq,-90,max(mX)+2])
-plt.plot(hfreq, hmag, marker='x', color='b', linestyle='') 
+plt.axis([0,maxplotfreq,-100,max(mX)+2])
+plt.plot(hfreq, hmag, marker='x', color='b', linestyle='', lw=2) 
 plt.title('mX and harmonics') 
 
-plt.subplot(3,2,5)
-plt.plot(binFreq,pX,'c', lw=1.5)
-plt.axis([0,maxplotfreq,min(pX),33])
-plt.plot(hfreq, hphase, marker='x', color='b', linestyle='')   
-plt.title('pX and harmonics') 
-
-plt.subplot(3,2,4)
+plt.subplot(2,1,2)
 binFreq = (fs/2.0)*np.arange(mXr.size)/(mXr.size) 
-plt.plot(binFreq,mYh,'r', lw=.8, label='mYh')
-plt.plot(binFreq,mXr,'r', lw=1.5, label='mXr')
-plt.axis([0,maxplotfreq,-90,max(mYh)+2])
+plt.plot(binFreq,mYh,'r', lw=.6, label='mYh')
+plt.plot(binFreq,mXr,'r', lw=1.0, label='mXr')
+binFreq = (fs/2.0)*np.arange(mYst.size)/(mYst.size) 
+plt.plot(binFreq,mYst,'r', lw=1.5, label='mYst')
+plt.axis([0,maxplotfreq,-100,max(mYh)+2])
 plt.legend(prop={'size':10})
-plt.title('mYh and mXr') 
+plt.title('mYh, mXr, mYst') 
 
-plt.subplot(3,2,6)
-binFreq = (fs/2.0)*np.arange(mXr.size)/(mXr.size) 
-plt.plot(binFreq,pYh,'c', lw=.8, label='pYh')
-plt.plot(binFreq,pXr,'c', lw=1.5, label ='pXr')
-plt.axis([0,maxplotfreq,-18,10])
-plt.legend(prop={'size':10})
-plt.title('pYh and pXr') 
-
-plt.subplot(3,2,2)
-plt.plot(np.arange(Ns), yhw, 'b', lw=.8, label='yh')
-plt.plot(np.arange(Ns), xrw, 'b', lw=1.5, label='xr')
-plt.axis([0, Ns, min(yhw), max(yhw)])
-plt.legend(prop={'size':10})
-plt.title('yh and xr')
 
 plt.show()
 
