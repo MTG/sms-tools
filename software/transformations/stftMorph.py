@@ -51,14 +51,14 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 
 # example call of stftMorph function
 if __name__ == '__main__':
-	(fs, x1) = WIO.wavread('../../sounds/orchestra.wav')
+	(fs, x1) = WIO.wavread('../../sounds/ocean.wav')
 	(fs, x2) = WIO.wavread('../../sounds/speech.wav')
 	w1 = np.hamming(1024)
 	N1 = 1024
 	H1 = 256
 	w2 = np.hamming(1024)
 	N2 = 1024
-	smoothf = .1
-	balancef = 0.5
+	smoothf = .5
+	balancef = 0.2
 	y = stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
 	WIO.play(y, fs)

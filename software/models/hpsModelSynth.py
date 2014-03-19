@@ -3,7 +3,6 @@ from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, time
-import hpsModelAnal
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
@@ -40,7 +39,7 @@ def hpsModelSynth(hfreq, hmag, hphase, mYst, N, H, fs):
   wr = bh                                                   # window for residual
   sw[hN-H:hN+H] = sw[hN-H:hN+H] / bh[hN-H:hN+H]             # synthesis window for harmonic component
   sws = H*hanning(N)/2                                      # synthesis window for stochastic component
-  lastyhfreq = hfreq[0,:]                                   # initialize synthesis harmonic locations
+  lastyhfreq = hfreq[0,:]                                   # initialize synthesis harmonic frequencies
   yhphase = 2*np.pi*np.random.rand(nH)                      # initialize synthesis harmonic phases     
   for l in range(L):
     yhfreq = hfreq[l,:]                                     # synthesis harmonics frequencies
