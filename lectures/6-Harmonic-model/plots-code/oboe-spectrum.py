@@ -22,21 +22,21 @@ mX, pX = DF.dftAnal(x1, w, N)
 
 plt.figure(1)
 plt.subplot(311)
-plt.plot(np.arange(-hM1, hM2)/float(fs), x1)
+plt.plot(np.arange(-hM1, hM2)/float(fs), x1, lw=1.5)
 plt.axis([-hM1/float(fs), hM2/float(fs), min(x1), max(x1)])
 plt.ylabel('amplitude')
-plt.title('input signal: x=wavread(oboe-A4.wav)')
+plt.title('x (oboe-A4.wav)')
 
 plt.subplot(3,1,2)
-plt.plot(fs*np.arange(N/2)/float(N), mX, 'r')
+plt.plot(fs*np.arange(N/2)/float(N), mX, 'r', lw=1.5)
 plt.axis([0,fs/2,-90,max(mX)])
-plt.title ('magnitude spectrum')
+plt.title ('mX, magnitude spectrum')
 plt.ylabel('amplitude (dB)')
 
 plt.subplot(3,1,3)
-plt.plot(fs*np.arange(N/2)/float(N), pX, 'c')
+plt.plot(fs*np.arange(N/2)/float(N), pX, 'c', lw=1.5)
 plt.axis([0,fs/2,min(pX),max(pX)])
-plt.title ('phase spectrum')
+plt.title ('pX, phase spectrum')
 plt.ylabel('phase (radians)')
 
 

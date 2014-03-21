@@ -53,6 +53,6 @@ if __name__ == '__main__':
   plt.plot(frmTime, f0, linewidth=2, color='k')
 
   plt.autoscale(tight=True)
-  plt.title('f0 on spectrogram; YIN: N=2048, H = 256')
+  plt.title('f0 on spectrogram; YIN: N=2048, H = 256 (vignesh.wav)')
   plt.show()
 
