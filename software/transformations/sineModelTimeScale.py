@@ -6,13 +6,10 @@ import math
 import sys, os, functools, time
 from scipy.interpolate import interp1d
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
-import sineModelAnal as SA 
-import sineModelSynth as SS
-import waveIO as WIO
+import sineModel as SM 
+import utilFunctions as UF
 
 
 def sineModelTimeScale(sfreq, smag, inTime, outTime):
@@ -37,7 +34,7 @@ def sineModelTimeScale(sfreq, smag, inTime, outTime):
   return ysfreq, ysmag, indexes
 
 if __name__ == '__main__':
-  (fs, x) = WIO.wavread('../../sounds/mridangam.wav')
+  (fs, x) = UF.wavread('../../sounds/mridangam.wav')
   w = np.hamming(801)
   N = 2048
   t = -90
@@ -47,11 +44,11 @@ if __name__ == '__main__':
   freqDevSlope = 0.02
   Ns = 512
   H = Ns/4
-  tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+  tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
   inTime = np.array([0, .091, .405, .747, .934, 1.259, 1.568, 1.761, 2.057])
   outTime = np.array([0, .091, .405+.4, .747+.4, .934+.4, 1.259+.8, 1.568+.8, 1.761+1.2, 2.057+1.2])            
   ytfreq, ytmag, indexes = sineModelTimeScale(tfreq, tmag, inTime, outTime)
-  y = SS.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
-  WIO.play(y, fs)
+  y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
+  UF.play(y, fs)
 
 

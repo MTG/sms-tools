@@ -2,12 +2,10 @@ import numpy as np
 import time, os, sys
 from scipy.signal import hamming, resample
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
-import dftAnal as DFT
-import dftSynth as IDFT
-import waveIO as WIO
+import dftModel as DFT
+import utilFunctions as UF
 import math
 
 def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
@@ -42,7 +40,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 		mX2 = resample(mX2smooth, N2/2) 
 		mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 	#-----synthesis-----
-		y[pin1-hM1_1:pin1+hM1_2] += H1*IDFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound
+		y[pin1-hM1_1:pin1+hM1_2] += H1*DFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound
 		pin1 += H1                                     # advance sound pointer
 		pin2 += H2                                     # advance sound pointer
 	y = np.delete(y, range(hM1_2))                   # delete half of first window which was added in stftAnal
@@ -51,8 +49,8 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 
 # example call of stftMorph function
 if __name__ == '__main__':
-	(fs, x1) = WIO.wavread('../../sounds/ocean.wav')
-	(fs, x2) = WIO.wavread('../../sounds/speech.wav')
+	(fs, x1) = UF.wavread('../../sounds/ocean.wav')
+	(fs, x2) = UF.wavread('../../sounds/speech.wav')
 	w1 = np.hamming(1024)
 	N1 = 1024
 	H1 = 256
@@ -61,4 +59,4 @@ if __name__ == '__main__':
 	smoothf = .5
 	balancef = 0.2
 	y = stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
-	WIO.play(y, fs)
+	UF.play(y, fs)

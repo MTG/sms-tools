@@ -4,21 +4,10 @@ from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
-
-import waveIO as WIO
-import peakProcessing as PP
-import errorHandler as EH
-
-try:
-  import genSpecSines_C as GS
-except ImportError:
-  import genSpecSines as GS
-  EH.printWarning(1)
+import sineModel as SM
+import stft as STFT
+import utilFunctions as UF
   
-
   
 def sprModel(x, fs, w, N, t):
   # Analysis/synthesis of a sound using the sinusoidal plus residual model
@@ -55,9 +44,9 @@ def sprModel(x, fs, w, N, t):
     fftbuffer[N-hM2:] = xw[:hM2]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10(abs(X[:hN]))                              # magnitude spectrum of positive frequencies
-    ploc = PP.peakDetection(mX, hN, t)                
+    ploc = UF.peakDetection(mX, hN, t)                
     pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
-    iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc)          # refine peak values
+    iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)          # refine peak values
     iploc = (iploc!=0) * (iploc*Ns/N)                            # synth. locs
     ri = pin-hNs-1                                               # input sound pointer for residual analysis
     xw2 = x[ri:ri+Ns]*wr                                          # window the input sound                                       
@@ -66,7 +55,7 @@ def sprModel(x, fs, w, N, t):
     fftbuffer[hNs:] = xw2[:hNs]                           
     X2 = fft(fftbuffer)                                          # compute FFT for residual analysis
   #-----synthesis-----
-    Ys = GS.genSpecSines(iploc, ipmag, ipphase, Ns)              # generate spec of sinusoidal component          
+    Ys = UF.genSpecSines(fs*iploc/N, ipmag, ipphase, Ns, fs)     # generate spec of sinusoidal component          
     Xr = X2-Ys;                                                  # get the residual complex spectrum
     fftbuffer = np.zeros(Ns)
     fftbuffer = np.real(ifft(Ys))                                # inverse FFT of sinusoidal spectrum
@@ -83,23 +72,41 @@ def sprModel(x, fs, w, N, t):
   return y, ys, xr
 
 
-def defaultTest():
-    str_time = time.time()
-    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
-    w = np.blackman(901)
-    N = 1024
-    t = -70
-    y, ys, yr = sprModel(x, fs, w, N, t)
-    print "time taken for computation " + str(time.time()-str_time)
-  
+# test the subtraction of sines
 if __name__ == '__main__':
-    
-    (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/mridangam.wav'))
-    w = np.blackman(901)
-    N = 1024
-    t = -70
-    y, ys, xr = sprModel(x, fs, w, N, t)
+  (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+  w = np.hamming(2001)
+  N = 2048
+  H = 128
+  t = -100
+  minSineDur = .02
+  maxnSines = 200
+  freqDevOffset = 10
+  freqDevSlope = 0.001
+  tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+  xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
+  mXr, pXr = STFT.stftAnal(xr, fs, hamming(H*2), H*2, H)
+  Ns = 512
+  ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
-    WIO.play(y, fs)
-    WIO.play(ys, fs)
-    WIO.play(xr, fs)
+  plt.figure(1, figsize=(9.5, 7))
+  numFrames = int(mXr[:,0].size)
+  frmTime = H*np.arange(numFrames)/float(fs)                             
+  binFreq = np.arange(H)*float(fs)/(H*2)                       
+  plt.pcolormesh(frmTime, binFreq, np.transpose(mXr))
+  plt.autoscale(tight=True)
+
+  tfreq[tfreq==0] = np.nan
+  numFrames = int(tfreq[:,0].size)
+  frmTime = H*np.arange(numFrames)/float(fs) 
+  plt.plot(frmTime, tfreq, color='k', ms=3, alpha=1)
+  plt.xlabel('Time(s)')
+  plt.ylabel('Frequency(Hz)')
+  plt.autoscale(tight=True)
+  plt.title('sinusoidal + residual components')
+
+  UF.play(ys, fs)
+  UF.play(xr, fs)
+
+  plt.tight_layout()
+  plt.show()

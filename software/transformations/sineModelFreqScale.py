@@ -2,13 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys, os, functools, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions_C/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
-import sineModelAnal as SA 
-import sineModelSynth as SS
-import waveIO as WIO
+import sineModel as SM 
+import utilFunctions as UF
 
 
 def sineModelFreqScale(sfreq, freqScaling):
@@ -24,7 +21,7 @@ def sineModelFreqScale(sfreq, freqScaling):
 	return ysfreq
 
 if __name__ == '__main__':
-	(fs, x) = WIO.wavread('../../sounds/orchestra.wav')
+	(fs, x) = UF.wavread('../../sounds/orchestra.wav')
 	w = np.hamming(2000)
 	N = 2048
 	H = 500
@@ -35,10 +32,10 @@ if __name__ == '__main__':
 	freqDevSlope = 0.02
 	Ns = 512
 	H = Ns/4
-	tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 	freqScaling = np.array([0, .8, 1, 1.2])           
 	ytfreq = sineModelFreqScale(tfreq, freqScaling)
-	y = SS.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
-	WIO.play(y, fs)
+	y = SM.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
+	UF.play(y, fs)
 
 

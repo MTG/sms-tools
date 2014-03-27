@@ -1,11 +1,9 @@
 import numpy as np
-import time, os, sys
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../utilFunctions/'))
-
-import dftAnal, dftSynth
-import waveIO as WIO
+import matplotlib.pyplot as plt
+from scipy.signal import hamming
 import math
+import dftModel as DFT
+import utilFunctions as UF
 
 def stft(x, fs, w, N, H):
 # Analysis/synthesis of a sound using the short-time fourier transform
@@ -23,31 +21,90 @@ def stft(x, fs, w, N, H):
   while pin<=pend:                               # while sound pointer is smaller than last sample      
   #-----analysis-----  
     x1 = x[pin-hM1:pin+hM2]                      # select one frame of input sound
-    mX, pX = dftAnal.dftAnal(x1, w, N)           # compute dft
+    mX, pX = DFT.dftAnal(x1, w, N)               # compute dft
   #-----synthesis-----
-    y1 = dftSynth.dftSynth(mX, pX, M)            # compute idft
+    y1 = DFT.dftSynth(mX, pX, M)                 # compute idft
     y[pin-hM1:pin+hM2] += H*y1                   # overlap-add to generate output sound
     pin += H                                     # advance sound pointer
   y = np.delete(y, range(hM2))                   # delete half of first window which was added in stftAnal
   y = np.delete(y, range(y.size-hM1, y.size))    # add zeros at the end to analyze last sample
   return y
 
-def defaultTest():
-  str_time = time.time()    
-  (fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/orchestra.wav'))
-  w = np.hamming(500)
-  N = 1024
-  H = 125
-  y = stft(x, fs, w, N, H)
-  print "time taken for computation " + str(time.time()-str_time)  
+def stftAnal(x, fs, w, N, H) :
+  #Analysis of a sound using the short-time fourier transform
+  # x: input array sound, w: analysis window, N: FFT size, H: hop size
+  # returns xmX, xpX: magnitude and phase spectra
+  M = w.size                                      # size of analysis window
+  hM1 = int(math.floor((M+1)/2))                  # half analysis window size by rounding
+  hM2 = int(math.floor(M/2))                      # half analysis window size by floor
+  x = np.append(np.zeros(hM2),x)                  # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(hM2))                  # add zeros at the end to analyze last sample
+  pin = hM1                                       # initialize sound pointer in middle of analysis window       
+  pend = x.size-hM1                               # last sample to start a frame
+  w = w / sum(w)                                  # normalize analysis window
+  y = np.zeros(x.size)                            # initialize output array
+  while pin<=pend:                                # while sound pointer is smaller than last sample      
+    x1 = x[pin-hM1:pin+hM2]                       # select one frame of input sound
+    mX, pX = DFT.dftAnal(x1, w, N)                # compute dft
+    if pin == hM1: 
+      xmX = np.array([mX])
+      xpX = np.array([pX])
+    else:
+      xmX = np.vstack((xmX,np.array([mX])))
+      xpX = np.vstack((xpX,np.array([pX])))
+    pin += H                                   # advance sound pointer
+  return xmX, xpX
 
-# example call of stft function
+def stftSynth(mY, pY, M, H) :
+# Synthesis of a sound using the short-time fourier transform
+# mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
+# returns y: output sound
+  hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
+  hM2 = int(math.floor(M/2))                              # half analysis window size by floor
+  nFrames = mY[:,0].size                                  # number of frames
+  y = np.zeros(nFrames*H + hM1 + hM2)                     # initialize output array
+  pin = hM1                  
+  for i in range(nFrames):                                # iterate over all frames      
+    y1 = DFT.dftSynth(mY[i,:], pY[i,:], M)                # compute idft
+    y[pin-hM1:pin+hM2] += H*y1                            # overlap-add to generate output sound
+    pin += H                                              # advance sound pointer
+  y = np.delete(y, range(hM2))                            # delete half of first window which was added in stftAnal
+  y = np.delete(y, range(y.size-hM1, y.size))             # add zeros at the end to analyze last sample
+  return y
+
+
+# example call of stftAnal function
 if __name__ == '__main__':
-  (fs, x) = WIO.wavread('../../sounds/orchestra.wav')
-  w = np.hamming(500)
+  (fs, x) = UF.wavread('../../sounds/piano.wav')
+  w = np.hamming(1024)
   N = 1024
-  H = 100
-  y = stft(x, fs, w, N, H)
-  WIO.play(y, fs)
-  error = -(20*np.log10(2**15) - 20*np.log10(sum(abs(x[N:x.size-N]-y[N:x.size-N]))))
-  print "output/input error (in dB) =", error
+  H = 512
+  mX, pX = stftAnal(x, fs, w, N, H)
+  
+  plt.figure(1, figsize=(9.5, 7))
+  plt.subplot(211)
+  numFrames = int(mX[:,0].size)
+  frmTime = H*np.arange(numFrames)/float(fs)                             
+  binFreq = np.arange(N/2)*float(fs)/N                         
+  plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
+  plt.xlabel('time (sec)')
+  plt.ylabel('frequency (Hz)')
+  plt.title('magnitude spectrogram')
+  plt.autoscale(tight=True)
+
+  plt.subplot(212)
+  numFrames = int(pX[:,0].size)
+  frmTime = H*np.arange(numFrames)/float(fs)                             
+  binFreq = np.arange(N/2)*float(fs)/N                         
+  plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX,axis=1)))
+  plt.xlabel('time (sec)')
+  plt.ylabel('frequency (Hz)')
+  plt.title('phase spectrogram (derivative)')
+  plt.autoscale(tight=True)
+
+  y = stftSynth(mX, pX, w.size, H)
+  UF.play(y, fs)   
+  
+  plt.tight_layout()
+  plt.show()
+ 

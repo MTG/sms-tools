@@ -26,16 +26,9 @@ np_lib = os.path.dirname(numpy.__file__)
 np_inc = [os.path.join(np_lib, 'core/include')]
 ext_inc = os
 
-sourcefiles = ["tables.c", "genSpecSines.c", "cgenSpecSines.pyx"]
+sourcefiles = ["utilFunctions.c", "cutilFunctions.pyx"]
 
 setup(
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("genSpecSines_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
-  )
-
-sourcefiles = ["twm.c", "ctwm.pyx"]
-
-setup(
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("twm_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
+    ext_modules = [Extension("utilFunctions_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
   )

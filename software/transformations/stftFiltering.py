@@ -3,9 +3,8 @@ import time, os, sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
-import dftAnal as DFT 
-import dftSynth as IDFT
-import waveIO as WIO
+import dftModel as DFT 
+import utilFunctions as UF
 import math
 
 def stftFiltering(x, fs, w, N, H, filter):
@@ -30,9 +29,9 @@ def stftFiltering(x, fs, w, N, H, filter):
 	# filter
 		mY = mX + filt                               # filter input magnitude spectrum
 	#-----synthesis-----
-		y1 = IDFT.dftSynth(mY, pX, M)                # compute idft
-		y[pin-hM1:pin+hM2] += H*y1                   # overlap-add to generate output sound
-		pin += H                                     # advance sound pointer
+		y1 = DFT.dftSynth(mY, pX, M)                # compute idft
+		y[pin-hM1:pin+hM2] += H*y1                  # overlap-add to generate output sound
+		pin += H                                    # advance sound pointer
 	y = np.delete(y, range(hM2))                   # delete half of first window which was added in stftAnal
 	y = np.delete(y, range(y.size-hM1, y.size))    # add zeros at the end to analyze last sample
 	return y
@@ -40,10 +39,10 @@ def stftFiltering(x, fs, w, N, H, filter):
 
 # example call of stft function
 if __name__ == '__main__':
-	(fs, x) = WIO.wavread('../../sounds/orchestra.wav')
+	(fs, x) = UF.wavread('../../sounds/orchestra.wav')
 	w = np.hamming(500)
 	N = 1024
 	H = 100
 	filter = np.array([0,0,500, 00, 600,-20,800,-40,22050,-100])
 	y = stftFiltering(x, fs, w, N, H, filter)
-	WIO.play(y, fs)
+	UF.play(y, fs)

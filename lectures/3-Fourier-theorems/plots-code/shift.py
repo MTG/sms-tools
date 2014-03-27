@@ -1,46 +1,46 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import time, os, sys
-from scipy.fftpack import fft, ifft, fftshift
-import math
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import smsWavplayer as wp
+import sys
+from scipy.signal import sawtooth
+sys.path.append('../../../software/models/')
 import dftAnal as DF
-(fs, x) = wp.wavread('../../../sounds/soprano-E4.wav')
-w = np.hamming(511)
-N = 512
-pin = 5000
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2)) 
-fftbuffer = np.zeros(N)  
-x1 = x[pin-hM1:pin+hM2]
-xw = x1*w
-fftbuffer[:hM1] = xw[hM2:]
-fftbuffer[N-hM2:] = xw[:hM2]        
-X = fftshift(fft(fftbuffer))
-mX = 20 * np.log10(abs(X))       
-pX = np.unwrap(np.angle(X))
 
-plt.figure(1)
-plt.subplot(311)
-plt.plot(np.arange(-hM1, hM2), x1)
-plt.axis([-hM1, hM2, min(x1), max(x1)])
-plt.ylabel('amplitude')
-plt.title('input signal: x=wavread(soprano-E4.wav)')
+N = 128
+x1 = sawtooth(2*np.pi*np.arange(-N/2,N/2)/float(N))
+x2 = sawtooth(2*np.pi*np.arange(-N/2+2,N/2+2)/float(N))
+mX1, pX1 = DF.dftAnal(x1, np.ones(N), N)
+mX2, pX2 = DF.dftAnal(x2, np.ones(N), N)
 
-plt.subplot(3,1,2)
-plt.plot(np.arange(-N/2,N/2), mX, 'r')
-plt.axis([-N/2,N/2,-48,max(mX)])
-plt.title ('magnitude spectrum: mX = 20*log10(abs(X))')
-plt.ylabel('amplitude (dB)')
+plt.figure(1, figsize=(9.5, 7))
+plt.subplot(321)
+plt.title('x1=x[n]')
+plt.plot(np.arange(-N/2, N/2, 1.0), x1, lw=1.5)
+plt.axis([-N/2, N/2, -1, 1])
 
-plt.subplot(3,1,3)
-plt.plot(np.arange(-N/2,N/2), pX, 'c')
-plt.axis([-N/2,N/2,min(pX),max(pX)])
-plt.title ('phase spectrum: pX=unwrap(angle(X))')
-plt.ylabel('phase (radians)')
+plt.subplot(322)
+plt.title('x2=x[n-2]')
+plt.plot(np.arange(-N/2, N/2, 1.0), x2, lw=1.5)
+plt.axis([-N/2, N/2, -1, 1])
 
+plt.subplot(323)
+plt.title('mX1')
+plt.plot(np.arange(0, N/2, 1.0), mX1, 'r', lw=1.5)
+plt.axis([0,N/2,min(mX1),max(mX1)])      
+
+plt.subplot(324)
+plt.title('mX2')
+plt.plot(np.arange(0, N/2, 1.0), mX2, 'r', lw=1.5)
+plt.axis([0,N/2,min(mX2),max(mX2)])  
+
+plt.subplot(325)
+plt.title('pX1')
+plt.plot(np.arange(0, N/2, 1.0), pX1, 'c', lw=1.5)
+plt.axis([0,N/2,min(pX1),max(pX2)])  
+
+plt.subplot(326)
+plt.title('pX2')
+plt.plot(np.arange(0, N/2, 1.0), pX2, 'c', lw=1.5)
+plt.axis([0,N/2,min(pX2),max(pX2)]) 
+
+plt.tight_layout()
 plt.show()
