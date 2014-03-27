@@ -2,5 +2,5 @@
 *.so
 *.pyc
 *.o
-workspace/*.*
+./workspace/*.*
  
