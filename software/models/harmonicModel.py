@@ -7,6 +7,7 @@ import sys, os, functools, time
 import dftModel as DFT
 import stft as STFT
 import utilFunctions as UF
+import sineModel as SM
 
 def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
   # fundamental frequency detection using twm algorithm
@@ -33,7 +34,7 @@ def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
     ploc = UF.peakDetection(mX, hN, t)            # detect peak locations   
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
-    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0)  # find f0
+    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
     if ((f0stable==0)&(f0t>0)) \
         or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
       f0stable = f0t                                # consider a stable f0 if it is close to the previous one
@@ -149,28 +150,6 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
   xhfreq = UF.cleaningSineTracks(xhfreq, round(fs*minSineDur/H))
   return xhfreq, xhmag, xhphase
 
-def harmonicModelSynth(hfreq, hmag, hphase, N, H, fs):
-  # Synthesis of a sound using the sinusoidal harmonic model
-  # hfreq, hmag, hphase: harmonic frequencies, magnitudes and phases
-  # returns y: output array sound
-  hN = N/2      
-  pin = 0                                                 # initialize output sound pointer 
-  L = hfreq[:,0].size                                     # number of frames   
-  ysize = H*(L+3)                                         # output sound size
-  y = np.zeros(ysize)                                     # initialize output array
-  sw = np.zeros(N)                                        # initialize synthesis window
-  ow = triang(2*H)                                        # overlapping window
-  sw[hN-H:hN+H] = ow      
-  bh = blackmanharris(N)                                  # synthesis window
-  bh = bh / sum(bh)                                       # normalize synthesis window
-  sw[hN-H:hN+H] = sw[hN-H:hN+H] / bh[hN-H:hN+H]           # window for overlap-add
-  for l in range(L): 
-    Yh = UF.genSpecSines(hfreq[l,:], hmag[l,:], hphase[l,:], N, fs)   # generate spec sines          
-    yh = np.real(fftshift(ifft(Yh)))                      # inverse FFT
-    y[pin:pin+N] += sw*yh                                 # overlap-add
-    pin += H                                              # advance sound pointer
-  return y
-
 
 # test harmonicModelAnal and harmonicModelSynth
 if __name__ == '__main__':
@@ -206,7 +185,7 @@ if __name__ == '__main__':
   plt.autoscale(tight=True)
   plt.title('harmonics on spectrogram')
 
-  y = harmonicModelSynth(hfreq, hmag, hphase, Ns, H, fs)
+  y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
   UF.play(y, fs)
 
   plt.tight_layout()

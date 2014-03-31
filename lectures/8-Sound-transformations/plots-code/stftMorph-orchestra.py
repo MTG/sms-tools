@@ -3,20 +3,18 @@ import time, os, sys
 from scipy.signal import hamming, resample
 import matplotlib.pyplot as plt
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
 
-import dftAnal as DFT
-import dftSynth as IDFT
-import waveIO as WIO
+import dftModel as DFT
+import utilFunctions as UF
 import stftMorph as STFTM
-import stochasticModelAnal as STOC
+import stochasticModel as STOC
 import math
-import stftAnal as STFT
+import stft as STFT
 
-(fs, x1) = WIO.wavread('../../../sounds/orchestra.wav')
-(fs, x2) = WIO.wavread('../../../sounds/speech.wav')
+(fs, x1) = UF.wavread('../../../sounds/orchestra.wav')
+(fs, x2) = UF.wavread('../../../sounds/speech.wav')
 w1 = np.hamming(1024)
 N1 = 1024
 H1 = 256
@@ -32,7 +30,7 @@ mX,pX = STFT.stftAnal(x1, fs, w1, N1, H1)
 mY,pY = STFT.stftAnal(y, fs, w1, N1, H1)
 maxplotfreq = 10000.0
 
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 7))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
 frmTime = H1*np.arange(numFrames)/float(fs)                             
@@ -59,4 +57,6 @@ plt.pcolormesh(frmTime, binFreq, np.transpose(mY[:,:N1*maxplotfreq/fs+1]))
 plt.title('mY')
 plt.autoscale(tight=True)
 
+plt.tight_layout()
+plt.savefig('stftMorph-orchestra.png')
 plt.show()

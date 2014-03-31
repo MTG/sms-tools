@@ -27,7 +27,7 @@ def stft(x, fs, w, N, H):
     y[pin-hM1:pin+hM2] += H*y1                   # overlap-add to generate output sound
     pin += H                                     # advance sound pointer
   y = np.delete(y, range(hM2))                   # delete half of first window which was added in stftAnal
-  y = np.delete(y, range(y.size-hM1, y.size))    # add zeros at the end to analyze last sample
+  y = np.delete(y, range(y.size-hM1, y.size))    # delete half of the last window which as added in stftAnal
   return y
 
 def stftAnal(x, fs, w, N, H) :

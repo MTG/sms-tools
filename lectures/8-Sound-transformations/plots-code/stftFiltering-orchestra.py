@@ -3,14 +3,13 @@ import time, os, sys
 import matplotlib.pyplot as plt
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
 
-import waveIO as WIO
+import utilFunctions as UF
 import stftFiltering as STFTF
-import stftAnal as STFT
+import stft as STFT
 
-(fs, x) = WIO.wavread('../../../sounds/orchestra.wav')
+(fs, x) = UF.wavread('../../../sounds/orchestra.wav')
 w = np.hamming(2048)
 N = 2048
 H = 512
@@ -20,7 +19,7 @@ y = STFTF.stftFiltering(x, fs, w, N, H, filter)
 mX,pX = STFT.stftAnal(x, fs, w, N, H)
 mY,pY = STFT.stftAnal(y, fs, w, N, H)
 
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 7))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -42,4 +41,6 @@ plt.pcolormesh(frmTime, binFreq, np.transpose(mY))
 plt.title('mY')
 plt.autoscale(tight=True)
 
+plt.tight_layout()
+plt.savefig('stftFiltering-orchestra.png')
 plt.show()

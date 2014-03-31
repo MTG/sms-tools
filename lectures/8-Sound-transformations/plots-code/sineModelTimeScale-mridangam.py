@@ -9,14 +9,14 @@ from scipy.interpolate import interp1d
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
 
-import sineModelAnal as SA 
-import stftAnal as STFT
-import sineModelSynth as SS
-import waveIO as WIO
+import sineModel as SM 
+import stft as STFT
+import sineModel as SM
+import utilFunctions as UF
 import sineModelTimeScale as SMT
 
 
-(fs, x) = WIO.wavread('../../../sounds/mridangam.wav')
+(fs, x) = UF.wavread('../../../sounds/mridangam.wav')
 w = np.hamming(801)
 N = 2048
 t = -90
@@ -27,18 +27,18 @@ freqDevSlope = 0.02
 Ns = 512
 H = Ns/4
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
-tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 inTime = np.array([0, .091, .405, .747, .934, 1.259, 1.568, 1.761, 2.057])
 outTime = np.array([0, .091, .405+.4, .747+.4, .934+.4, 1.259+.8, 1.568+.8, 1.761+1.2, 2.057+1.2])            
 ytfreq, ytmag, indexes = SMT.sineModelTimeScale(tfreq, tmag, inTime, outTime)
-y = SS.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
+y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
 mY, pY = STFT.stftAnal(y, fs, w, N, H)
-WIO.play(y, fs)
+UF.play(y, fs)
 
 
 maxplotfreq = 4000.0
 
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 7))
 
 plt.subplot(4,1,1)
 plt.plot(np.arange(x.size)/float(fs), x, 'b')
@@ -82,5 +82,7 @@ plt.plot(np.arange(y.size)/float(fs), y, 'b')
 plt.axis([0,y.size/float(fs),min(y),max(y)])
 plt.title('y')    
 
+plt.tight_layout()
+plt.savefig('sineModelTimeScale-mridangam.png')
 plt.show()
 

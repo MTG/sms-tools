@@ -7,13 +7,12 @@ import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
 
-import sineModelAnal as SA 
-import stftAnal as STFT
-import sineModelSynth as SS
-import waveIO as WIO
+import sineModel as SM 
+import stft as STFT
+import utilFunctions as UF
 import sineModelFreqScale as SMF
 
-(fs, x) = WIO.wavread('../../../sounds/orchestra.wav')
+(fs, x) = UF.wavread('../../../sounds/orchestra.wav')
 w = np.hamming(801)
 N = 2048
 t = -90
@@ -24,16 +23,16 @@ freqDevSlope = 0.02
 Ns = 512
 H = Ns/4
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
-tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 freqScaling = np.array([0, .8, 1, 1.2])           
 ytfreq = SMF.sineModelFreqScale(tfreq, freqScaling)
-y = SS.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
+y = SM.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
 mY, pY = STFT.stftAnal(y, fs, w, N, H)
-WIO.play(y, fs)
+UF.play(y, fs)
 
 maxplotfreq = 4000.0
 
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 7))
 plt.subplot(4,1,1)
 plt.plot(np.arange(x.size)/float(fs), x, 'b')
 plt.axis([0,x.size/float(fs),min(x),max(x)])
@@ -76,5 +75,7 @@ plt.plot(np.arange(y.size)/float(fs), y, 'b')
 plt.axis([0,y.size/float(fs),min(y),max(y)])
 plt.title('y')    
 
+plt.tight_layout()
+plt.savefig('sineModelFreqScale-orchestra.png')
 plt.show()
 

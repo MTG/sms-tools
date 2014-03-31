@@ -3,16 +3,14 @@ import time, os, sys
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, resample
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import dftAnal as DFT
-import dftSynth as IDFT
-import waveIO as WIO
+import dftModel as DFT
+import utilFunctions as UF
 import math
 
-(fs, x1) = WIO.wavread('../../../sounds/orchestra.wav')
-(fs, x2) = WIO.wavread('../../../sounds/speech.wav')
+(fs, x1) = UF.wavread('../../../sounds/orchestra.wav')
+(fs, x2) = UF.wavread('../../../sounds/speech.wav')
 w1 = np.hamming(1024)
 N1 = 1024
 H1 = 256
@@ -39,10 +37,10 @@ mX2smooth = resample(np.maximum(-200, mX2), mX2.size*smoothf)       # smooth spe
 mX2 = resample(mX2smooth, N2/2) 
 mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 #-----synthesis-----
-y = IDFT.dftSynth(mY, pX1, M1) * sum(w1)  # overlap-add to generate output sound
+y = DFT.dftSynth(mY, pX1, M1) * sum(w1)  # overlap-add to generate output sound
 mY1, pY1 = DFT.dftAnal(y, w1, M1)  # overlap-add to generate output sound
 
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 7))
 plt.subplot(321)
 plt.plot(np.arange(N1)/float(fs), x1*w1, 'b')
 plt.axis([0, N1/float(fs), min(x1*w1), max(x1*w1)])
@@ -74,4 +72,7 @@ plt.subplot(326)
 plt.plot(fs*np.arange(N1/2)/float(N1/2), pY1, 'c', lw=1.3)
 plt.axis([0,fs/4.0,min(pY1),6])
 plt.title('pY')
+
+plt.tight_layout()
+plt.savefig('stftMorph-frame.png')
 plt.show()

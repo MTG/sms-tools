@@ -100,11 +100,10 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   # Synthesis of a sound using the sinusoidal model
   # tfreq,tmag, tphase: frequencies, magnitudes and phases of sinusoids,
-  # N: synthesis FFT size, H: hop size, 
+  # N: synthesis FFT size, H: hop size, fs: sampling rate
   # returns y: output array sound
   hN = N/2                                                # half of FFT size for synthesis
   L = tfreq[:,0].size                                     # number of frames
-  nTracks = tfreq[0,:].size                               # number of sinusoidal tracks
   pout = 0                                                # initialize output sound pointer         
   ysize = H*(L+3)                                         # output sound size
   y = np.zeros(ysize)                                     # initialize output array
@@ -115,7 +114,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   bh = bh / sum(bh)                                       # normalized blackmanharris window
   sw[hN-H:hN+H] = sw[hN-H:hN+H]/bh[hN-H:hN+H]             # normalized synthesis window
   lastytfreq = tfreq[0,:]                                 # initialize synthesis frequencies
-  ytphase = 2*np.pi*np.random.rand(nTracks)               # initialize synthesis phases 
+  ytphase = 2*np.pi*np.random.rand(tfreq[0,:].size)       # initialize synthesis phases 
   for l in range(L):                                      # iterate over all frames
     if (tphase.size > 0):                                 # if no phases generate them
       ytphase = tphase[l,:] 
@@ -126,6 +125,8 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
     yw = np.real(fftshift(ifft(Y)))                       # compute inverse FFT
     y[pout:pout+N] += sw*yw                               # overlap-add and apply a synthesis window
     pout += H                                             # advance sound pointer
+  y = np.delete(y, range(hN))                             # delete half of first window
+  y = np.delete(y, range(y.size-hN, y.size))              # delete half of the last window 
   return y
   
 # test sineModelAnal and sineModelSynth
