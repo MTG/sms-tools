@@ -8,15 +8,21 @@ from scipy.interpolate import interp1d
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
-import hpsModel as HPS
+import stochasticModel as STC
 import utilFunctions as UF
 
-def hpsTimeScale(hfreq, hmag, stocEnv, inTime, outTime):
-  # Synthesis of a sound using the harmonic plus stochastic model
-  # hfreq, hmag: harmonic frequencies and magnitudes, stocEnv: residual envelope
-  # inTime: input time, outTime: output time
-  # returns yhfreq, yhmag: harmonic frequencies and amplitudes, ystocEnv: residual envelope
-  l = 0                                                        # frame index
+def stochasticTimeScale(stocEnv, inTime, timeScaling):
+  # time scaling of stochastic component
+  # stocEnv: stochastic envelope
+  # timeScaling: scaling factors, in time-value pairs
+  # returns ystocEnv: stochastic envelope
+  L = stocEnv[:,0].size                                       # number of input frames
+  outL = int(L*timeScaling[-1]/timeScaling[-2])               # number of synthesis frames
+  timeScalingEnv = interp1d(timeScaling[::2]/timeScaling[-2], timeScaling[1::2]/timeScaling[-1])
+  ysfreq = sfreq[0,:]                                         # initialize output frame
+  ysmag = smag[0,:]                                           # initialize output frame
+  indexes = (L-1)*timeScalingEnv(np.arange(outL)/float(outL))
+
   L = hfreq[:,0].size                                           # number of analysis frames
   nH = hfreq[0,:].size                                          # number of harmonics
   yhfreq = hfreq[0,:]                                           # initialize output frame
@@ -29,8 +35,6 @@ def hpsTimeScale(hfreq, hmag, stocEnv, inTime, outTime):
   il = np.arange(outL)
   indexes = interpf(il)
   for l in indexes[1:]:
-    yhfreq = np.vstack((yhfreq, hfreq[round(l),:]))
-    yhmag = np.vstack((yhmag, hmag[round(l),:])) 
     ystocEnv = np.vstack((ystocEnv, stocEnv[round(l),:]))
   return yhfreq, yhmag, ystocEnv
 
