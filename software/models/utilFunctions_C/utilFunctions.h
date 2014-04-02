@@ -33,8 +33,6 @@
 #define TWM_rho 0.33               //weighting of MP error
 #define MAXNPEAKS 10               // maximum number of peaks used for TWM 
 
-extern const float bh_92_1001[BH_SIZE];
-
 void genbh92lobe_C(double *x, double *y, int N);
 void genspecsines_C(double *iploc, double *ipmag, double *ipphase, int n_peaks, double *real, double*imag, int size_spec);
 void maxValArg(double *data, int dLen, double *max_val, int*max_ind);
