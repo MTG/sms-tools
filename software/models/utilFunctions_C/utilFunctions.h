@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include <string.h>
 #include <math.h>
 
 #ifndef UTILFUNCTIONS_H 
-
+    
 #define UTILFUNCTIONS_H
 
 #define BH_SIZE 1001
