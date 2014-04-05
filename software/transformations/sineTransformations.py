@@ -19,8 +19,8 @@ def sineTimeScaling(sfreq, smag, timeScaling):
   L = sfreq[:,0].size                                         # number of input frames
   outL = int(L*timeScaling[-1]/timeScaling[-2])               # number of synthesis frames
   timeScalingEnv = interp1d(timeScaling[::2]/timeScaling[-2], timeScaling[1::2]/timeScaling[-1])
-  ysfreq = sfreq[0,:]                                         # initialize output frame
-  ysmag = smag[0,:]                                           # initialize output frame
+  ysfreq = sfreq[0,:]                                         # first output frame is same than input
+  ysmag = smag[0,:]                                           # first output frame is same than input
   indexes = (L-1)*timeScalingEnv(np.arange(outL)/float(outL))
   for l in indexes[1:]:
     ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))
