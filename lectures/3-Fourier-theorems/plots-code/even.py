@@ -4,12 +4,11 @@ import sys
 from scipy.fftpack import fft, ifft, fftshift
 import math
 
-sys.path.append('../../../software/basicFunctions/')
 sys.path.append('../../../software/models/')
 
-import waveIO as WIO
-import dftAnal as DF
-(fs, x) = WIO.wavread('../../../sounds/soprano-E4.wav')
+import utilityFunctions as UF
+import dftModel as DF
+(fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 w = np.hamming(511)
 N = 512
 pin = 5000
@@ -44,4 +43,5 @@ plt.title ('phase spectrum: pX=unwrap(angle(X))')
 plt.ylabel('phase (radians)')
 
 plt.tight_layout()
+plt.savefig('even.png')
 plt.show()

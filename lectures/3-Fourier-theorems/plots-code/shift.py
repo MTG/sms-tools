@@ -43,4 +43,5 @@ plt.plot(np.arange(0, N/2, 1.0), pX2, 'c', lw=1.5)
 plt.axis([0,N/2,min(pX2),max(pX2)]) 
 
 plt.tight_layout()
+plt.savefig('shift.png')
 plt.show()

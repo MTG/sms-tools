@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftshift
 import sys
 
-sys.path.append('../../software/basicFunctions/')
+sys.path.append('../../software/models/')
 
-import waveIO as WIO
+import utilFunction as UF
 
-(fs, x) = WIO.wavread('../../../sounds/soprano-E4.wav')
+(fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 N = 1024
 x1 = np.blackman(N)*x[40000:40000+N]
 
@@ -41,4 +41,5 @@ plt.plot(pX1, 'c', lw=1.5)
 plt.axis([0,N/2,min(pX1),max(pX1)])
 
 plt.tight_layout()
+plt.savefig('unwrap.png')
 plt.show()

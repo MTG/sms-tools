@@ -46,4 +46,5 @@ plt.plot(np.arange(-N/2, N/2),mY2[M/2:M+M/2], 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mY2)])
 
 plt.tight_layout()
+plt.savefig('convolution-2.png')
 plt.show()

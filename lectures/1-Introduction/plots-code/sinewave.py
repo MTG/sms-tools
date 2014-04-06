@@ -15,4 +15,5 @@ plt.xlabel('time')
 plt.ylabel('amplitude')
 
 plt.tight_layout()
+plt.savefig('sinewave.png')
 plt.show()

@@ -1,1 +1,1 @@
-The material in this directory are the slides and the code used in the shown plots that I use in class to introduce the signal processing methodologies implemented in the code.
+The content in this directory is the slides used in my class lectures and code used for the plots shown in the slides. 

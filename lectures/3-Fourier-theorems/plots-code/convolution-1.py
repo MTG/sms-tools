@@ -4,24 +4,23 @@ import time, os, sys
 from scipy.fftpack import fft, ifft, fftshift
 import math
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import smsWavplayer as wp
-import dftAnal as DF
-(fs, x) = wp.wavread('../../../sounds/ocean.wav')
-(fs, x2) = wp.wavread('../../../sounds/impulse-response.wav')
+import utilFunctions as UF
+import dftModel as DF
+(fs, x) = UF.wavread('../../../sounds/ocean.wav')
+(fs, x2) = UF.wavread('../../../sounds/impulse-response.wav')
 x1 = x[40000:44096]
-plt.figure(1)
 N = 4096
 
+plt.figure(1, figsize=(9.5, 7))
 plt.subplot(3,2,1)
-plt.title('x1 = wavread(ocean.wav)')
+plt.title('x1 (ocean.wav)')
 plt.plot(x1, 'b')
 plt.axis([0,N,min(x1),max(x1)])
 
 plt.subplot(3,2,3)
-plt.title('x2 = wavread(impulse-response.wav)')
+plt.title('x2 (impulse-response.wav)')
 plt.plot(x2, 'b')
 plt.axis([0,N,min(x2),max(x2)])
 
@@ -54,4 +53,6 @@ mY1 = mY1 - max(mY1)
 plt.plot(mY1[0:N/2], 'r')
 plt.axis([0,N/2,-84,0])
 
+plt.tight_layout()
+plt.savefig('convolution-1.png')
 plt.show()

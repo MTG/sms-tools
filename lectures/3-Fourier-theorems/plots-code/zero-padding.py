@@ -34,4 +34,5 @@ plt.axis([-N3/2,N3/2-1,-20,max(mX)+1])
 plt.title('magnitude spectrum: mX3, N=32')
 
 plt.tight_layout()
+plt.savefig('zero-padding.png')
 plt.show()
