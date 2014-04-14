@@ -3,7 +3,7 @@ import numpy as np
 import sys
 from scipy.signal import sawtooth
 sys.path.append('../../../software/models/')
-import dftAnal as DF
+import dftModel as DF
 
 N = 128
 x1 = sawtooth(2*np.pi*np.arange(-N/2,N/2)/float(N))

@@ -20,7 +20,7 @@ x1 = x[pin-hM1:pin+hM2]
 mX, pX = DFT.dftAnal(x1, w, N)
 y = DFT.dftSynth(mX, pX, w.size)*sum(w)
 
-plt.figure(1, figsize=(9.5, 7))
+plt.figure(1, figsize=(9.5, 5.5))
 plt.subplot(4,1,1)
 plt.plot(np.arange(-hM1, hM2), x1*w, lw=1.5)
 plt.axis([-hM1, hM2, min(x1), max(x1)])
@@ -29,12 +29,12 @@ plt.title('x (oboe-A4.wav)')
 plt.subplot(4,1,2)
 plt.plot(np.arange(N/2), mX, 'r', lw=1.5)
 plt.axis([0,N/2,min(mX),max(mX)])
-plt.title ('mX: magnitude spectrum')
+plt.title ('mX')
 
 plt.subplot(4,1,3)
 plt.plot(np.arange(N/2), pX, 'c', lw=1.5)
 plt.axis([0,N/2,min(pX),max(pX)])
-plt.title ('phase spectrum: pX')
+plt.title ('pX')
 
 plt.subplot(4,1,4)
 plt.plot(np.arange(-hM1, hM2), y, lw=1.5)

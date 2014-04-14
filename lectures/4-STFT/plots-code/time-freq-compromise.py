@@ -1,50 +1,45 @@
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../software/basicFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../software/models/'))
 
-import stftAnal
-import smsWavplayer as wp
+import stft as STFT
+import utilFunctions as UF
 import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
 from scipy.signal import hamming
 from scipy.fftpack import fft
 import math
 
-(fs, x) = wp.wavread('../../../sounds/piano.wav')
+(fs, x) = UF.wavread('../../../sounds/piano.wav')
 
-
-
-plt.figure(1)
+plt.figure(1, figsize=(9.5, 6))
 
 w = np.hamming(256)
 N = 256
 H = 128
-mX1, pX1 = stftAnal.stftAnal(x, fs, w, N, H)
+mX1, pX1 = STFT.stftAnal(x, fs, w, N, H)
 plt.subplot(211)
-numFrames = int(mX1[1,:].size)
+numFrames = int(mX1[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(N/2)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, mX1)
-plt.xlabel('time (sec)')
-plt.ylabel('frequency (Hz)')
-plt.title('piano.wav magnitude spectrogram; M=256, N=256, H=128')
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX1))
+plt.title('mX (piano.wav), M=256, N=256, H=128')
 plt.autoscale(tight=True)
 
 w = np.hamming(1024)
 N = 1024
 H = 128
-mX2, pX2 = stftAnal.stftAnal(x, fs, w, N, H)
+mX2, pX2 = STFT.stftAnal(x, fs, w, N, H)
 
 plt.subplot(212)
-numFrames = int(mX2[1,:].size)
+numFrames = int(mX2[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(N/2)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, mX2)
-plt.xlabel('time (sec)')
-plt.ylabel('frequency (Hz)')
-plt.title('piano.wav magnitude spectrogram; M=1024, N=1024, H=128')
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX2))
+plt.title('mX (piano.wav), M=1024, N=1024, H=128')
 plt.autoscale(tight=True)
+
+plt.tight_layout()
+plt.savefig('time-freq-compromise.png')
 plt.show()
 

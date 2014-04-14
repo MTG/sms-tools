@@ -6,7 +6,7 @@ import math
 
 sys.path.append('../../../software/models/')
 
-import utilityFunctions as UF
+import utilFunctions as UF
 import dftModel as DF
 (fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 w = np.hamming(511)
@@ -33,15 +33,15 @@ plt.title('x (soprano-E4.wav)')
 plt.subplot(3,1,2)
 plt.plot(np.arange(-N/2,N/2), mX, 'r', lw=1.5)
 plt.axis([-N/2,N/2,-48,max(mX)])
-plt.title ('magnitude spectrum: mX = 20*log10(abs(X))')
+plt.title ('mX = 20*log10(abs(X))')
 plt.ylabel('amplitude (dB)')
 
 plt.subplot(3,1,3)
 plt.plot(np.arange(-N/2,N/2), pX, 'c', lw=1.5)
 plt.axis([-N/2,N/2,min(pX),max(pX)])
-plt.title ('phase spectrum: pX=unwrap(angle(X))')
+plt.title ('pX = unwrap(angle(X))')
 plt.ylabel('phase (radians)')
 
 plt.tight_layout()
-plt.savefig('even.png')
+plt.savefig('symmetry.png')
 plt.show()

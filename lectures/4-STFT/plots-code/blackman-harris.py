@@ -10,13 +10,11 @@ hM = M/2
 fftbuffer = np.zeros(N)
 mX1 = np.zeros(N)
 
-plt.figure(1)
+plt.figure(1, figsize=(7.5, 4))
 fftbuffer[hN-hM:hN+hM]=signal.blackmanharris(M)
 plt.subplot(2,1,1)
-plt.plot(np.arange(-hN, hN), fftbuffer, 'b')
+plt.plot(np.arange(-hN, hN), fftbuffer, 'b', lw=1.5)
 plt.axis([-hN, hN, 0, 1.1])
-plt.xlabel('time (samples)')
-plt.ylabel('amplitude')
 
 
 X = fft(fftbuffer)
@@ -25,9 +23,9 @@ mX1[:hN] = mX[hN:]
 mX1[N-hN:] = mX[:hN]      
 
 plt.subplot(2,1,2)
-plt.plot(np.arange(-hN, hN), mX1-max(mX), 'r')
+plt.plot(np.arange(-hN, hN), mX1-max(mX), 'r', lw=1.5)
 plt.axis([-hN,hN,-110,0])
-plt.xlabel('frequency (bins)')
-plt.ylabel('amplitude (dB)')
 
+plt.tight_layout()
+plt.savefig('blackman-harris.png')
 plt.show()
