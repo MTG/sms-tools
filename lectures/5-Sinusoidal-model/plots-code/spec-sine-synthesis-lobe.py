@@ -1,12 +1,15 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import time, os, sys
+import matplotlib.pyplot as plt
+from scipy.signal import hamming, triang, blackmanharris
+from scipy.fftpack import fft, ifft
 import math
-from scipy.fftpack import fft, ifft, fftshift
-from scipy.signal import hamming, blackmanharris
+import sys, os, functools, time
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import dftAnal, dftSynth
+
+import stft as STFT
+import sineModel as SM
+import utilFunctions as UF
 
 M = 256
 N = 256
@@ -44,23 +47,23 @@ SNR1 = -10*np.log10((powerX-powerY)/(powerX))
 freqaxis = fs*np.arange(0,N/2)/float(N)
 taxis = np.arange(N)/float(fs) 
 
-plt.figure(1)
+plt.figure(1, figsize=(9, 6))
 plt.subplot(3,2,1)
-plt.plot(20*np.log10(mY[:hN])-max(20*np.log10(mY[:hN])), 'r')
+plt.plot(20*np.log10(mY[:hN])-max(20*np.log10(mY[:hN])), 'r', lw=1.5)
 plt.title ('mX, mY (main lobe); Hamming')
-plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', alpha=.2)
+plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', lw=1.5, alpha=.2)
 plt.axis([0,hN,-120,0])
 
 plt.subplot(3,2,3)
-plt.plot(y[0:M], 'b')
+plt.plot(y[0:M], 'b', lw=1.5)
 plt.axis([0,M,-1,1])
 plt.title ('y (synthesis of main lobe)')
 
 plt.subplot(3,2,5)
 yerror = xw - y
-plt.plot(yerror, 'k')
-plt.axis([0,M,min(yerror),max(yerror)])
-plt.title (r"error function: x-y; SNR = ${%d}$ dB" %(SNR1))
+plt.plot(yerror, 'k', lw=1.5)
+plt.axis([0,M,-.003,.003])
+plt.title ("error function: x-y; SNR = ${%d}$ dB" %(SNR1))
 
 w = blackmanharris(M)
 xw = x*w
@@ -85,20 +88,22 @@ y = ifft(Y)
 SNR2 = -10*np.log10((powerX-powerY)/(powerX))
 
 plt.subplot(3,2,2)
-plt.plot(20*np.log10(mY[:hN])-max(20*np.log10(mY[:hN])), 'r')
+plt.plot(20*np.log10(mY[:hN])-max(20*np.log10(mY[:hN])), 'r', lw=1.5)
 plt.title ('mX, mY (main lobe); Blackman Harris')
-plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', alpha=.2)
+plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', lw=1.5, alpha=.2)
 plt.axis([0,hN,-120,0])
 
 plt.subplot(3,2,4)
-plt.plot(y[0:M], 'b')
+plt.plot(y[0:M], 'b', lw=1.5)
 plt.axis([0,M,-1,1])
 plt.title ('y (synthesis of main lobe)')
 
 plt.subplot(3,2,6)
 yerror2 = xw - y
-plt.plot(yerror2, 'k')
-plt.axis([0,M,min(yerror2),max(yerror2)])
-plt.title (r"error function: x-y; SNR = ${%d}$ dB" %(SNR2))
+plt.plot(yerror2, 'k', lw=1.5)
+plt.axis([0,M,-.003,.003])
+plt.title ("error function: x-y; SNR = ${%d}$ dB" %(SNR2))
 
+plt.tight_layout()
+plt.savefig('spec-sine-synthesis-lobe.png')
 plt.show()

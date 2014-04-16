@@ -1,31 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris
-from scipy.fftpack import fft, ifft
-import time
+from scipy.signal import hamming, triang, blackman
 import math
-import sys, os, functools
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions_C/'))
+import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import waveIO as WIO
-import peakProcessing as PP
-import harmonicDetection as HD
-import errorHandler as EH
-import stftAnal, dftAnal, f0Twm
+import dftModel as DFT
+import utilFunctions as UF
+import stft as STFT
+import harmonicModel as HM
+import sineModel as SM
 
-try:
-  import genSpecSines_C as GS
-  import twm_C as TWM
-except ImportError:
-  import genSpecSines as GS
-  import twm as TWM
-  EH.printWarning(1)
-
-
-(fs, x) = WIO.wavread('../../../sounds/piano.wav')
+(fs, x) = UF.wavread('../../../sounds/piano.wav')
 w = np.blackman(1501)
 N = 2048
 t = -90
@@ -36,8 +22,10 @@ maxnpeaksTwm = 4
 H = 128
 x1 = x[1.5*fs:1.8*fs]
 
-mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
-f0 = f0Twm.f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et, maxnpeaksTwm)
+plt.figure(1, figsize=(9, 7))
+mX, pX = STFT.stftAnal(x, fs, w, N, H)
+f0 = HM.f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et)
+yf0 = SM.sinewaveSynth(f0, np.zeros(f0.size)+1, np.array([]), 512, 128, fs)
 f0[f0==0] = np.nan
 maxplotfreq = 800.0
 numFrames = int(mX[:,0].size)
@@ -48,6 +36,9 @@ plt.autoscale(tight=True)
   
 plt.plot(frmTime, f0, linewidth=2, color='k')
 plt.autoscale(tight=True)
-plt.title('f0 on spectrogram; TWM; (piano.wav)')
+plt.title('mX + f0 (piano.wav), TWM')
+
+plt.tight_layout()
+plt.savefig('f0TWM-piano.png')
 plt.show()
 

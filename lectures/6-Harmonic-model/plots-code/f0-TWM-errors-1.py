@@ -1,15 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris, blackman
+from scipy.signal import hamming, triang, blackman
 import math
-import sys, os, functools
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
+import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import waveIO as WIO
-import peakProcessing as PP
-import stftAnal, dftAnal
+import dftModel as DFT
+import utilFunctions as UF
 
 
 def TWM (pfreq, pmag, maxnpeaks, f0c):
@@ -55,7 +52,7 @@ def TWM (pfreq, pmag, maxnpeaks, f0c):
 
   return f0, ErrorPM, ErrorMP, Error
 
-(fs, x) = WIO.wavread('../../../sounds/oboe-A4.wav')
+(fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 N = 1024
 hN = N/2
 M = 801
@@ -65,29 +62,31 @@ minf0 = 100
 maxf0 = 1500
 w = blackman (M)
 x1 = x[start:start+M]
-mX, pX = dftAnal.dftAnal(x1, w, N)          
-ploc = PP.peakDetection(mX, hN, t)    
-iploc, ipmag, ipphase = PP.peakInterp(mX, pX, ploc) 
+mX, pX = DFT.dftAnal(x1, w, N)          
+ploc = UF.peakDetection(mX, hN, t)    
+iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
 ipfreq = fs * iploc/N
 f0cand = np.arange(minf0, maxf0, 1.0)
 maxnpeaks = 10
 f0, ErrorPM, ErrorMP, Error = TWM (ipfreq, ipmag, maxnpeaks, f0cand)
 freqaxis = fs*np.arange(N/2)/float(N)
 
-plt.figure(1)
+plt.figure(1, figsize=(9, 7))
 plt.subplot (2,1,1)
-plt.plot(freqaxis,mX,'r')
+plt.plot(freqaxis,mX,'r', lw=1.5)
 plt.axis([100,5100,-80,max(mX)+1])
-plt.plot(fs * iploc / N, ipmag, marker='x', color='b', linestyle='') 
-plt.title('Magnitude spectrum + peaks (oboe-A4.wav)')   
+plt.plot(fs * iploc / N, ipmag, marker='x', color='b', linestyle='', markeredgewidth=1.5) 
+plt.title('mX + peaks (oboe-A4.wav)')   
 
 plt.subplot (2,1,2)
-plt.plot(f0cand,ErrorPM[0], 'b', label = 'ErrorPM')
-plt.plot(f0cand,ErrorMP, 'g', label = 'ErrorMP')
-plt.plot(f0cand,Error, color='black', label = 'Error Total')
+plt.plot(f0cand,ErrorPM[0], 'b', label = 'ErrorPM', lw=1.2)
+plt.plot(f0cand,ErrorMP, 'g', label = 'ErrorMP', lw=1.2)
+plt.plot(f0cand,Error, color='black', label = 'Error Total', lw=1.5)
 plt.axis([minf0,maxf0,min(Error),130])
 plt.legend()
 plt.title('TWM Errors')
 
+plt.tight_layout()
+plt.savefig('f0-TWM-errors-1.png')
 plt.show()
 

@@ -97,6 +97,35 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
   return xtfreq, xtmag, xtphase
 
 
+def sinewaveSynth(freq, mag, N, H, fs):
+  # Synthesis of a time-varying sinusoid
+  # freq,mag, phase: frequency, magnitude and phase of sinusoid,
+  # N: synthesis FFT size, H: hop size, fs: sampling rate
+  # returns y: output array sound
+  hN = N/2                                                # half of FFT size for synthesis
+  L = freq.size                                           # number of frames
+  pout = 0                                                # initialize output sound pointer         
+  ysize = H*(L+3)                                         # output sound size
+  y = np.zeros(ysize)                                     # initialize output array
+  sw = np.zeros(N)                                        # initialize synthesis window
+  ow = triang(2*H);                                       # triangular window
+  sw[hN-H:hN+H] = ow                                      # add triangular window
+  bh = blackmanharris(N)                                  # blackmanharris window
+  bh = bh / sum(bh)                                       # normalized blackmanharris window
+  sw[hN-H:hN+H] = sw[hN-H:hN+H]/bh[hN-H:hN+H]             # normalized synthesis window
+  lastfreq = freq[0]                                      # initialize synthesis frequencies
+  phase = 0                                               # initialize synthesis phases 
+  for l in range(L):                                      # iterate over all frames
+    phase += (np.pi*(lastfreq+freq[l])/fs)*H            # propagate phases
+    Y = UF.genSpecSines(freq[l], mag[l], phase, N, fs)    # generate sines in the spectrum         
+    lastfreq = freq[l]                                    # save frequency for phase propagation
+    yw = np.real(fftshift(ifft(Y)))                       # compute inverse FFT
+    y[pout:pout+N] += sw*yw                               # overlap-add and apply a synthesis window
+    pout += H                                             # advance sound pointer
+  y = np.delete(y, range(hN))                             # delete half of first window
+  y = np.delete(y, range(y.size-hN, y.size))              # delete half of the last window 
+  return y
+
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   # Synthesis of a sound using the sinusoidal model
   # tfreq,tmag, tphase: frequencies, magnitudes and phases of sinusoids,

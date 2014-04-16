@@ -2,16 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys, os, time
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions_C/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import stftAnal
-import sineModelAnal as SA
-import sineTracking as ST
-import waveIO as WIO
+import stft as STFT
+import sineModel as SM
+import utilFunctions as UF
 
-(fs, x) = WIO.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/bendir.wav'))
+(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/bendir.wav'))
 w = np.hamming(2001)
 N = 2048
 H = 200
@@ -20,9 +17,10 @@ minSineDur = .02
 maxnSines = 150
 freqDevOffset = 10
 freqDevSlope = 0.001
-mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
-tfreq, tmag, tphase = SA.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+mX, pX = STFT.stftAnal(x, fs, w, N, H)
+tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
+plt.figure(1, figsize=(9.5, 7))
 maxplotfreq = 800.0
 maxplotbin = int(N*maxplotfreq/fs)
 numFrames = int(mX[:,0].size)
@@ -33,7 +31,10 @@ plt.autoscale(tight=True)
   
 tracks = tfreq*np.less(tfreq, maxplotfreq)
 tracks[tracks<=0] = np.nan
-plt.plot(frmTime, tracks, color='k')
+plt.plot(frmTime, tracks, color='k', lw=1.5)
 plt.autoscale(tight=True)
-plt.title('sinusoidal tracks on spectrogram (bendir.wav)')
+plt.title('mX + sinusoidal tracks (bendir.wav)')
+
+plt.tight_layout()
+plt.savefig('sineModelAnal-bendir.png')
 plt.show()

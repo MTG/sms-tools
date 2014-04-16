@@ -30,7 +30,7 @@ mX = mX - max(mX)
 plt.subplot(4,1,2)
 plt.plot(np.arange(N/2), mX, 'r', lw=1.5)
 plt.axis([0,N/4,-70,0])
-plt.title ('mX (reactangular window)')
+plt.title ('mX (rectangular window)')
 
 w = np.hamming(501)
 mX, pX = DF.dftAnal(x1, w, N)

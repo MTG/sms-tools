@@ -4,10 +4,10 @@ import math
 import time, os, sys
 import essentia.standard as ess
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import waveIO as WIO
-(fs, x) = WIO.wavread('../../../sounds/oboe-A4.wav')
+import utilFunctions as UF
+(fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 
 M = 500
 start = .8*fs   
@@ -16,7 +16,7 @@ r = ess.AutoCorrelation(normalization = 'standard')(xp)
 r = r / max(r)
 peaks = ess.PeakDetection(threshold =.2, interpolate = False, minPosition = .01)(r)
 
-plt.figure(1)
+plt.figure(1, figsize=(9, 7))
 plt.subplot(211)
 plt.plot(np.arange(M)/float(fs), xp, lw=1.5)
 plt.axis([0, (M-1)/float(fs), min(xp), max(xp)])
@@ -25,11 +25,13 @@ plt.ylabel('amplitude')
 plt.title('x (oboe-A4.wav)')
 
 plt.subplot(212)
-plt.plot(np.arange(M)/float(fs), r, 'r')
-plt.plot(peaks[0]*(M-1)/float(fs),peaks[1], 'x', color='k', lw=1.5)
+plt.plot(np.arange(M)/float(fs), r, 'r', lw=1.5)
+plt.plot(peaks[0]*(M-1)/float(fs),peaks[1], 'x', color='k', markeredgewidth=1.5)
 plt.axis([0, (M-1)/float(fs), min(r), max(r)])
 plt.title('autocorrelation function + peaks')
 plt.xlabel('lag time (sec)')
 plt.ylabel('correlation')
 
+plt.tight_layout()
+plt.savefig('oboe-autocorrelation.png')
 plt.show()
