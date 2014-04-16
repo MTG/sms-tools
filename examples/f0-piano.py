@@ -54,7 +54,7 @@ x1 = x[1.5*fs:1.8*fs]
 plt.figure(1, figsize=(9, 7))
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
 f0 = HM.f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et)
-yf0 = sinewaveSynth(f0, np.zeros(f0.size), 512, 128, fs)
+yf0 = sinewaveSynth(f0, np.zeros(f0.size)-6.0, 512, 128, fs)
 f0[f0==0] = np.nan
 maxplotfreq = 800.0
 numFrames = int(mX[:,0].size)
