@@ -5,26 +5,26 @@ from scipy.fftpack import fft, ifft
 import time
 import sys, os
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import waveIO as WIO
-import stochasticModelAnal, stochasticModel,stftAnal
+import utilFunctions as UF
+import stochasticModel as STM
+import stft as STFT
   
-(fs, x) = WIO.wavread('../../../sounds/ocean.wav')
+(fs, x) = UF.wavread('../../../sounds/ocean.wav')
 w = np.hamming(512)
 N = 512
 H = 256
 stocf = .1
-mXenv = stochasticModelAnal.stochasticModelAnal(x, w, N, H, stocf)
-y = stochasticModel.stochasticModel(x, w, N, H, stocf)
-mX, pX = stftAnal.stftAnal(x, fs, w, N, H)
+mYst = STM.stochasticModelAnal(x, H, stocf)
+y = STM.stochasticModelSynth(mYst, H)
+mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
 
-plt.figure(1)
+plt.figure(1, figsize=(9, 7))
 plt.subplot(411)
 plt.plot(np.arange(x.size)/float(fs), x,'b')
-plt.title('input sound x=wavread(ocean.wav)')
+plt.title('x (ocean.wav)')
 plt.axis([0,x.size/float(fs),min(x),max(x)])
 
 plt.subplot(412)
@@ -32,19 +32,23 @@ numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(N/2)*float(fs)/N                         
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
-plt.title('magnitude spectrogram; M=512, N=512, H=256')
+plt.title('mX; M=512, N=512, H=256')
 plt.autoscale(tight=True)
 
 plt.subplot(413)
-numFrames = int(mXenv[:,0].size)
+numFrames = int(mYst[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(stocf*N/2)*float(fs)/(stocf*N)                       
-plt.pcolormesh(frmTime, binFreq, np.transpose(mXenv))
-plt.title('stochastic approximation; stocf=.1')
+plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
+plt.title('mY (stochastic approximation); stocf=.1')
 plt.autoscale(tight=True)
 
 plt.subplot(414)
-plt.plot(np.arange(x.size)/float(fs), y,'b')
+plt.plot(np.arange(y.size)/float(fs), y,'b')
 plt.title('y')
 plt.axis([0,y.size/float(fs),min(y),max(y)])
+
+plt.tight_layout()
+plt.savefig('stochasticModelAnalSynth.png')
+UF.wavwrite(y, fs, 'ocean-synthesis.wav')
 plt.show()

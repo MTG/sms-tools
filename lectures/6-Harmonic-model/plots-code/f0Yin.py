@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 
 import utilFunctions as UF
 import stft as STFT
+import sineModel as SM
 
 
 def f0Yin(x, N, H, minf0, maxf0):
@@ -48,6 +49,7 @@ if __name__ == '__main__':
   maxf0 = 300
   H = 256
   f0 = f0Yin(x, N, H, minf0, maxf0)
+  yf0 = SM.sinewaveSynth(f0, .8, H, fs)
   frmTime = H*np.arange(f0.size)/float(fs)  
   plt.plot(frmTime, f0, linewidth=2, color='k')
   plt.autoscale(tight=True)
@@ -55,5 +57,6 @@ if __name__ == '__main__':
 
   plt.tight_layout()
   plt.savefig('f0Yin.png')
+  UF.wavwrite(yf0, fs, 'f0Yin.wav')
   plt.show()
 

@@ -9,9 +9,9 @@ import dftModel as DFT
 import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/carnatic.wav')
-pin = 1.5*fs
-w = np.blackman(1501)
-N = 2048
+pin = 1.4*fs
+w = np.blackman(1601)
+N = 4096
 hM1 = int(math.floor((w.size+1)/2)) 
 hM2 = int(math.floor(w.size/2))  
 x1 = x[pin-hM1:pin+hM2]
@@ -25,12 +25,12 @@ plt.title('x (carnatic.wav)')
 
 plt.subplot(3,1,2)
 plt.plot(fs*np.arange(N/2)/float(N), mX, 'r', lw=1.5)
-plt.axis([0,fs/2,-110,max(mX)])
+plt.axis([0,fs/4,-100,max(mX)])
 plt.title ('mX')
 
 plt.subplot(3,1,3)
 plt.plot(fs*np.arange(N/2)/float(N), pX, 'c', lw=1.5)
-plt.axis([0,fs/2,min(pX),max(pX)])
+plt.axis([0,fs/4,min(pX),15])
 plt.title ('pX')
 
 plt.tight_layout()

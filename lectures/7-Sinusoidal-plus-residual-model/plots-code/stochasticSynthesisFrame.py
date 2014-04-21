@@ -5,9 +5,8 @@ import math
 import sys, os, time
 from scipy.fftpack import fft, ifft
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/utilFunctions/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import waveIO as WIO
+import utilFunctions as UF
 
 def stochasticModelFrame(x, w, N, stocf) :
   # x: input array sound, w: analysis window, N: FFT size,  
@@ -37,7 +36,7 @@ def stochasticModelFrame(x, w, N, stocf) :
     
 # example call of stochasticModel function
 if __name__ == '__main__':
-  (fs, x) = WIO.wavread('../../../sounds/ocean.wav')
+  (fs, x) = UF.wavread('../../../sounds/ocean.wav')
   w = np.hanning(1024)
   N = 1024
   stocf = 0.1
@@ -47,17 +46,20 @@ if __name__ == '__main__':
   last = first+w.size
   mX, pX, mY, pY, y = stochasticModelFrame(x[first:last], w, N, stocf)
   
-  plt.figure(1)
+  plt.figure(1, figsize=(9, 5))
   plt.subplot(3,1,1)
-  plt.plot(np.arange(0, fs/2.0, fs/float(N)), mY, 'r', label="mY")
-  plt.axis([0, maxFreq, -80, max(mX)+3])
-  plt.title('magnitude spectrum (approx of mX)')
+  plt.plot(np.arange(0, fs/2.0, fs/float(N)), mY, 'r', lw=1.5, label="mY")
+  plt.axis([0, maxFreq, -78, max(mX)+0.5])
+  plt.title('mY (stochastic approximation of mX)')
   plt.subplot(3,1,2)
-  plt.plot(np.arange(0, fs/2.0, fs/float(N)), pY-np.pi, 'c', label="pY")
+  plt.plot(np.arange(0, fs/2.0, fs/float(N)), pY-np.pi, 'c', lw=1.5, label="pY")
   plt.axis([0, maxFreq, -np.pi, np.pi]) 
-  plt.title('phase spectrum (random)')
+  plt.title('pY random phases)')
   plt.subplot(3,1,3)
-  plt.plot(np.arange(first, last)/float(fs), y, 'b')
+  plt.plot(np.arange(first, last)/float(fs), y, 'b', lw=1.5)
   plt.axis([first/float(fs), last/float(fs), min(y), max(y)])
-  plt.title('y')
+  plt.title('yst')
+
+  plt.tight_layout()
+  plt.savefig('stochasticSynthesisFrame.png')
   plt.show()

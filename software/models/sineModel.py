@@ -97,33 +97,36 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
   return xtfreq, xtmag, xtphase
 
 
-def sinewaveSynth(freq, mag, N, H, fs):
-  # Synthesis of a time-varying sinusoid
-  # freq,mag, phase: frequency, magnitude and phase of sinusoid,
-  # N: synthesis FFT size, H: hop size, fs: sampling rate
+def sinewaveSynth(freqs, amp, H, fs):
+  # Synthesis of a sinusoid with time-varying frequency
+  # freqs: array of frequencies of sinusoid, amp: amplitude of sinusoid
+  # H: hop size, fs: sampling rate
   # returns y: output array sound
-  hN = N/2                                                # half of FFT size for synthesis
-  L = freq.size                                           # number of frames
-  pout = 0                                                # initialize output sound pointer         
-  ysize = H*(L+3)                                         # output sound size
-  y = np.zeros(ysize)                                     # initialize output array
-  sw = np.zeros(N)                                        # initialize synthesis window
-  ow = triang(2*H);                                       # triangular window
-  sw[hN-H:hN+H] = ow                                      # add triangular window
-  bh = blackmanharris(N)                                  # blackmanharris window
-  bh = bh / sum(bh)                                       # normalized blackmanharris window
-  sw[hN-H:hN+H] = sw[hN-H:hN+H]/bh[hN-H:hN+H]             # normalized synthesis window
-  lastfreq = freq[0]                                      # initialize synthesis frequencies
-  phase = 0                                               # initialize synthesis phases 
-  for l in range(L):                                      # iterate over all frames
-    phase += (np.pi*(lastfreq+freq[l])/fs)*H            # propagate phases
-    Y = UF.genSpecSines(freq[l], mag[l], phase, N, fs)    # generate sines in the spectrum         
-    lastfreq = freq[l]                                    # save frequency for phase propagation
-    yw = np.real(fftshift(ifft(Y)))                       # compute inverse FFT
-    y[pout:pout+N] += sw*yw                               # overlap-add and apply a synthesis window
-    pout += H                                             # advance sound pointer
-  y = np.delete(y, range(hN))                             # delete half of first window
-  y = np.delete(y, range(y.size-hN, y.size))              # delete half of the last window 
+  t = np.arange(H)/float(fs)
+  lastphase = 0                                           # initialize synthesis phases
+  lastfreq = freqs[0]
+  y = np.array([])
+  for l in range(freqs.size):                             # iterate over all frames
+    if (lastfreq==0) & (freqs[l]==0):
+      A = np.zeros(H)
+      freq = np.zeros(H)
+    elif (lastfreq==0) & (freqs[l]>0):
+      A = np.arange(0,amp, amp/H)
+      freq = np.ones(H)*freqs[l]
+    elif (lastfreq>0) & (freqs[l]>0):
+      A = np.ones(H)*amp
+      if (lastfreq==freqs[l]):
+        freq = np.ones(H)*lastfreq
+      else:
+        freq = np.arange(lastfreq,freqs[l], (freqs[l]-lastfreq)/H)
+    elif (lastfreq>0) & (freqs[l]==0):
+      A = np.arange(amp,0,-amp/H)
+      freq = np.ones(H)*lastfreq
+    phase = 2*np.pi*freq*t+lastphase
+    yh = A * np.cos(phase) 
+    lastfreq = freqs[l]                                   # save frequency for phase propagation
+    lastphase = np.remainder(phase[H-1], 2*np.pi)
+    y = np.append(y, yh)    
   return y
 
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):

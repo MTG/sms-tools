@@ -25,7 +25,8 @@ x1 = x[1.5*fs:1.8*fs]
 plt.figure(1, figsize=(9, 7))
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
 f0 = HM.f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et)
-yf0 = SM.sinewaveSynth(f0, np.zeros(f0.size)+1, np.array([]), 512, 128, fs)
+f0 = UF.cleaningTrack(f0, 5)
+yf0 = SM.sinewaveSynth(f0, .8, H, fs)
 f0[f0==0] = np.nan
 maxplotfreq = 800.0
 numFrames = int(mX[:,0].size)
@@ -39,6 +40,7 @@ plt.autoscale(tight=True)
 plt.title('mX + f0 (piano.wav), TWM')
 
 plt.tight_layout()
-plt.savefig('f0TWM-piano.png')
+plt.savefig('f0Twm-piano.png')
+UF.wavwrite(yf0, fs, 'f0Twm-piano.wav')
 plt.show()
 

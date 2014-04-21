@@ -4,7 +4,7 @@ from essentia.standard import *
 from pylab import *
 from numpy import *
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import stftAnal
+import stft as STFT
 
 filename = '../../../sounds/carnatic.wav'
 hopSize = 128
@@ -50,9 +50,9 @@ pitch, confidence = run_pitch_contours_melody(contours_bins,
                                               contours_start_times,
                                               duration)
 
-figure(1)
+figure(1, figsize=(9, 6))
 
-mX, pX = stftAnal.stftAnal(audio, sampleRate, hamming(frameSize), frameSize, hopSize)
+mX, pX = STFT.stftAnal(audio, sampleRate, hamming(frameSize), frameSize, hopSize)
 maxplotfreq = 3000.0
 numFrames = int(mX[:,0].size)
 frmTime = hopSize*arange(numFrames)/float(sampleRate)                             
@@ -64,7 +64,9 @@ offset = .5 * frameSize/sampleRate
 for i in range(len(contours_bins)):
   time = contours_start_times[i] - offset + hopSize*arange(size(contours_bins[i]))/float(sampleRate)
   contours_freq = 55.0 * pow(2, array(contours_bins[i]) * 10 / 1200.0)
-  plot(time,contours_freq, color='k', linewidth = 3)
+  plot(time,contours_freq, color='k', linewidth = 2)
 
-plt.title('F0 trajectories on spectrogram (carnatic.wav)')
+plt.title('mX + F0 trajectories (carnatic.wav)')
+tight_layout()
+savefig('predominantmelody.png')
 show()

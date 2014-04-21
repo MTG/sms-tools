@@ -8,12 +8,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 
 import utilFunctions as UF
 (fs, x) = UF.wavread('../../../sounds/piano.wav')
-start = .3*fs
-M = 1000 
+start = 13860
+M = 800 
 xp = x[start:start+M]/float(max(x[start:start+M]))
 r = ess.AutoCorrelation(normalization = 'standard')(xp)
 r = r / max(r)
-peaks = ess.PeakDetection(threshold =.1, interpolate = False, minPosition = .01)(r)
+peaks = ess.PeakDetection(threshold =.11, interpolate = False, minPosition = .01)(r)
 
 plt.figure(1, figsize=(9, 7))
 plt.subplot(211)

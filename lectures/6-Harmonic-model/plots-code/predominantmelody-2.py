@@ -4,7 +4,9 @@ from essentia.standard import *
 from pylab import *
 from numpy import *
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import stftAnal
+import stft as STFT
+import sineModel as SM
+import utilFunctions as UF
 
 filename = '../../../sounds/carnatic.wav'
 hopSize = 128
@@ -50,9 +52,11 @@ pitch, confidence = run_pitch_contours_melody(contours_bins,
                                               contours_start_times,
                                               duration)
 
-figure(1)
+yf0 = SM.sinewaveSynth(pitch, .6, hopSize, sampleRate)
 
-mX, pX = stftAnal.stftAnal(audio, sampleRate, hamming(frameSize), frameSize, hopSize)
+figure(1, figsize=(9, 6))
+
+mX, pX = STFT.stftAnal(audio, sampleRate, hamming(frameSize), frameSize, hopSize)
 maxplotfreq = 3000.0
 numFrames = int(mX[:,0].size)
 frmTime = hopSize*arange(numFrames)/float(sampleRate)                             
@@ -63,7 +67,11 @@ plt.autoscale(tight=True)
 offset = .5 * frameSize/sampleRate
 time = hopSize*arange(size(pitch))/float(sampleRate)
 pitch[pitch==0]=nan
-plot(time, pitch, color='k', linewidth = 3)
+plot(time, pitch, color='k', linewidth = 2)
 
-plt.title('Prominent melody on spectrogram (carnatic.wav)')
+plt.title('mX + prominent melody (carnatic.wav)')
+tight_layout()
+savefig('predominantmelody-2.png')
+UF.wavwrite(yf0, sampleRate, 'predominantmelody-2.wav')
+
 show()

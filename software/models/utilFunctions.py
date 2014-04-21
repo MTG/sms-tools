@@ -201,7 +201,7 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
   return xr
 
 def cleaningSineTracks(tfreq, minTrackLength=3):
-  # delete short sinusoidal tracks 
+  # delete short fragments of a collections of sinusoidal tracks 
   # tfreq: frequency of tracks
   # minTrackLength: minimum duration of tracks in number of frames
   # returns tfreqn: frequency of tracks
@@ -222,6 +222,26 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
       if j <= minTrackLength:
         trackFreqs[i:i+j] = 0
   return tfreq
+
+def cleaningTrack(track, minTrackLength=3):
+  # delete short fragments of one single track
+  # track: array of values
+  # minTrackLength: minimum duration of tracks in number of frames
+  # returns cleanTrack: array of clean values
+  nFrames = track.size         # number of frames
+  cleanTrack = np.copy(track)
+  trackBegs = np.nonzero((track[:nFrames-1] <= 0) # begining of track contours
+                & (track[1:]>0))[0] + 1
+  if track[0]>0:
+    trackBegs = np.insert(trackBegs, 0, 0)
+  trackEnds = np.nonzero((track[:nFrames-1] > 0)  & (track[1:] <=0))[0] + 1
+  if track[nFrames-1]>0:
+    trackEnds = np.append(trackEnds, nFrames-1)
+  trackLengths = 1 + trackEnds - trackBegs           # lengths of trach contours
+  for i,j in zip(trackBegs, trackLengths):           # delete short track contours
+    if j <= minTrackLength:
+      cleanTrack[i:i+j] = 0
+  return cleanTrack
 
 def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01):
   # tracking sinusoids from one frame to the next
