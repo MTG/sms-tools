@@ -15,7 +15,7 @@ def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
   # N: FFT size (minimum 512), t: threshold in negative dB, 
   # minf0: minimum f0 frequency in Hz, maxf0: maximim f0 frequency in Hz, 
   # f0et: error threshold in the f0 detection (ex: 5),
-  # returns f0
+  # returns f0: fundamental frequency
   hN = N/2                                        # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))             # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                 # half analysis window size by floor
@@ -183,7 +183,7 @@ if __name__ == '__main__':
   numFrames = int(hfreq[:,0].size)
   plt.plot(frmTime, harms, color='k')
   plt.autoscale(tight=True)
-  plt.title('harmonics on spectrogram')
+  plt.title('mX + harmonics')
 
   y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
   UF.play(y, fs)

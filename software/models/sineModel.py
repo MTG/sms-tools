@@ -188,7 +188,7 @@ if __name__ == '__main__':
   tracks[tracks<=0] = np.nan
   plt.plot(frmTime, tracks, color='k')
   plt.autoscale(tight=True)
-  plt.title('sinusoidal tracks on spectrogram')
+  plt.title('mX + sinusoidal tracks')
 
   Ns = 512
   y = sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
