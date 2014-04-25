@@ -10,7 +10,7 @@ import utilFunctions as UF
 import math
 
 (fs, x1) = UF.wavread('../../../sounds/orchestra.wav')
-(fs, x2) = UF.wavread('../../../sounds/speech.wav')
+(fs, x2) = UF.wavread('../../../sounds/speech-male.wav')
 w1 = np.hamming(1024)
 N1 = 1024
 H1 = 256
@@ -40,39 +40,40 @@ mY = balancef * mX2 + (1-balancef) * mX1                            # generate o
 y = DFT.dftSynth(mY, pX1, M1) * sum(w1)  # overlap-add to generate output sound
 mY1, pY1 = DFT.dftAnal(y, w1, M1)  # overlap-add to generate output sound
 
-plt.figure(1, figsize=(9.5, 7))
+plt.figure(1, figsize=(9, 7))
 plt.subplot(321)
-plt.plot(np.arange(N1)/float(fs), x1*w1, 'b')
+plt.plot(np.arange(N1)/float(fs), x1*w1, 'b', lw=1.5)
 plt.axis([0, N1/float(fs), min(x1*w1), max(x1*w1)])
-plt.title('x1 (orchestra.wav)')
+plt.title('x (orchestra.wav)')
 
 plt.subplot(323)
-plt.plot(fs*np.arange(N1/2)/float(N1/2), mX1-max(mX1), 'r', lw=1.3, label = 'mX1')
-plt.plot(fs*np.arange(N1/2)/float(N1/2), mX2-max(mX2), 'k', lw=1.3, label='mX2')
+plt.plot(fs*np.arange(N1/2)/float(N1/2), mX1-max(mX1), 'r', lw=1.5, label = 'mX')
+plt.plot(fs*np.arange(N1/2)/float(N1/2), mX2-max(mX2), 'k', lw=1.5, label='mX2')
 plt.legend(prop={'size':10})
 plt.axis([0,fs/4.0,-70,2])
-plt.title('mX1 and mX2 (speech.wav)')
+plt.title('mX + mX2 (speech-male.wav)')
 
 plt.subplot(325)
-plt.plot(fs*np.arange(N1/2)/float(N1/2), pX1, 'c', lw=1.3)
+plt.plot(fs*np.arange(N1/2)/float(N1/2), pX1, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pX1),20])
-plt.title('pX1')
+plt.title('pX ')
 
 plt.subplot(322)
-plt.plot(np.arange(N1)/float(fs), y, 'b')
+plt.plot(np.arange(N1)/float(fs), y, 'b', lw=1.5)
 plt.axis([0, float(N1)/fs, min(y), max(y)])
 plt.title('y')
 
 plt.subplot(324)
-plt.plot(fs*np.arange(N1/2)/float(N1/2), mY1-max(mY1), 'r', lw=1.3)
+plt.plot(fs*np.arange(N1/2)/float(N1/2), mY1-max(mY1), 'r', lw=1.5)
 plt.axis([0,fs/4.0,-70,2])
 plt.title('mY')
 
 plt.subplot(326)
-plt.plot(fs*np.arange(N1/2)/float(N1/2), pY1, 'c', lw=1.3)
+plt.plot(fs*np.arange(N1/2)/float(N1/2), pY1, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pY1),6])
 plt.title('pY')
 
 plt.tight_layout()
+
 plt.savefig('stftMorph-frame.png')
 plt.show()

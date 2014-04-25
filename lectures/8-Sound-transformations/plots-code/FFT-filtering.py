@@ -14,26 +14,29 @@ N = 2048
 start = 1.0*fs
 x1 = x[start:start+N]
 
-plt.figure(1, figsize=(9.5, 7))
+plt.figure(1, figsize=(9, 7))
 plt.subplot(321)
-plt.plot(np.arange(N)/float(fs), x1*np.hamming(N), 'b')
+plt.plot(np.arange(N)/float(fs), x1*np.hamming(N), 'b', lw=1.5)
 plt.axis([0, N/float(fs), min(x1*np.hamming(N)), max(x1*np.hamming(N))])
 plt.title('x (orchestra.wav)')
 
 mX, pX = DFT.dftAnal(x1, np.hamming(N), N)
-filter = np.array([0, -40, 200, -40, 300, 0, 600, 0, 700,-40, 1500, -40, 1600, 0, 2500, 0, 2800, -40, 22050, -60])
-filt = np.interp(np.arange(N/2), (N/2)*filter[::2]/filter[-2], filter[1::2])
+startBin = int(N*500.0/fs)
+nBins = int(N*4000.0/fs)
+bandpass = (np.hanning(nBins) * 60.0) - 60
+filt = np.zeros(N/2)-60
+filt[startBin:startBin+nBins] = bandpass
 mY = mX + filt
 
 plt.subplot(323)
-plt.plot(fs*np.arange(N/2)/float(N/2), mX, 'r', lw=1.3, label = 'mX')
-plt.plot(fs*np.arange(N/2)/float(N/2), filt+max(mX), 'k', lw=1.3, label='filter')
+plt.plot(fs*np.arange(N/2)/float(N/2), mX, 'r', lw=1.5, label = 'mX')
+plt.plot(fs*np.arange(N/2)/float(N/2), filt+max(mX), 'k', lw=1.5, label='filter')
 plt.legend(prop={'size':10})
 plt.axis([0,fs/4.0,-90,max(mX)+2])
-plt.title('mX')
+plt.title('mX + filter')
 
 plt.subplot(325)
-plt.plot(fs*np.arange(N/2)/float(N/2), pX, 'c', lw=1.3)
+plt.plot(fs*np.arange(N/2)/float(N/2), pX, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pX),8])
 plt.title('pX')
 
@@ -45,12 +48,12 @@ plt.axis([0, float(N)/fs, min(y), max(y)])
 plt.title('y')
 
 plt.subplot(324)
-plt.plot(fs*np.arange(N/2)/float(N/2), mY1, 'r', lw=1.3)
+plt.plot(fs*np.arange(N/2)/float(N/2), mY1, 'r', lw=1.5)
 plt.axis([0,fs/4.0,-90,max(mY1)+2])
 plt.title('mY')
 
 plt.subplot(326)
-plt.plot(fs*np.arange(N/2)/float(N/2), pY, 'c', lw=1.3)
+plt.plot(fs*np.arange(N/2)/float(N/2), pY, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pY),8])
 plt.title('pY')
 

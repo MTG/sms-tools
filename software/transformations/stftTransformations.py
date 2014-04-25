@@ -1,15 +1,12 @@
 import numpy as np
-import time, os, sys
+import time, os, sys, math
 from scipy.signal import hamming, resample
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
-
 import dftModel as DFT
 import utilFunctions as UF
-import math
 
 def stftFiltering(x, fs, w, N, H, filter):
-# Analysis/synthesis of a sound using the short-time fourier transform
+# apply a filter to a sound by using the STFT
 # x: input sound, w: analysis window, N: FFT size, H: hop size
 # filter: magnitude response of filter with frequency-magnitude pairs (in dB)
 # returns y: output sound
@@ -22,19 +19,18 @@ def stftFiltering(x, fs, w, N, H, filter):
 	pend = x.size-hM1                              # last sample to start a frame
 	w = w / sum(w)                                 # normalize analysis window
 	y = np.zeros(x.size)                           # initialize output array
-	filt = np.interp(np.arange(N/2), (N/2)*filter[::2]/filter[-2], filter[1::2])  # generate filter shape
 	while pin<=pend:                               # while sound pointer is smaller than last sample      
 	#-----analysis-----  
 		x1 = x[pin-hM1:pin+hM2]                      # select one frame of input sound
 		mX, pX = DFT.dftAnal(x1, w, N)               # compute dft
-	# filter
-		mY = mX + filt                               # filter input magnitude spectrum
+	#------transformation-----
+		mY = mX + filter                             # filter input magnitude spectrum
 	#-----synthesis-----
 		y1 = DFT.dftSynth(mY, pX, M)                # compute idft
 		y[pin-hM1:pin+hM2] += H*y1                  # overlap-add to generate output sound
 		pin += H                                    # advance sound pointer
-	y = np.delete(y, range(hM2))                   # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1, y.size))    # add zeros at the end to analyze last sample
+	y = np.delete(y, range(hM2))                  # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1, y.size))   # add zeros at the end to analyze last sample
 	return y
 
 def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
@@ -64,7 +60,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 	#-----analysis-----  
 		mX1, pX1 = DFT.dftAnal(x1[pin1-hM1_1:pin1+hM1_2], w1, N1)           # compute dft
 		mX2, pX2 = DFT.dftAnal(x2[pin2-hM2_1:pin2+hM2_2], w2, N2)           # compute dft
-	# morph
+	#-----transformation-----
 		mX2smooth = resample(np.maximum(-200, mX2), mX2.size*smoothf)       # smooth spectrum of second sound
 		mX2 = resample(mX2smooth, N2/2) 
 		mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
@@ -92,6 +88,12 @@ if __name__ == '__main__':
 	w = np.hamming(1024)
 	N = 1024
 	H = 256
-	filter = np.array([0,0, 500, 0, 5000,-20, 6000,-40, 22050,-100])
-	y = stftFiltering(y, fs, w, N, H, filter)
+	# design a band stop filter using a hanning window
+	startBin = int(N*2000.0/fs)
+	nBins = int(N*3000.0/fs)
+	bandstop = -np.hanning(nBins) * 40.0
+	filt = np.zeros(N/2)
+	filt[startBin:startBin+nBins] = bandstop
+
+	y = stftFiltering(y, fs, w, N, H, filt)
 	UF.play(y, fs)
