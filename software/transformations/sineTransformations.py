@@ -24,7 +24,7 @@ def sineTimeScaling(sfreq, smag, timeScaling):
   ysfreq = sfreq[round(indexes[0]),:]                    # first output frame
   ysmag = smag[round(indexes[0]),:]                      # first output frame
   for l in indexes[1:]:                                  # generate frames for output sine tracks
-    ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))
+    ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))  
     ysmag = np.vstack((ysmag, smag[round(l),:])) 
   return ysfreq, ysmag
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
   tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
   freqScaling = np.array([0, 2.0, 1, .3])           
   ytfreq = sineFreqScaling(tfreq, freqScaling)
-  timeScale = np.array([.01, .0, .02, .02, .335, .4, .345, .41, .671, .8, .681, .81, .858, 1.2, .868, 1.21, 1.185, 1.6, 1.195, 1.61, 1.497, 2.0, 1.507, 2.01, 1.686, 2.4, 1.696, 2.41, 1.978, 2.8])          
+  timeScale = np.array([.01, .0, .03, .03, .335, .4, .355, .42, .671, .8, .691, .82, .858, 1.2, .878, 1.22, 1.185, 1.6, 1.205, 1.62, 1.497, 2.0, 1.517, 2.02, 1.686, 2.4, 1.706, 2.42, 1.978, 2.8])          
   ytfreq, ytmag = sineTimeScaling(ytfreq, tmag, timeScale)
   y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
   UF.play(y, fs)

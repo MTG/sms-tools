@@ -353,7 +353,6 @@ def D(x, N):
 	y[np.isnan(y)] = N                                 # avoid NaN if x == 0
 	return y
 
-
 def peakInterp(mX, pX, ploc):
 	# interpolate peak values using parabolic interpolation
 	# mX: magnitude spectrum, pX: phase spectrum, ploc: locations of peaks
