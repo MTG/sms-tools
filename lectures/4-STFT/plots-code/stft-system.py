@@ -45,6 +45,7 @@ plt.title('y')
 
 plt.tight_layout()
 plt.savefig('stft-system.png')
+UF.wavwrite(y, fs, 'piano-stft.wav')
 plt.show()
   
   
