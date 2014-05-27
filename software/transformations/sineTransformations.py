@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
-from scipy.fftpack import fft, ifft, fftshift
 import math, sys, os, functools, time
 from scipy.interpolate import interp1d
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -17,7 +16,7 @@ def sineTimeScaling(sfreq, smag, timeScaling):
   maxInTime = max(timeScaling[::2])                      # maximum value used as input times
   maxOutTime = max(timeScaling[1::2])                    # maximum value used in output times
   outL = int(L*maxOutTime/maxInTime)                     # number of output frames
-  inFrames = L*timeScaling[::2]/maxInTime                # input time values in frames
+  inFrames = (L-1)*timeScaling[::2]/maxInTime                # input time values in frames
   outFrames = outL*timeScaling[1::2]/maxOutTime          # output time values in frames
   timeScalingEnv = interp1d(outFrames, inFrames, fill_value=0)    # interpolation function
   indexes = timeScalingEnv(np.arange(outL))              # generate frame indexes for the output
@@ -42,6 +41,7 @@ def sineFreqScaling(sfreq, freqScaling):
 
 if __name__ == '__main__':
   (fs, x) = UF.wavread('../../sounds/mridangam.wav')
+
   w = np.hamming(801)
   N = 2048
   t = -90

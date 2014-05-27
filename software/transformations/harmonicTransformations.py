@@ -53,7 +53,7 @@ def harmonicModulation(hfreq, hmag, frameRate, modRate, vibDepth, tremDepth):
 	vibDepth = np.interp(np.arange(L), L*vibDepth[::2]/vibDepth[-2], vibDepth[1::2])
 	tremDepth = np.interp(np.arange(L), L*tremDepth[::2]/tremDepth[-2], tremDepth[1::2])
 	modf = np.sin(2.0*np.pi*modRate/frameRate)              # modulation factor for both vibrato and tremolo (which has to be scaled later)
-  sfscale = fscale*(2.0**(vd/1200.0*modf))                # affective scale factor together with vibrato affect
+	sfscale = fscale*(2.0**(vd/1200.0*modf))                # affective scale factor together with vibrato affect
  
 	yhfreq = hfreq
 	yhmag = hmag
@@ -81,10 +81,6 @@ if __name__ == '__main__':
 	timbrePreservation = 1
 	hfreqt, hmagt = harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreservation, fs)
 	timeScaling = np.array([0, 0, 1, .5, 2, 4])
-	hfreqt, hmagt = ST.sineTimeScaling(hfreq, hmag, timeScaling)
+	hfreqt, hmagt = ST.sineTimeScaling(hfreqt, hmagt, timeScaling)
 	yh = SM.sineModelSynth(hfreqt, hmagt, np.array([]), Ns, H, fs) 
 	UF.play(yh, fs)  
-		
-
-
-

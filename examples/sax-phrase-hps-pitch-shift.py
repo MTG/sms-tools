@@ -28,8 +28,9 @@ if __name__ == '__main__':
 	H = Ns/4
 	stocf = .2
 	hfreq, hmag, hphase, mYst = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
-	timeScaling = np.array([0, 0, 0.211, 0.211, 0.39, 0.39, 0.618, 0.618, 0.816, 0.816, 0.879, 0.879, 1.077, 1.077+0.8, 1.149, 1.149+0.8, 2.172, 2.172, 2.184, 2.184, 2.680, 2.680, 2.837, 2.837, 3.276, 3.276, 4.397, 4.397, 4.614, 4.614, 4.818, 4.818, 4.852, 4.852, 5.068, 5.068, 6.176, 6.176, 6.612, 6.612, 6.843, 6.843, 7.258, 7.258, 7.309, 7.309, 8.009, 8.009, 8.229, 8.229, 8.782, 8.782, 8.842, 8.842, 9.379, 9.379])
-	yhfreq, yhmag, ystocEnv = HPST.hpsTimeScale(hfreq, hmag, mYst, timeScaling)
+	inTime = np.array([0, 0.165, 0.595, 0.850, 1.15, 2.15, 2.81, 3.285, 4.585, 4.845, 5.1, 6.15, 6.825, 7.285, 8.185, 8.830, 9.379])
+	outTime = np.array([0, 0.165, 0.595, 0.850, .9+1.15, 2.15, 2.81, 3.285, 4.585, 4.845, .9+5.1, 6.15, 6.825, 7.285, 8.185, 8.830, 9.379])            
+	yhfreq, yhmag, ystocEnv = HPST.hpsTimeScale(hfreq, hmag, mYst, inTime, outTime)
 	y, yh, yst = HPS.hpsModelSynth(yhfreq, yhmag, np.array([]), ystocEnv, Ns, H, fs)
 	UF.play(y, fs)
 		# wp.wavwrite(y,fs,'sax-phrase-total-synthesis.wav')
