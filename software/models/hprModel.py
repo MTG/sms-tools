@@ -8,6 +8,7 @@ import harmonicModel as HM
 import stft as STFT
 import dftModel as DFT
 import utilFunctions as UF
+import sineModel as SM
   
 def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   # Analysis/synthesis of a sound using the harmonic plus residual model
@@ -98,7 +99,7 @@ if __name__ == '__main__':
   hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
   xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
   mXr, pXr = STFT.stftAnal(xr, fs, hamming(Ns), Ns, H)
-  yh = HM.harmonicModelSynth(hfreq, hmag, hphase, Ns, H, fs)
+  yh = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
 
   UF.play(yh, fs)
   UF.play(xr, fs)
