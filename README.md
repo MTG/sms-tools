@@ -1,20 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title></title>
-	<meta name="generator" content="LibreOffice 4.2.3.3 (Linux)">
-	<meta name="created" content="0;0">
-	<meta name="changed" content="20140623;144358897059966">
-	<style type="text/css">
-	<!--
-		code.cjk { font-family: "Droid Sans Fallback", monospace }
-	-->
-	</style>
-</head>
-<body lang="en-US" dir="ltr" style="background: transparent">
-<p>sms-tools ========= 
-</p>
+sms-tools ========= 
+
 <p>Spectral modeling analysis and synthesis tools written in python
 and C for sound and music applications, plus complementary teaching
 material.</p>
@@ -42,5 +27,4 @@ examples directory. All the sounds used in the examples are in the
 sounds directory.</p>
 <p>All this code is used in several classes that I teach. The slides
 and demo code used in class are in the lectures directory.</p>
-</body>
-</html>
+
