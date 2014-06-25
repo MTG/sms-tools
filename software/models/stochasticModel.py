@@ -52,7 +52,7 @@ def stochasticModelSynth(mYst, H):
 	return y
 
 def stochasticModel(x, H, stocf):
-	# stochastic analysis/synthesis of a sound
+	# stochastic analysis/synthesis of a sound, one frame at a time
 	# x: input array sound, H: hop size, 
 	# stocf: decimation factor of mag spectrum for stochastic analysis
 	# returns y: output sound
@@ -83,15 +83,16 @@ def stochasticModel(x, H, stocf):
 	return y
 		
 		
-# example call of stochasticModelAnal and stochasticModelSynth functions
+# example use of the stochastic model functions
 if __name__ == '__main__':
 	(fs, x) = UF.wavread('../../sounds/ocean.wav')
 	H = 256
 	stocf = .1
 	mYst = stochasticModelAnal(x, H, stocf)
 	y = stochasticModelSynth(mYst, H)
-	UF.play(y, fs)
+	UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')
 
+	# plot stochastic representation
 	plt.figure(1, figsize=(9.5, 7)) 
 	numFrames = int(mYst[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)                             

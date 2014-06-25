@@ -19,7 +19,7 @@ def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSin
 	# f0et: error threshold in the f0 detection (ex: 5),
 	# harmDevSlope: slope of harmonic deviation
 	# minSineDur: minimum length of harmonics
-	# returns: hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
+	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 	mYst = UF.stochasticResidual(x, Ns, H, hfreq, hmag, hphase, fs, stocf)
 	return hfreq, hmag, hphase, mYst
@@ -28,20 +28,20 @@ def hpsModelSynth(hfreq, hmag, hphase, mYst, N, H, fs):
 	# Synthesis of a sound using the harmonic plus stochastic model
 	# hfreq: harmonic frequencies, hmag:harmonic amplitudes, mYst: stochastic envelope
 	# Ns: synthesis FFT size, H: hop size, fs: sampling rate 
-	# y: output sound, yh: harmonic component, yst: stochastic component
+	# returns y: output sound, yh: harmonic component, yst: stochastic component
 	hN = N/2                                                  # half of FFT size for synthesis
 	L = hfreq[:,0].size                                       # number of frames
 	nH = hfreq[0,:].size                                      # number of harmonics
 	pout = 0                                                  # initialize output sound pointer         
 	ysize = H*(L+4)                                           # output sound size
-	yhw = np.zeros(N)                                        # initialize output sound frame
-	ysw = np.zeros(N)                                        # initialize output sound frame
+	yhw = np.zeros(N)                                         # initialize output sound frame
+	ysw = np.zeros(N)                                         # initialize output sound frame
 	yh = np.zeros(ysize)                                      # initialize output array
 	yst = np.zeros(ysize)                                     # initialize output array
 	sw = np.zeros(N)     
 	ow = triang(2*H)                                          # overlapping window
 	sw[hN-H:hN+H] = ow      
-	bh = blackmanharris(N)                                   # synthesis window
+	bh = blackmanharris(N)                                    # synthesis window
 	bh = bh / sum(bh)                                         # normalize synthesis window
 	wr = bh                                                   # window for residual
 	sw[hN-H:hN+H] = sw[hN-H:hN+H] / bh[hN-H:hN+H]             # synthesis window for harmonic component
@@ -80,7 +80,7 @@ def hpsModelSynth(hfreq, hmag, hphase, mYst, N, H, fs):
 
 
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
-	# Analysis/synthesis of a sound using the harmonic plus stochastic model
+	# Analysis/synthesis of a sound using the harmonic plus stochastic model, one frame at a time
 	# x: input sound, fs: sampling rate, w: analysis window, 
 	# N: FFT size (minimum 512), t: threshold in negative dB, 
 	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
@@ -117,7 +117,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 	while pin<pend:  
 	#-----analysis-----             
 		x1 = x[pin-hM1:pin+hM2]                              # select frame
-		mX, pX = DFT.dftAnal(x1, w, N)                   # compute dft
+		mX, pX = DFT.dftAnal(x1, w, N)                       # compute dft
 		ploc = UF.peakDetection(mX, hN, t)                   # find peaks                
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
 		ipfreq = fs * iploc/N                                # convert peak locations to Hz
@@ -164,6 +164,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 	y = yh+yst                                              # sum of harmonic and stochastic components
 	return y, yh, yst
 
+# example of using the harmonic plus stochastic model
 if __name__ == '__main__':
 	(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
 	w = np.blackman(601)
@@ -179,13 +180,17 @@ if __name__ == '__main__':
 	Ns = 512
 	H = Ns/4
 	stocf = .2
+	# compute the harmonic plus stochastic model of the whole sound
 	hfreq, hmag, hphase, mYst = hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
+	# synthesize a sound from the harmonic plus stochastic representation
 	y, yh, yst = hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
  
-	UF.play(y, fs)
-	UF.play(yh, fs)
-	UF.play(yst, fs)
+	# write output sound and harmonic and stochastic components
+	UF.wavwrite(y, fs, 'sax-phrase-hpsModel.wav')
+	UF.wavwrite(yh, fs, 'sax-phrase-harmonics.wav')
+	UF.wavwrite(yst, fs, 'sax-phrase-stochastic.wav')
 
+	# plot stochastic compoment
 	plt.figure(1, figsize=(9.5, 7)) 
 	maxplotfreq = 20000.0
 	numFrames = int(mYst[:,0].size)

@@ -186,7 +186,7 @@ if __name__ == '__main__':
   plt.title('mX + harmonics')
 
   y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
-  UF.play(y, fs)
+  UF.wavwrite(y, fs, 'vignesh-harmonicModel.wav')
 
   plt.tight_layout()
   plt.show()

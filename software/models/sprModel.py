@@ -10,10 +10,10 @@ import utilFunctions as UF
   
   
 def sprModel(x, fs, w, N, t):
-  # Analysis/synthesis of a sound using the sinusoidal plus residual model
+  # Analysis/synthesis of a sound using the sinusoidal plus residual model, one frame at a time
   # x: input sound, fs: sampling rate, w: analysis window, 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
-  # y: output sound, ys: sinusoidal component, xr: residual component
+  # returns y: output sound, ys: sinusoidal component, xr: residual component
 
   hN = N/2                                                      # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
@@ -72,41 +72,49 @@ def sprModel(x, fs, w, N, t):
   return y, ys, xr
 
 
-# test the subtraction of sines
+# example of using the sinusoidal plus residual model by first doing the whole analysis and then the synthesis
+# this permits to apply sinusoidal tracking, which is not possible with the sprModel function
 if __name__ == '__main__':
-  (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
-  w = np.hamming(2001)
-  N = 2048
-  H = 128
-  t = -100
-  minSineDur = .02
-  maxnSines = 200
-  freqDevOffset = 10
-  freqDevSlope = 0.001
-  tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
-  xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
-  mXr, pXr = STFT.stftAnal(xr, fs, hamming(H*2), H*2, H)
-  Ns = 512
-  ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+	(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
+	w = np.hamming(2001)
+	N = 2048
+	H = 128
+	t = -100
+	minSineDur = .02
+	maxnSines = 200
+	freqDevOffset = 10
+	freqDevSlope = 0.001
+	# perform sinusoidal analysis
+	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+	# subtract sinusoids from original 
+	xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
+  # compute spectrogram of residual
+	mXr, pXr = STFT.stftAnal(xr, fs, hamming(H*2), H*2, H)
+	Ns = 512
+	# synthesize sinusoids
+	ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
-  plt.figure(1, figsize=(9.5, 7))
-  numFrames = int(mXr[:,0].size)
-  frmTime = H*np.arange(numFrames)/float(fs)                             
-  binFreq = np.arange(H)*float(fs)/(H*2)                       
-  plt.pcolormesh(frmTime, binFreq, np.transpose(mXr))
-  plt.autoscale(tight=True)
+	# plot magnitude spectrogram of residual
+	plt.figure(1, figsize=(9.5, 7))
+	numFrames = int(mXr[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs)                             
+	binFreq = np.arange(H)*float(fs)/(H*2)                       
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mXr))
+	plt.autoscale(tight=True)
 
-  tfreq[tfreq==0] = np.nan
-  numFrames = int(tfreq[:,0].size)
-  frmTime = H*np.arange(numFrames)/float(fs) 
-  plt.plot(frmTime, tfreq, color='k', ms=3, alpha=1)
-  plt.xlabel('Time(s)')
-  plt.ylabel('Frequency(Hz)')
-  plt.autoscale(tight=True)
-  plt.title('sinusoidal + residual components')
+	# plot sinusoidal frequencies on top of residual spectrogram
+	tfreq[tfreq==0] = np.nan
+	numFrames = int(tfreq[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs) 
+	plt.plot(frmTime, tfreq, color='k', ms=3, alpha=1)
+	plt.xlabel('Time(s)')
+	plt.ylabel('Frequency(Hz)')
+	plt.autoscale(tight=True)
+	plt.title('sinusoidal + residual components')
 
-  UF.play(ys, fs)
-  UF.play(xr, fs)
+	# write sounds files for sinusoidal sound and residual sound
+	UF.wavwrite(ys, fs, 'bendir-sines.wav')
+	UF.wavwrite(xr, fs, 'bendir-residual.wav')
 
-  plt.tight_layout()
-  plt.show()
+	plt.tight_layout()
+	plt.show()

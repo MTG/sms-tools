@@ -161,7 +161,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
   y = np.delete(y, range(y.size-hN, y.size))              # delete half of the last window 
   return y
   
-# test sineModelAnal and sineModelSynth
+# example of using the sinusoidal Model
 if __name__ == '__main__':
   (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
   w = np.hamming(2001)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
   Ns = 512
   y = sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
-  UF.play(y, fs)
+  UF.wavwrite(y, fs, 'bendir-sineModel.wav')
 
   plt.tight_layout()
   plt.show()

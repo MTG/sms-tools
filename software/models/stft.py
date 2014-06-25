@@ -103,7 +103,7 @@ if __name__ == '__main__':
   plt.autoscale(tight=True)
 
   y = stftSynth(mX, pX, w.size, H)
-  UF.play(y, fs)   
+  UF.wavwrite(y, fs, 'piano-stft.wav')   
   
   plt.tight_layout()
   plt.show()

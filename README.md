@@ -27,8 +27,8 @@ $ easy_install cython
 Once Cython is installed go to the directory
 software/models/utilFunctions_C and type:</p>
 <p>
-<code class="western">python
-$ compileModule.py build_ext --inplace </code>
+<code class="western">
+$ python compileModule.py build_ext --inplace </code>
 </p>
 
 <p>The code for the basic analysis/synthesis models is in the
