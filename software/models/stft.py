@@ -73,15 +73,23 @@ def stftSynth(mY, pY, M, H) :
   return y
 
 
-# example call of stftAnal and stftSynth functions
+# example of using the stft functions
 if __name__ == '__main__':
+
+	# read the sound of the piano
   (fs, x) = UF.wavread('../../sounds/piano.wav')
+
+	# compute a window of the same size than the FFT
   w = np.hamming(1024)
   N = 1024
   H = 512
+
+	# compute the magnitude and phase spectrogram
   mX, pX = stftAnal(x, fs, w, N, H)
   
   plt.figure(1, figsize=(9.5, 7))
+
+	# plot the magnitude spectrogmra
   plt.subplot(211)
   numFrames = int(mX[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -92,6 +100,7 @@ if __name__ == '__main__':
   plt.title('magnitude spectrogram')
   plt.autoscale(tight=True)
 
+	# plot the phase spectrogram
   plt.subplot(212)
   numFrames = int(pX[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -102,7 +111,10 @@ if __name__ == '__main__':
   plt.title('phase spectrogram (derivative)')
   plt.autoscale(tight=True)
 
+	# perform the inverse stft
   y = stftSynth(mX, pX, w.size, H)
+
+	# write the sound resulting from the inverse stft
   UF.wavwrite(y, fs, 'piano-stft.wav')   
   
   plt.tight_layout()

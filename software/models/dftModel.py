@@ -69,25 +69,40 @@ def dftSynth(mX, pX, M):
   return y
 
 
-# example call of dftAnal and dftSynth function
+# example use of th dftModel
 if __name__ == '__main__':
+	
+	# read the sound of the oboe note
   (fs, x) = UF.wavread('../../sounds/oboe-A4.wav')
+	
+	# use and odd size blackman window
   w = np.blackman(511)
   N = 1024
   pin = 5000
+	
+	# find the two sides of the windo
   hM1 = int(math.floor((w.size+1)/2)) 
-  hM2 = int(math.floor(w.size/2))  
+  hM2 = int(math.floor(w.size/2)) 
+	
+	# get a fragment of the input sound 
   x1 = x[pin-hM1:pin+hM2]
-  mX, pX = dftAnal(x1, w, N)
+ 
+	# compute the dft of the sound fragment
+	mX, pX = dftAnal(x1, w, N)
+
+	# compute the inverse dft of the spectrum
   y = dftSynth(mX, pX, w.size)*sum(w)
 
   plt.figure(1, figsize=(9.5, 7))
+
+	# plot the sound fragment
   plt.subplot(4,1,1)
   plt.plot(np.arange(-hM1, hM2), x1)
   plt.axis([-hM1, hM2, min(x1), max(x1)])
   plt.ylabel('amplitude')
   plt.title('input signal: x')
 
+	# plot the magnitude spectrum
   plt.subplot(4,1,2)
   plt.plot(np.arange(N/2), mX, 'r')
   plt.axis([0,N/2,min(mX),max(mX)])
@@ -95,6 +110,7 @@ if __name__ == '__main__':
   plt.ylabel('amplitude (dB)')
   plt.ylabel('frequency samples')
 
+	# plot the phase spectrum
   plt.subplot(4,1,3)
   plt.plot(np.arange(N/2), pX, 'c')
   plt.axis([0,N/2,min(pX),max(pX)])
@@ -102,6 +118,7 @@ if __name__ == '__main__':
   plt.ylabel('phase (radians)')
   plt.ylabel('frequency samples')
 
+	# plot the sound resulting from the inverse dft
   plt.subplot(4,1,4)
   plt.plot(np.arange(-hM1, hM2), y)
   plt.axis([-hM1, hM2, min(y), max(y)])
@@ -111,5 +128,6 @@ if __name__ == '__main__':
   plt.tight_layout()
   plt.show()
 
+	# compute the energy different between input and output sound
   error = -(20*np.log10(2**15) - 20*np.log10(sum(abs(x1*w-y))))
   print "output/input error (in dB) =", error
