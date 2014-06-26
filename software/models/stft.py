@@ -73,20 +73,20 @@ def stftSynth(mY, pY, M, H) :
   return y
 
 
-# example of using the stft functions
+# example of using the stft functions, stftAnal and stftSynth
 if __name__ == '__main__':
 
 	# read the sound of the piano
   (fs, x) = UF.wavread('../../sounds/piano.wav')
-
-	# compute a window of the same size than the FFT
-  w = np.hamming(1024)
-  N = 1024
-  H = 512
+	
+  w = np.hamming(1024)  # compute a window of the same size than the FFT
+  N = 1024              # fft size 
+  H = 512               # hop size 1/4 of window size to have good overlap-add
 
 	# compute the magnitude and phase spectrogram
   mX, pX = stftAnal(x, fs, w, N, H)
   
+  # create figure to plot
   plt.figure(1, figsize=(9.5, 7))
 
 	# plot the magnitude spectrogmra

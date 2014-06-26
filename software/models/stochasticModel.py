@@ -85,12 +85,13 @@ def stochasticModel(x, H, stocf):
 		
 # example use of the stochastic model functions
 if __name__ == '__main__':
-	(fs, x) = UF.wavread('../../sounds/ocean.wav')
-	H = 256
-	stocf = .1
-	mYst = stochasticModelAnal(x, H, stocf)
-	y = stochasticModelSynth(mYst, H)
-	UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')
+
+	(fs, x) = UF.wavread('../../sounds/ocean.wav')          # read ocean sound
+	H = 256                                                 # hop size of analysis window
+	stocf = .1                                              # decimation factor used for the stochastic approximation
+	mYst = stochasticModelAnal(x, H, stocf)                 # compute stochastic model
+	y = stochasticModelSynth(mYst, H)                       # synthesize sound from stochastic model
+	UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')         # write output sound
 
 	# plot stochastic representation
 	plt.figure(1, figsize=(9.5, 7)) 

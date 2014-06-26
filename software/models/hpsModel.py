@@ -164,24 +164,28 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 	y = yh+yst                                              # sum of harmonic and stochastic components
 	return y, yh, yst
 
+##############################################################################################################
 # example of using the harmonic plus stochastic model
 if __name__ == '__main__':
+
+	# read the sax-phrase sound
 	(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
-	w = np.blackman(601)
-	N = 1024
-	t = -100
-	nH = 100
-	minf0 = 350
-	maxf0 = 700
-	f0et = 5
-	maxnpeaksTwm = 5
-	minSineDur = .1
-	harmDevSlope = 0.01
-	Ns = 512
-	H = Ns/4
-	stocf = .2
+	w = np.blackman(601)        # compute analysis window of odd size
+	N = 1024                    # fft size
+	t = -100                    # magnitude threshold used for peak detection
+	nH = 100                    # maximum number of harmonic to detect
+	minf0 = 350                 # minimum fundamental frequency
+	maxf0 = 700                 # maximum fundamental frequency
+	f0et = 5                    # maximum error allowed in f0 detection algorithm
+	minSineDur = .1             # min size of harmonic tracks
+	harmDevSlope = 0.01         # allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	Ns = 512                    # fft size used in synthesis
+	H = Ns/4                    # hop size used in analysis and synthesis
+	stocf = .2                  # decimation factor used for the stochastic approximation
+	
 	# compute the harmonic plus stochastic model of the whole sound
 	hfreq, hmag, hphase, mYst = hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
+	
 	# synthesize a sound from the harmonic plus stochastic representation
 	y, yh, yst = hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
  
@@ -190,7 +194,7 @@ if __name__ == '__main__':
 	UF.wavwrite(yh, fs, 'sax-phrase-harmonics.wav')
 	UF.wavwrite(yst, fs, 'sax-phrase-stochastic.wav')
 
-	# plot stochastic compoment
+	# plot spectrogram stochastic compoment
 	plt.figure(1, figsize=(9.5, 7)) 
 	maxplotfreq = 20000.0
 	numFrames = int(mYst[:,0].size)
@@ -200,6 +204,7 @@ if __name__ == '__main__':
 	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
 	plt.autoscale(tight=True)
 
+	# plot harmonic on top of stochastic spectrogram
 	harms = hfreq*np.less(hfreq,maxplotfreq)
 	harms[harms==0] = np.nan
 	numFrames = int(harms[:,0].size)

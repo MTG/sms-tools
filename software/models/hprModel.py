@@ -47,7 +47,7 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   while pin<pend:  
   #-----analysis-----             
     x1 = x[pin-hM1:pin+hM2]                          # select frame
-    mX, pX = DFT.dftAnal(x1, w, N)                    # compute dft
+    mX, pX = DFT.dftAnal(x1, w, N)                   # compute dft
     ploc = UF.peakDetection(mX, hN, t)               # find peaks 
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
     ipfreq = fs * iploc/N
@@ -82,30 +82,44 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   y = yh+xr                                         # sum of harmonic and residual components
   return y, yh, xr
  
+# example of using the harmonic plus residual model by first doing the whole analysis and then the synthesis
+# this permits to apply harmonic tracking, which is not possible with the hprModel function
 if __name__ == '__main__':
+
+  # read the sax-phrase sound
   (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/sax-phrase.wav'))
-  w = np.blackman(601)
-  N = 1024
-  t = -100
-  nH = 100
-  minf0 = 350
-  maxf0 = 700
-  f0et = 5
-  maxnpeaksTwm = 5
-  minSineDur = .1
-  harmDevSlope = 0.01
-  Ns = 512
-  H = Ns/4
+  w = np.blackman(601)        # compute analysis window of odd size
+  N = 1024                    # fft size
+  t = -100                    # magnitude threshold used for peak detection
+  nH = 100                    # maximum number of harmonic to detect
+  minf0 = 350                 # minimum fundamental frequency
+  maxf0 = 700                 # maximum fundamental frequency
+  f0et = 5                    # maximum error allowed in f0 detection algorithm
+  minSineDur = .1             # min size of harmonic tracks
+  harmDevSlope = 0.01         # allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+  Ns = 512                    # fft size used in synthesis
+  H = Ns/4                    # hop size used in analysis and synthesis
+  
+  # find harmonics
   hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
+  
+  # subtract harmonics from original sound
   xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
+  
+  # compute spectrogram of residual sound
   mXr, pXr = STFT.stftAnal(xr, fs, hamming(Ns), Ns, H)
+  
+  # synthesize harmonic component
   yh = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
 
-  UF.play(yh, fs)
-  UF.play(xr, fs)
+  # write harmonic and residual components
+  UF.wavwrite(yh, fs, 'sax-phrase-harmonic.wav')
+  UF.wavwrite(xr, fs, 'sax-phrase-residual.wav')
 
-
+  # create figure to plot
   plt.figure(1, figsize=(9.5, 7))
+
+  # plot residual spectrogram
   maxplotfreq = 20000.0
   numFrames = int(mXr[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
@@ -113,6 +127,7 @@ if __name__ == '__main__':
   plt.pcolormesh(frmTime, binFreq, np.transpose(mXr[:,:Ns*maxplotfreq/fs+1]))
   plt.autoscale(tight=True)
 
+  # plot harmonic frequencies on residual spectrogram
   harms = hfreq*np.less(hfreq,maxplotfreq)
   harms[harms==0] = np.nan
   numFrames = int(harms[:,0].size)

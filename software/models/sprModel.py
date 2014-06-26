@@ -75,23 +75,29 @@ def sprModel(x, fs, w, N, t):
 # example of using the sinusoidal plus residual model by first doing the whole analysis and then the synthesis
 # this permits to apply sinusoidal tracking, which is not possible with the sprModel function
 if __name__ == '__main__':
+
+  # read bendir sound
 	(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/bendir.wav'))
-	w = np.hamming(2001)
-	N = 2048
-	H = 128
-	t = -100
-	minSineDur = .02
-	maxnSines = 200
-	freqDevOffset = 10
-	freqDevSlope = 0.001
+	w = np.hamming(2001)          # compute analysis window of odd size
+	N = 2048                      # fft size
+	H = 128                       # hop size of analysis window
+	t = -100                      # magnitude threshold used for peak detection
+	minSineDur = .02              # minimum length of sinusoidal tracks in seconds
+	maxnSines = 200               # maximum number of paralell sinusoids
+	freqDevOffset = 10            # allowed deviation in Hz at lowest frequency used in the frame to frame tracking
+	freqDevSlope = 0.001          # increase factor of the deviation as the frequency increases
+
 	# perform sinusoidal analysis
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
-	# subtract sinusoids from original 
+	
+  # subtract sinusoids from original 
 	xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
+  
   # compute spectrogram of residual
 	mXr, pXr = STFT.stftAnal(xr, fs, hamming(H*2), H*2, H)
 	Ns = 512
-	# synthesize sinusoids
+	
+  # synthesize sinusoids
 	ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
 	# plot magnitude spectrogram of residual

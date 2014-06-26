@@ -151,33 +151,40 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
   return xhfreq, xhmag, xhphase
 
 
-# test harmonicModelAnal and harmonicModelSynth
+# example of using harmonicModelAnal and harmonicModelSynth
 if __name__ == '__main__':
-  (fs, x) = UF.wavread('../../sounds/vignesh.wav')
-  w = np.blackman(1201)
-  N = 2048
-  t = -90
-  nH = 100
-  minf0 = 130
-  maxf0 = 300
-  f0et = 7
-  maxnpeaksTwm = 4
-  Ns = 512
-  H = Ns/4
-  minSineDur = .1
-  harmDevSlope = 0.01
 
+  (fs, x) = UF.wavread('../../sounds/vignesh.wav')   # read vignesh sound file
+  w = np.blackman(1201)                              # create odd size window
+  N = 2048                                           # fft size
+  t = -90                                            # magnitude threshold used for peak detection
+  nH = 100                                           # maximum number of harmonics to identify
+  minf0 = 130                                        # minimum fundamental frequency in sound
+  maxf0 = 300                                        # maximum fundamental frequency in sound
+  f0et = 7                                           # maximum error accepted in f0 detection algorithm
+  Ns = 512                                           # fft size used for synthesis
+  H = Ns/4                                           # hop size used in analysis and synthesis, has to be 1/4 of Ns
+  minSineDur = .1                                    # minimum duration of sinusoidal tracks
+  harmDevSlope = 0.01                                # allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+
+  # compute spectrogram of input sound
   mX, pX = STFT.stftAnal(x, fs, w, N, H)
+
+  # computer harmonics of input sound
   hfreq, hmag, hphase = harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
-  maxplotfreq = 20000.0
+
+  # create figure to show plots
+  plt.figure(1, figsize=(9.5, 7))
+
+  # plot magnitude spectrogmra
+  maxplotfreq = 20000.0                 # show onnly frequencies below this value
   numFrames = int(mX[:,0].size)
   frmTime = H*np.arange(numFrames)/float(fs)                             
   binFreq = fs*np.arange(N*maxplotfreq/fs)/N  
-
-  plt.figure(1, figsize=(9.5, 7))
   plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
   plt.autoscale(tight=True)
   
+  # plot harmonics on top of spectrogram of input sound
   harms = hfreq*np.less(hfreq,maxplotfreq)
   harms[harms==0] = np.nan
   numFrames = int(hfreq[:,0].size)
@@ -185,8 +192,9 @@ if __name__ == '__main__':
   plt.autoscale(tight=True)
   plt.title('mX + harmonics')
 
-  y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
-  UF.wavwrite(y, fs, 'vignesh-harmonicModel.wav')
+
+  y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  # synthesize harmonics
+  UF.wavwrite(y, fs, 'vignesh-harmonicModel.wav')        # write output sound
 
   plt.tight_layout()
   plt.show()
