@@ -14,7 +14,7 @@ In Ubuntu (which we recommend) to install all the modules, plus the basic develo
 the Terminal:</p>
 <p>
 <code class="western">
-$ sudo apt-get install python-dev python-setuptools build-essentia ipython python-matplotlib python-numpy python-scipy
+$ sudo apt-get install python-dev python-setuptools build-essential ipython python-matplotlib python-numpy python-scipy
 </code>
 </p>
 <p>Some of the core functions are written in C and have to be compiled. For that,
