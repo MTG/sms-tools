@@ -1,26 +1,49 @@
+# example of using the functions in software/models/sprModel.py
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
-import math
-import sys, os, functools, time
-
+import sys, os, functools, time, math
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import sineModel as SM
 import stft as STFT
 import utilFunctions as UF
-  
 
-# read bendir sound
-(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../sounds/bendir.wav'))
-w = np.hamming(2001)          # compute analysis window of odd size
-N = 2048                      # fft size
-H = 128                       # hop size of analysis window
-t = -100                      # magnitude threshold used for peak detection
-minSineDur = .02              # minimum length of sinusoidal tracks in seconds
-maxnSines = 200               # maximum number of paralell sinusoids
-freqDevOffset = 10            # allowed deviation in Hz at lowest frequency used in the frame to frame tracking
-freqDevSlope = 0.001          # increase factor of the deviation as the frequency increases
+# input sound (monophonic with sampling rate of 44100)
+(fs, x) = UF.wavread('../sounds/bendir.wav')
+
+# analysis window size 
+M = 2001
+
+# analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+w = np.hamming(M) 
+
+# fft size (power of two, bigger or equal than M)
+N = 2048             
+
+# magnitude threshold of spectral peaks
+t = -80  
+
+# minimun duration of sinusoidal tracks
+minSineDur = .02
+
+# maximum number of parallel sinusoids
+maxnSines = 150  
+
+# frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+freqDevOffset = 10 
+
+# slope of the frequency deviation, higher frequencies have bigger deviation
+freqDevSlope = 0.001 
+
+# size of fft used in synthesis
+Ns = 512
+
+# hop size (has to be 1/4 of Ns)
+H = 128
+
+# --------- computation -----------------
 
 # perform sinusoidal analysis
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
@@ -34,6 +57,8 @@ Ns = 512
 	
 # synthesize sinusoids
 ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+
+# --------- plotting --------------------
 
 # plot magnitude spectrogram of residual
 plt.figure(1, figsize=(9.5, 7))
@@ -53,9 +78,13 @@ plt.ylabel('Frequency(Hz)')
 plt.autoscale(tight=True)
 plt.title('sinusoidal + residual components')
 
+plt.tight_layout()
+plt.show()
+
+# --------- write output sound ---------
+
 # write sounds files for sinusoidal sound and residual sound
 UF.wavwrite(ys, fs, 'bendir-sines.wav')
 UF.wavwrite(xr, fs, 'bendir-residual.wav')
 
-plt.tight_layout()
-plt.show()
+

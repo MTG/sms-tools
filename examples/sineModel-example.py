@@ -1,35 +1,63 @@
+# example of using the functions in software/models/sineModel.py
+
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris
+from scipy.signal import hann, hamming, triang, blackman, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
-import math
-import sys, os, functools, time
-
+import sys, os, functools, time, math
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import sineModel as SM
 import dftModel as DFT
 import stft as STFT
 import utilFunctions as UF
 
-# read the sound of the bendir
-(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../sounds/bendir.wav'))
+# ------- analysis parameters -------------------
 
-# compute and odd size hamming window with a length sufficient to be able to identify frequencies separated by 88Hz (4*fs/2001)
-w = np.hamming(2001)
+# input sound (monophonic with sampling rate of 44100)
+(fs, x) = UF.wavread('../sounds/bendir.wav')
 
-N = 2048             # fft size the next power of 2 bigger than the window size
-H = 128              # hop size Ns/4
-t = -80              # magnitude threshold quite low
-minSineDur = .02     # only accept sinusoidal trajectores bigger than 20ms
-maxnSines = 150      # track as many as 150 parallel sinusoids
-freqDevOffset = 10   # frequency deviation allowed in the sinusoids from frame to frame at frequency 0
-freqDevSlope = 0.001 # slope of the frequency deviation, higher frequencies have bigger deviation
+# analysis window size 
+M = 2001
+
+# analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+w = np.hamming(M) 
+
+# fft size (power of two, bigger or equal than M)
+N = 2048             
+
+# magnitude threshold of spectral peaks
+t = -80  
+
+# minimun duration of sinusoidal tracks
+minSineDur = .02
+
+# maximum number of parallel sinusoids
+maxnSines = 150  
+
+# frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+freqDevOffset = 10 
+
+# slope of the frequency deviation, higher frequencies have bigger deviation
+freqDevSlope = 0.001 
+
+# size of fft used in synthesis
+Ns = 512
+
+# hop size (has to be 1/4 of Ns)
+H = 128
+
+# --------- computation -----------------
 
 # compute the magnitude and phase spectrogram of input sound
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
 # compute the sinusoidal model
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+
+# synthesize the output sound from the sinusoidal representation
+y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+
+# --------- plotting --------------------
 
 # create figure to show plots
 plt.figure(1, figsize=(9.5, 7))
@@ -50,12 +78,12 @@ plt.plot(frmTime, tracks, color='k')
 plt.autoscale(tight=True)
 plt.title('mX + sinusoidal tracks')
 
-# synthesize the output sound from the sinusoidal representation
-Ns = 512
-y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+plt.tight_layout()
+plt.show()
+
+# --------- write output sound ---------
 
 # write the output sound
 UF.wavwrite(y, fs, 'bendir-sineModel.wav')
 
-plt.tight_layout()
-plt.show()
+

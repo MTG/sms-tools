@@ -1,10 +1,10 @@
+# example of using the functions in software/models/harmonicModel.py
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
-import math
-import sys, os, functools, time
-
+import sys, os, functools, time, math
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import harmonicModel as HM
 import dftModel as DFT
@@ -12,24 +12,59 @@ import stft as STFT
 import utilFunctions as UF
 import sineModel as SM
 
-(fs, x) = UF.wavread('../../sounds/vignesh.wav')   # read vignesh sound file
-w = np.blackman(1201)                              # create odd size window
-N = 2048                                           # fft size
-t = -90                                            # magnitude threshold used for peak detection
-nH = 100                                           # maximum number of harmonics to identify
-minf0 = 130                                        # minimum fundamental frequency in sound
-maxf0 = 300                                        # maximum fundamental frequency in sound
-f0et = 7                                           # maximum error accepted in f0 detection algorithm
-Ns = 512                                           # fft size used for synthesis
-H = Ns/4                                           # hop size used in analysis and synthesis, has to be 1/4 of Ns
-minSineDur = .1                                    # minimum duration of sinusoidal tracks
-harmDevSlope = 0.01                                # allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+# ------- analysis parameters -------------------
+
+# input sound (monophonic with sampling rate of 44100)
+(fs, x) = UF.wavread('../sounds/vignesh.wav') 
+
+# analysis window size 
+M = 1201
+
+# analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+w = np.blackman(M) 
+
+# fft size (power of two, bigger or equal than M)
+N = 2048             
+
+# magnitude threshold of spectral peaks
+t = -90  
+
+# minimun duration of sinusoidal tracks
+minSineDur = .1
+
+# maximum number of harmonics
+nH = 100  
+
+# minimum fundamental frequency in sound
+minf0 = 130 
+
+# maximum fundamental frequency in sound
+maxf0 = 300 
+
+# maximum error accepted in f0 detection algorithm                                    
+f0et = 7                                         
+
+# allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+harmDevSlope = 0.01 
+
+# size of fft used in synthesis
+Ns = 512
+
+# hop size (has to be 1/4 of Ns)
+H = 128
+
+# --------- computation -----------------
 
 # compute spectrogram of input sound
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
 # computer harmonics of input sound
 hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
+
+# synthesize harmonics
+y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  
+
+# --------- plotting --------------------
 
 # create figure to show plots
 plt.figure(1, figsize=(9.5, 7))
@@ -50,9 +85,13 @@ plt.plot(frmTime, harms, color='k')
 plt.autoscale(tight=True)
 plt.title('mX + harmonics')
 
-y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  # synthesize harmonics
-UF.wavwrite(y, fs, 'vignesh-harmonicModel.wav')        # write output sound
-
 plt.tight_layout()
 plt.show()
+
+# --------- write output sound ---------
+
+# write output sound
+UF.wavwrite(y, fs, 'vignesh-harmonicModel.wav')        
+
+
 

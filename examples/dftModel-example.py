@@ -1,24 +1,36 @@
+# example of using the functions in software/models/dftModel.py
+
 import matplotlib.pyplot as plt
 import numpy as np
-import time, os, sys
+import time, os, sys, math
 from scipy.fftpack import fft, ifft
-import math
-
+from scipy.signal import hann, hamming, blackman, blackmanharris
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import utilFunctions as UF
 import dftModel as DFT
 
-	
-# read the sound of the oboe note
+# ------- analysis parameters -------------------
+
+# input sound (monophonic with sampling rate of 44100)
 (fs, x) = UF.wavread('../sounds/oboe-A4.wav')
-	
-w = np.blackman(511) # use and odd size blackman window 
-N = 1024             # fft size of a power of two length
-pin = 5000           # sample of input sound to start reading
-	
+
+# analysis window size (odd integer value)
+M = 511
+
+# analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
+w = np.blackman(M) 
+
+# fft size (power of two, bigger than M)
+N = 1024  
+
+ # sample of input sound to start reading (integer value)          
+pin = 5000          
+
+# --------- computation -----------------
+
 # find the two sides of the windo
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2)) 
+hM1 = int(math.floor((M+1)/2)) 
+hM2 = int(math.floor(M/2)) 
 	
 # get a fragment of the input sound 
 x1 = x[pin-hM1:pin+hM2]
@@ -28,6 +40,8 @@ mX, pX = DFT.dftAnal(x1, w, N)
 
 # compute the inverse dft of the spectrum
 y = DFT.dftSynth(mX, pX, w.size)*sum(w)
+
+# --------- plotting --------------------
 
 # create figure
 plt.figure(1, figsize=(9.5, 7))

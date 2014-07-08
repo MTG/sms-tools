@@ -1,17 +1,34 @@
+# example of using the functions in software/models/stochasticModel.py
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hanning, resample
 from scipy.fftpack import fft, ifft, fftshift
 import sys, os, functools, time
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import stochasticModel as STM
 import utilFunctions as UF
-	
-(fs, x) = UF.wavread('../sounds/ocean.wav')             # read ocean sound
-H = 256                                                 # hop size of analysis window
-stocf = .1                                              # decimation factor used for the stochastic approximation
-mYst = STM.stochasticModelAnal(x, H, stocf)             # compute stochastic model
+
+# ------- analysis parameters -------------------
+
+# input sound (monophonic with sampling rate of 44100)
+(fs, x) = UF.wavread('../sounds/ocean.wav') 
+
+# hop size
+H = 256 
+
+# decimation factor used for the stochastic approximation
+stocf = .1  
+
+# --------- computation -----------------  
+
+# compute stochastic model                                          
+mYst = STM.stochasticModelAnal(x, H, stocf)             
+
+# synthesize sound from stochastic model
+y = STM.stochasticModelSynth(mYst, H)                   
+
+# --------- plotting --------------------
 
 # plot stochastic representation
 plt.figure(1, figsize=(9.5, 7)) 
@@ -24,9 +41,13 @@ plt.xlabel('Time(s)')
 plt.ylabel('Frequency(Hz)')
 plt.title('stochastic approximation')
 
-y = STM.stochasticModelSynth(mYst, H)                   # synthesize sound from stochastic model
-UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')         # write output sound
-
 plt.tight_layout()
 plt.show()
+
+# --------- write output sound ---------
+
+# write output sound
+UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')       
+
+
 

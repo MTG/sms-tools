@@ -1,8 +1,9 @@
+# functions that implement analysis and synthesis of sounds using the Stochastic Model
+# (for example usage check the examples directory)
+
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import hanning, resample
 from scipy.fftpack import fft, ifft, fftshift
-import sys, os, functools, time
 import utilFunctions as UF
 	
 def stochasticModelAnal(x, H, stocf):
@@ -81,29 +82,3 @@ def stochasticModel(x, H, stocf):
 	y = np.delete(y, range(H))                               # delete half of first window which was added 
 	y = np.delete(y, range(y.size-H, y.size))                # delete half of last window which was added                                            # advance sound pointer
 	return y
-		
-		
-# example use of the stochastic model functions
-if __name__ == '__main__':
-
-	(fs, x) = UF.wavread('../../sounds/ocean.wav')          # read ocean sound
-	H = 256                                                 # hop size of analysis window
-	stocf = .1                                              # decimation factor used for the stochastic approximation
-	mYst = stochasticModelAnal(x, H, stocf)                 # compute stochastic model
-	y = stochasticModelSynth(mYst, H)                       # synthesize sound from stochastic model
-	UF.wavwrite(y, fs, 'ocean-stochasticModel.wav')         # write output sound
-
-	# plot stochastic representation
-	plt.figure(1, figsize=(9.5, 7)) 
-	numFrames = int(mYst[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = np.arange(stocf*H)*float(fs)/(stocf*2*H)                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
-	plt.autoscale(tight=True)
-	plt.xlabel('Time(s)')
-	plt.ylabel('Frequency(Hz)')
-	plt.title('stochastic approximation')
-
-	plt.tight_layout()
-	plt.show()
-
