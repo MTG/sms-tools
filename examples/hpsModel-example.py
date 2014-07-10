@@ -2,17 +2,19 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming, triang, blackmanharris, hanning, resample
-from scipy.fftpack import fft, ifft, fftshift
-import sys, os, functools, time, math
+from scipy.signal import get_window
+import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
-import hpsModel as HPS
 import utilFunctions as UF
+import hpsModel as HPS
 
 # ------- analysis parameters -------------------
 
 # input sound (monophonic with sampling rate of 44100)
-(fs, x) = UF.wavread('../sounds/sax-phrase.wav') 
+inputFile = '../sounds/sax-phrase.wav'
+
+# analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+window = 'blackman' 
 
 # analysis window size 
 M = 601
@@ -53,20 +55,48 @@ Ns = 512
 # hop size (has to be 1/4 of Ns)
 H = 128
 
+# output sound files (monophonic with sampling rate of 44100)
+outputFileSines = 'sax_phrase_hpsModel_sines.wav'
+outputFileStochastic = 'sax_phrase_hprModel_stochastic.wav'
+outputFile = 'sax_phrase_hpsModel.wav'
 
 # --------- computation -----------------
-	
+
+# read input sound
+(fs, x) = UF.wavread(inputFile)
+
+# compute analysis window
+w = get_window(window, M)
+
 # compute the harmonic plus stochastic model of the whole sound
 hfreq, hmag, hphase, mYst = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
 	
 # synthesize a sound from the harmonic plus stochastic representation
 y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
 
+# write sounds files for harmonics, stochastic, and the sum
+UF.wavwrite(yh, fs, outputFileSines)
+UF.wavwrite(yst, fs, outputFileStochastic)
+UF.wavwrite(y, fs, outputFile)
+
 # --------- plotting --------------------
 
+# create figure to plot
+plt.figure(1, figsize=(12, 9))
+
+# frequency range to plot
+maxplotfreq = 15000.0
+
+# plot the input sound
+plt.subplot(3,1,1)
+plt.plot(np.arange(x.size)/float(fs), x)
+plt.axis([0, x.size/float(fs), min(x), max(x)])
+plt.ylabel('amplitude')
+plt.xlabel('time (sec)')
+plt.title('input sound: x')
+
 # plot spectrogram stochastic compoment
-plt.figure(1, figsize=(9.5, 7)) 
-maxplotfreq = 22500.0
+plt.subplot(3,1,2)
 numFrames = int(mYst[:,0].size)
 sizeEnv = int(mYst[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs)
@@ -80,17 +110,19 @@ harms[harms==0] = np.nan
 numFrames = int(harms[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs) 
 plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-plt.xlabel('Time(s)')
-plt.ylabel('Frequency(Hz)')
+plt.xlabel('time(s)')
+plt.ylabel('frequency (Hz)')
 plt.autoscale(tight=True)
-plt.title('harmonic + stochastic components')
+plt.title('harmonics + stochastic spectrogram')
+
+# plot the output sound
+plt.subplot(3,1,3)
+plt.plot(np.arange(y.size)/float(fs), y)
+plt.axis([0, y.size/float(fs), min(y), max(y)])
+plt.ylabel('amplitude')
+plt.xlabel('time (sec)')
+plt.title('output sound: y')
 
 plt.tight_layout()
 plt.show()
 
-# --------- write output sound ---------
-
-# write output sound and harmonic and stochastic components
-UF.wavwrite(y, fs, 'sax-phrase-hpsModel.wav')
-UF.wavwrite(yh, fs, 'sax-phrase-harmonics.wav')
-UF.wavwrite(yst, fs, 'sax-phrase-stochastic.wav')
