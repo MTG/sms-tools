@@ -27,7 +27,3 @@ H = Ns/4
 hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 y = HM.harmonicModelSynth(hfreq, hmag, hphase, Ns, H, fs)
 xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
-
-UF.play(x, fs)
-UF.play(y, fs)
-UF.play(xr, fs)
