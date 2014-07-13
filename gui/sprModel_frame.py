@@ -174,6 +174,7 @@ class SprModel_frame:
             maxnSines = int(self.maxnSines.get())
             freqDevOffset = int(self.freqDevOffset.get())
             freqDevSlope = float(self.freqDevSlope.get())
+            
             sprModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
         except ValueError:

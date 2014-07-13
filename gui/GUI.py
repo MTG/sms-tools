@@ -8,6 +8,8 @@ from harmonicModel_frame import *
 from stochasticModel_frame import *
 from sprModel_frame import *
 from spsModel_frame import *
+from hprModel_frame import *
+from hpsModel_frame import *
 
 root = Tk( ) 
 root.title('sms-tools GUI')
@@ -36,7 +38,10 @@ f7 = Frame(nb( ))
 sps = SpsModel_frame(f7)
 
 f8 = Frame(nb( )) 
+hpr = HprModel_frame(f8)
+
 f9 = Frame(nb( )) 
+hps = HpsModel_frame(f9)
 
 nb.add_screen(f1, "DFT") 
 nb.add_screen(f2, "STFT")

@@ -104,6 +104,7 @@ class StochasticModel_frame:
         try:
             H = int(self.H.get())
             stocf = float(self.stocf.get())
+            
             stochasticModel_example.main(self.filelocation.get(), H, stocf)
 
         except ValueError:

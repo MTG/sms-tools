@@ -162,6 +162,7 @@ class SineModel_frame:
             maxnSines = int(self.maxnSines.get())
             freqDevOffset = int(self.freqDevOffset.get())
             freqDevSlope = float(self.freqDevSlope.get())
+            
             sineModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
         except ValueError:

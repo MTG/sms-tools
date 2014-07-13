@@ -10,7 +10,8 @@ import sineModel as SM
 import stft as STFT
 import stochasticModel as STM
 
-def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001, stocf=0.2):
+def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, 
+	minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001, stocf=0.2):
 
 	# ------- analysis parameters -------------------
 
@@ -60,7 +61,7 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFileSines = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel_sines.wav'
-	outputFileStochastic = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel_residual.wav'
+	outputFileStochastic = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel_stochastic.wav'
 	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel.wav'
 
 	# write sounds files for sinusoidal, residual, and the sum

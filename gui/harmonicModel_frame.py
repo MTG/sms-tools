@@ -181,7 +181,9 @@ class HarmonicModel_frame:
             minf0 = int(self.minf0.get())
             maxf0 = int(self.maxf0.get())
             f0et = int(self.f0et.get())
-            harmonicModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, nH, minf0, maxf0, f0et)
+            harmDevSlope = float(self.harmDevSlope.get())
+            
+            harmonicModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
         except ValueError:
             tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

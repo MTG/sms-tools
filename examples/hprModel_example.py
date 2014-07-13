@@ -2,14 +2,16 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os, sys
 from scipy.signal import get_window
-import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import utilFunctions as UF
-import hpsModel as HPS
+import sineModel as SM
+import stft as STFT
+import harmonicModel as HM
 
 def main(inputFile='../sounds/sax-phrase.wav', window='blackman', M=601, N=1024, t=-100, 
-	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
+	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01):
 	
 	# ------- analysis parameters -------------------
 
@@ -24,7 +26,6 @@ def main(inputFile='../sounds/sax-phrase.wav', window='blackman', M=601, N=1024,
 	# maxf0: maximum fundamental frequency in sound
 	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
 	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
-	# stocf: decimation factor used for the stochastic approximation
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -40,21 +41,29 @@ def main(inputFile='../sounds/sax-phrase.wav', window='blackman', M=601, N=1024,
 	# compute analysis window
 	w = get_window(window, M)
 
-	# compute the harmonic plus stochastic model of the whole sound
-	hfreq, hmag, hphase, mYst = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
-		
-	# synthesize a sound from the harmonic plus stochastic representation
-	y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
+	# find harmonics
+	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
+	  
+	# subtract harmonics from original sound
+	xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
+	  
+	# compute spectrogram of residual
+	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
+	  
+	# synthesize harmonic component
+	yh = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
+
+	# sum harmonics and residual
+	y = xr[:min(xr.size, yh.size)]+yh[:min(xr.size, yh.size)]
 
 	# output sound file (monophonic with sampling rate of 44100)
-	outputFileSines = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel_sines.wav'
-	outputFileStochastic = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel_stochastic.wav'
-	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel.wav'
+	outputFileSines = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hprModel_sines.wav'
+	outputFileResidual = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hprModel_residual.wav'
+	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_hprModel.wav'
 
-
-	# write sounds files for harmonics, stochastic, and the sum
+	# write sounds files for harmonics, residual, and the sum
 	UF.wavwrite(yh, fs, outputFileSines)
-	UF.wavwrite(yst, fs, outputFileStochastic)
+	UF.wavwrite(xr, fs, outputFileResidual)
 	UF.wavwrite(y, fs, outputFile)
 
 	# --------- plotting --------------------
@@ -63,7 +72,7 @@ def main(inputFile='../sounds/sax-phrase.wav', window='blackman', M=601, N=1024,
 	plt.figure(figsize=(12, 9))
 
 	# frequency range to plot
-	maxplotfreq = 15000.0
+	maxplotfreq = 5000.0
 
 	# plot the input sound
 	plt.subplot(3,1,1)
@@ -73,25 +82,25 @@ def main(inputFile='../sounds/sax-phrase.wav', window='blackman', M=601, N=1024,
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 
-	# plot spectrogram stochastic compoment
+	# plot the magnitude spectrogram of residual
 	plt.subplot(3,1,2)
-	numFrames = int(mYst[:,0].size)
-	sizeEnv = int(mYst[0,:].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+	maxplotbin = int(N*maxplotfreq/fs)
+	numFrames = int(mXr[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs)                       
+	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mXr[:,:maxplotbin+1]))
 	plt.autoscale(tight=True)
 
-	# plot harmonic on top of stochastic spectrogram
+	# plot harmonic frequencies on residual spectrogram
 	harms = hfreq*np.less(hfreq,maxplotfreq)
 	harms[harms==0] = np.nan
 	numFrames = int(harms[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs) 
 	plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-	plt.xlabel('time (sec)')
-	plt.ylabel('frequency (Hz)')
+	plt.xlabel('Time(s)')
+	plt.ylabel('Frequency(Hz)')
 	plt.autoscale(tight=True)
-	plt.title('harmonics + stochastic spectrogram')
+	plt.title('harmonics + residual spectrogram')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

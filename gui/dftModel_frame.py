@@ -116,6 +116,7 @@ class DftModel_frame:
             M = int(self.M.get())
             N = int(self.N.get())
             time = float(self.time.get())
+            
             dftModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, time)
 
         except ValueError:

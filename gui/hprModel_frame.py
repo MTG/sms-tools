@@ -5,9 +5,9 @@ import pygame
 from scipy.io.wavfile import read
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../examples/'))
-import spsModel_example
+import hprModel_example
  
-class SpsModel_frame:
+class HprModel_frame:
   
     def __init__(self, parent):  
          
@@ -26,7 +26,7 @@ class SpsModel_frame:
         self.filelocation["width"] = 25
         self.filelocation.grid(row=1,column=0, sticky=W, padx=10)
         self.filelocation.delete(0, END)
-        self.filelocation.insert(0, '../sounds/bendir.wav')
+        self.filelocation.insert(0, '../sounds/sax-phrase.wav')
 
         #BUTTON TO BROWSE SOUND FILE
         self.open_file = Button(self.parent, text="Browse...", command=self.browse_file) #see: def browse_file(self)
@@ -42,7 +42,7 @@ class SpsModel_frame:
         wtype_label = "Analysis window type:"
         Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
         self.w_type = StringVar()
-        self.w_type.set("hamming") # initial value
+        self.w_type.set("blackman") # initial value
         window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
         window_option.grid(row=3, column=0, sticky=W, padx=10)
 
@@ -53,7 +53,7 @@ class SpsModel_frame:
         self.M["width"] = 8
         self.M.grid(row=5,column=0, sticky=W, padx=10)
         self.M.delete(0, END)
-        self.M.insert(0, "2001")
+        self.M.insert(0, "601")
 
         #FFT SIZE
         N_label = "FFT size 'N' (power of two, bigger than 'M'):"
@@ -62,7 +62,7 @@ class SpsModel_frame:
         self.N["width"] = 8
         self.N.grid(row=7,column=0, sticky=W, padx=10)
         self.N.delete(0, END)
-        self.N.insert(0, "2048")
+        self.N.insert(0, "1024")
 
         #THRESHOLD MAGNITUDE
         t_label = "Magnitude threshold of spectral peaks 't':"
@@ -71,7 +71,7 @@ class SpsModel_frame:
         self.t["width"] = 8
         self.t.grid(row=9, column=0, sticky=W, padx=10)
         self.t.delete(0, END)
-        self.t.insert(0, "-80")
+        self.t.insert(0, "-100")
 
         #MIN DURATION SINUSOIDAL TRACKS
         minSineDur_label = "Minimum duration of sinusoidal tracks:"
@@ -80,65 +80,75 @@ class SpsModel_frame:
         self.minSineDur["width"] = 8
         self.minSineDur.grid(row=11, column=0, sticky=W, padx=10)
         self.minSineDur.delete(0, END)
-        self.minSineDur.insert(0, "0.02")
+        self.minSineDur.insert(0, "0.1")
 
-        #MAX NUMBER PARALLEL SINUSOIDS
-        maxnSines_label = "Maximum number of parallel sinusoids:"
-        Label(self.parent, text=maxnSines_label).grid(row=12, column=0, sticky=W, padx=5, pady=(10,2))
-        self.maxnSines = Entry(self.parent, justify=CENTER)
-        self.maxnSines["width"] = 8
-        self.maxnSines.grid(row=13, column=0, sticky=W, padx=10)
-        self.maxnSines.delete(0, END)
-        self.maxnSines.insert(0, "150")
+        #MAX NUMBER OF HARMONICS
+        nH_label = "Maximum number of harmonics:"
+        Label(self.parent, text=nH_label).grid(row=12, column=0, sticky=W, padx=5, pady=(10,2))
+        self.nH = Entry(self.parent, justify=CENTER)
+        self.nH["width"] = 8
+        self.nH.grid(row=13, column=0, sticky=W, padx=10)
+        self.nH.delete(0, END)
+        self.nH.insert(0, "100")
 
-        #FREQUENCY DEVIATION ALLOWED
-        freqDevOffset_label = "Frequency deviation allowed in the sinusoids from frame to frame at frequency 0:"
-        Label(self.parent, text=freqDevOffset_label).grid(row=14, column=0, sticky=W, padx=5, pady=(10,2))
-        self.freqDevOffset = Entry(self.parent, justify=CENTER)
-        self.freqDevOffset["width"] = 8
-        self.freqDevOffset.grid(row=15, column=0, sticky=W, padx=10)
-        self.freqDevOffset.delete(0, END)
-        self.freqDevOffset.insert(0, "10")
+        #MIN FUNDAMENTAL FREQUENCY
+        minf0_label = "Minimum fundamental frequency in sound:"
+        Label(self.parent, text=minf0_label).grid(row=14, column=0, sticky=W, padx=5, pady=(10,2))
+        self.minf0 = Entry(self.parent, justify=CENTER)
+        self.minf0["width"] = 8
+        self.minf0.grid(row=15, column=0, sticky=W, padx=10)
+        self.minf0.delete(0, END)
+        self.minf0.insert(0, "350")
 
-        #SLOPE OF THE FREQ DEVIATION
-        freqDevSlope_label = "Slope of the frequency deviation, higher frequencies have bigger deviation:"
-        Label(self.parent, text=freqDevSlope_label).grid(row=16, column=0, sticky=W, padx=5, pady=(10,2))
-        self.freqDevSlope = Entry(self.parent, justify=CENTER)
-        self.freqDevSlope["width"] = 8
-        self.freqDevSlope.grid(row=17, column=0, sticky=W, padx=10)
-        self.freqDevSlope.delete(0, END)
-        self.freqDevSlope.insert(0, "0.001")
+        #MAX FUNDAMENTAL FREQUENCY
+        maxf0_label = "Maximum fundamental frequency in sound:"
+        Label(self.parent, text=maxf0_label).grid(row=16, column=0, sticky=W, padx=5, pady=(10,2))
+        self.maxf0 = Entry(self.parent, justify=CENTER)
+        self.maxf0["width"] = 8
+        self.maxf0.grid(row=17, column=0, sticky=W, padx=10)
+        self.maxf0.delete(0, END)
+        self.maxf0.insert(0, "700")
 
-        #DECIMATION FACTOR
-        stocf_label = "Decimation factor used for the stochastic approximation:"
-        Label(self.parent, text=stocf_label).grid(row=18, column=0, sticky=W, padx=5, pady=(10,2))
-        self.stocf = Entry(self.parent, justify=CENTER)
-        self.stocf["width"] = 8
-        self.stocf.grid(row=19, column=0, sticky=W, padx=10)
-        self.stocf.delete(0, END)
-        self.stocf.insert(0, "0.2")
+        #MAX ERROR ACCEPTED
+        f0et_label = "Maximum error accepted in f0 detection algorithm:"
+        Label(self.parent, text=f0et_label).grid(row=18, column=0, sticky=W, padx=5, pady=(10,2))
+        self.f0et = Entry(self.parent, justify=CENTER)
+        self.f0et["width"] = 8
+        self.f0et.grid(row=19, column=0, sticky=W, padx=10)
+        self.f0et.delete(0, END)
+        self.f0et.insert(0, "5")
+
+        #ALLOWED DEVIATION OF HARMONIC TRACKS
+        harmDevSlope_label = "Allowed deviation of harmonic tracks:"
+        Label(self.parent, text=harmDevSlope_label).grid(row=20, column=0, sticky=W, padx=5, pady=(10,2))
+        self.harmDevSlope = Entry(self.parent, justify=CENTER)
+        self.harmDevSlope["width"] = 8
+        self.harmDevSlope.grid(row=21, column=0, sticky=W, padx=10)
+        self.harmDevSlope.delete(0, END)
+        self.harmDevSlope.insert(0, "0.01")
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=20, column=0, padx=5, pady=(20,2), sticky=W)
+        self.compute.grid(row=22, column=0, padx=5, pady=(20,2), sticky=W)
 
         #BUTTON TO PLAY SINE OUTPUT
         output_label = "Sinusoidal:"
-        Label(self.parent, text=output_label).grid(row=21, column=0, sticky=W, padx=5, pady=(20,15))
-        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('spsModel_sines'), bg="gray30", fg="white")
-        self.output.grid(row=21, column=0, padx=(75,5), pady=(20,15), sticky=W)
+        Label(self.parent, text=output_label).grid(row=23, column=0, sticky=W, padx=5, pady=(20,15))
+        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_sines'), bg="gray30", fg="white")
+        self.output.grid(row=23, column=0, padx=(75,5), pady=(20,15), sticky=W)
 
-        #BUTTON TO PLAY STOCHASTIC OUTPUT
-        output_label = "Stochastic:"
-        Label(self.parent, text=output_label).grid(row=22, column=0, sticky=W, padx=5, pady=(5,15))
-        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('spsModel_stochastic'), bg="gray30", fg="white")
-        self.output.grid(row=22, column=0, padx=(75,5), pady=(5,15), sticky=W)
+        #BUTTON TO PLAY RESIDUAL OUTPUT
+        output_label = "Residual:"
+        Label(self.parent, text=output_label).grid(row=24, column=0, sticky=W, padx=5, pady=(5,15))
+        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_residual'), bg="gray30", fg="white")
+        self.output.grid(row=24, column=0, padx=(75,5), pady=(5,15), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"
-        Label(self.parent, text=output_label).grid(row=23, column=0, sticky=W, padx=5, pady=(5,15))
-        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('spsModel'), bg="gray30", fg="white")
-        self.output.grid(row=23, column=0, padx=(75,5), pady=(5,15), sticky=W)
+        Label(self.parent, text=output_label).grid(row=25, column=0, sticky=W, padx=5, pady=(5,15))
+        self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel'), bg="gray30", fg="white")
+        self.output.grid(row=25, column=0, padx=(75,5), pady=(5,15), sticky=W)
+
 
         # define options for opening file
         self.file_opt = options = {}
@@ -180,12 +190,13 @@ class SpsModel_frame:
             N = int(self.N.get())
             t = int(self.t.get())
             minSineDur = float(self.minSineDur.get())
-            maxnSines = int(self.maxnSines.get())
-            freqDevOffset = int(self.freqDevOffset.get())
-            freqDevSlope = float(self.freqDevSlope.get())
-            stocf = float(self.stocf.get())
-            
-            spsModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope, stocf)
+            nH = int(self.nH.get())
+            minf0 = int(self.minf0.get())
+            maxf0 = int(self.maxf0.get())
+            f0et = int(self.f0et.get())
+            harmDevSlope = float(self.harmDevSlope.get())
+
+            hprModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
         except ValueError:
             tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
