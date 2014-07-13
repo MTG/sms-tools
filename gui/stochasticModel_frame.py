@@ -58,13 +58,13 @@ class StochasticModel_frame:
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=6, column=0, padx=5, pady=(20,2), sticky=W)
+        self.compute.grid(row=6, column=0, padx=5, pady=(10,2), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"
-        Label(self.parent, text=output_label).grid(row=7, column=0, sticky=W, padx=5, pady=(20,15))
+        Label(self.parent, text=output_label).grid(row=7, column=0, sticky=W, padx=5, pady=(10,15))
         self.output = Button(self.parent, text=">", command=self.play_out_sound, bg="gray30", fg="white")
-        self.output.grid(row=7, column=0, padx=(70,5), pady=(20,15), sticky=W)
+        self.output.grid(row=7, column=0, padx=(60,5), pady=(10,15), sticky=W)
 
         # define options for opening file
         self.file_opt = options = {}

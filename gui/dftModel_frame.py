@@ -44,7 +44,7 @@ class DftModel_frame:
         self.w_type = StringVar()
         self.w_type.set("blackman") # initial value
         window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-        window_option.grid(row=3, column=0, sticky=W, padx=10)
+        window_option.grid(row=2, column=0, sticky=W, padx=150, pady=(10,2))
 
         #WINDOW SIZE
         M_label = "Analysis window size 'M':"
@@ -75,7 +75,7 @@ class DftModel_frame:
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=10, column=0, padx=5, pady=(20,15), sticky=W)
+        self.compute.grid(row=10, column=0, padx=5, pady=(10,15), sticky=W)
 
         # define options for opening file
         self.file_opt = options = {}
