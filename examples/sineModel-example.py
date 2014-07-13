@@ -2,13 +2,15 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os, sys
 from scipy.signal import get_window
-import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
 import sineModel as SM
 import stft as STFT
 import utilFunctions as UF
 
+def main(inputFile, window, M, N, H):
+	
 # ------- analysis parameters -------------------
 
 # input sound (monophonic with sampling rate of 44100)
