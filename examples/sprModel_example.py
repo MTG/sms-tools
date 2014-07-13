@@ -1,4 +1,4 @@
-# example of using the functions in software/models/sineModel.py
+# example of using the functions in software/models/sprModel.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +9,8 @@ import utilFunctions as UF
 import sineModel as SM
 import stft as STFT
 
-def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
+def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, 
+	minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
 
 	# ------- analysis parameters -------------------
 
@@ -37,19 +38,29 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	# compute analysis window
 	w = get_window(window, M)
 
-	# compute the magnitude and phase spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
-
-	# compute the sinusoidal model
+	# perform sinusoidal analysis
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+		
+	# subtract sinusoids from original 
+	xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
+	  
+	# compute spectrogram of residual
+	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
+		
+	# synthesize sinusoids
+	ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
-	# synthesize the output sound from the sinusoidal representation
-	y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+	# sum sinusoids and residual
+	y = xr[:min(xr.size, ys.size)]+ys[:min(xr.size, ys.size)]
 
 	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModel.wav'
+	outputFileSines = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sprModel_sines.wav'
+	outputFileResidual = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sprModel_residual.wav'
+	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sprModel.wav'
 
-	# write the sound resulting from the inverse stft
+	# write sounds files for sinusoidal, residual, and the sum
+	UF.wavwrite(ys, fs, outputFileSines)
+	UF.wavwrite(xr, fs, outputFileResidual)
 	UF.wavwrite(y, fs, outputFile)
 
 	# --------- plotting --------------------
@@ -68,20 +79,20 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 		
-	# plot the magnitude spectrogram
+	# plot the magnitude spectrogram of residual
 	plt.subplot(3,1,2)
 	maxplotbin = int(N*maxplotfreq/fs)
-	numFrames = int(mX[:,0].size)
+	numFrames = int(mXr[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)                       
 	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mXr[:,:maxplotbin+1]))
 	plt.autoscale(tight=True)
 		
-	# plot the sinusoidal frequencies on top of the spectrogram
+	# plot the sinusoidal frequencies on top of the residual spectrogram
 	tracks = tfreq*np.less(tfreq, maxplotfreq)
 	tracks[tracks<=0] = np.nan
 	plt.plot(frmTime, tracks, color='k')
-	plt.title('magnitude spectrogram + sinusoidal tracks')
+	plt.title('sinusoidal tracks + residual spectrogram')
 	plt.autoscale(tight=True)
 
 	# plot the output sound
@@ -92,10 +103,9 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	plt.xlabel('time (sec)')
 	plt.title('output sound: y')
 
+
 	plt.tight_layout()
 	plt.show()
 
-
 if __name__ == "__main__":
 	main()
-

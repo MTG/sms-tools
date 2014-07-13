@@ -36,7 +36,7 @@ class SineModel_frame:
         self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
         self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
-        ## STFT MODEL
+        ## SINE MODEL
 
         #ANALYSIS WINDOW TYPE
         wtype_label = "Analysis window type:"

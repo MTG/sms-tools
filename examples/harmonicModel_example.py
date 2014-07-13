@@ -10,51 +10,28 @@ import sineModel as SM
 import stft as STFT
 import harmonicModel as HM
 
-def main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et):
+def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
+	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
 	
 	# ------- analysis parameters -------------------
 
-	# input sound (monophonic with sampling rate of 44100)
-	inputFile = '../sounds/vignesh.wav'
-
-	# analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	window = 'blackman' 
-
-	# analysis window size 
-	M = 1201
-
-	# fft size (power of two, bigger or equal than M)
-	N = 2048             
-
-	# magnitude threshold of spectral peaks
-	t = -90  
-
-	# minimun duration of sinusoidal tracks
-	minSineDur = .1
-
-	# maximum number of harmonics
-	nH = 100  
-
-	# minimum fundamental frequency in sound
-	minf0 = 130 
-
-	# maximum fundamental frequency in sound
-	maxf0 = 300 
-
-	# maximum error accepted in f0 detection algorithm                                    
-	f0et = 7                                         
-
-	# allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
-	harmDevSlope = 0.01 
+	# inputFile: input sound file (monophonic with sampling rate of 44100)
+	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	# M: analysis window size 
+	# N: fft size (power of two, bigger or equal than M)
+	# t: magnitude threshold of spectral peaks 
+	# minSineDur: minimum duration of sinusoidal tracks
+	# nH: maximum number of harmonics
+	# minf0: minimum fundamental frequency in sound
+	# maxf0: maximum fundamental frequency in sound
+	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 
 	# size of fft used in synthesis
 	Ns = 512
 
 	# hop size (has to be 1/4 of Ns)
 	H = 128
-
-	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = 'vignesh_harmonicModel.wav'  
 
 	# --------- computation -----------------
 
@@ -72,6 +49,9 @@ def main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et):
 
 	# synthesize harmonics
 	y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  
+
+	# output sound file (monophonic with sampling rate of 44100)
+	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_harmonicModel.wav'
 
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)
@@ -123,7 +103,3 @@ def main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et):
 
 if __name__ == "__main__":
 	main()
-
-
-
-

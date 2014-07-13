@@ -5,9 +5,9 @@ import pygame
 from scipy.io.wavfile import read
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../examples/'))
-import stft_example
+import stochasticModel_example
  
-class Stft_frame:
+class StochasticModel_frame:
   
     def __init__(self, parent):  
          
@@ -26,7 +26,7 @@ class Stft_frame:
         self.filelocation["width"] = 25
         self.filelocation.grid(row=1,column=0, sticky=W, padx=10)
         self.filelocation.delete(0, END)
-        self.filelocation.insert(0, '../sounds/piano.wav')
+        self.filelocation.insert(0, '../sounds/ocean.wav')
 
         #BUTTON TO BROWSE SOUND FILE
         self.open_file = Button(self.parent, text="Browse...", command=self.browse_file) #see: def browse_file(self)
@@ -36,53 +36,35 @@ class Stft_frame:
         self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
         self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
-        ## STFT
-
-        #ANALYSIS WINDOW TYPE
-        wtype_label = "Analysis window type:"
-        Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
-        self.w_type = StringVar()
-        self.w_type.set("hamming") # initial value
-        window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-        window_option.grid(row=3, column=0, sticky=W, padx=10)
-
-        #WINDOW SIZE
-        M_label = "Analysis window size 'M':"
-        Label(self.parent, text=M_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
-        self.M = Entry(self.parent, justify=CENTER)
-        self.M["width"] = 8
-        self.M.grid(row=5,column=0, sticky=W, padx=10)
-        self.M.delete(0, END)
-        self.M.insert(0, "1024")
-
-        #FFT SIZE
-        N_label = "FFT size 'N' (power of two, bigger than 'M'):"
-        Label(self.parent, text=N_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
-        self.N = Entry(self.parent, justify=CENTER)
-        self.N["width"] = 8
-        self.N.grid(row=7,column=0, sticky=W, padx=10)
-        self.N.delete(0, END)
-        self.N.insert(0, "1024")
+        ## STOCHASTIC MODEL
 
         #HOP SIZE
-        H_label = "Hop size 'H' (at least 1/2 of M to have good overlap-add):"
-        Label(self.parent, text=H_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
+        H_label = "Hop size 'H':"
+        Label(self.parent, text=H_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
         self.H = Entry(self.parent, justify=CENTER)
         self.H["width"] = 8
-        self.H.grid(row=9, column=0, sticky=W, padx=10)
+        self.H.grid(row=3, column=0, sticky=W, padx=10)
         self.H.delete(0, END)
-        self.H.insert(0, "512")
+        self.H.insert(0, "256")
+
+        #DECIMATION FACTOR
+        stocf_label = "Decimation factor used for the stochastic approximation:"
+        Label(self.parent, text=stocf_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
+        self.stocf = Entry(self.parent, justify=CENTER)
+        self.stocf["width"] = 8
+        self.stocf.grid(row=5, column=0, sticky=W, padx=10)
+        self.stocf.delete(0, END)
+        self.stocf.insert(0, "0.1")
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=10, column=0, padx=5, pady=(20,2), sticky=W)
+        self.compute.grid(row=6, column=0, padx=5, pady=(20,2), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"
-        Label(self.parent, text=output_label).grid(row=11, column=0, sticky=W, padx=5, pady=(20,15))
+        Label(self.parent, text=output_label).grid(row=7, column=0, sticky=W, padx=5, pady=(20,15))
         self.output = Button(self.parent, text=">", command=self.play_out_sound, bg="gray30", fg="white")
-        self.output.grid(row=11, column=0, padx=(70,5), pady=(20,15), sticky=W)
-
+        self.output.grid(row=7, column=0, padx=(70,5), pady=(20,15), sticky=W)
 
         # define options for opening file
         self.file_opt = options = {}
@@ -120,17 +102,16 @@ class Stft_frame:
     def compute_model(self):
         
         try:
-            M = int(self.M.get())
-            N = int(self.N.get())
             H = int(self.H.get())
-            stft_example.main(self.filelocation.get(), self.w_type.get(), M, N, H)
+            stocf = float(self.stocf.get())
+            stochasticModel_example.main(self.filelocation.get(), H, stocf)
 
         except ValueError:
             tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
 
     def play_out_sound(self):
 
-        filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_stft.wav'
+        filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_stochasticModel.wav'
         if os.path.isfile(filename):
             sound = pygame.mixer.Sound(filename)
             sound.play()

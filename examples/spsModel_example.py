@@ -1,4 +1,4 @@
-# example of using the functions in software/models/sineModel.py
+# example of using the functions in software/models/spsModel.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,8 +8,9 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../so
 import utilFunctions as UF
 import sineModel as SM
 import stft as STFT
+import stochasticModel as STM
 
-def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
+def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001, stocf=0.2):
 
 	# ------- analysis parameters -------------------
 
@@ -22,6 +23,7 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	# maxnSines: maximum number of parallel sinusoids
 	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
 	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
+	# stocf: decimation factor used for the stochastic approximation
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -37,28 +39,42 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	# compute analysis window
 	w = get_window(window, M)
 
-	# compute the magnitude and phase spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
-
-	# compute the sinusoidal model
+	# perform sinusoidal analysis
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
+		
+	# subtract sinusoids from original sound
+	Ns = 512
+	xr = UF.sineSubtraction(x, Ns, H, tfreq, tmag, tphase, fs)
+		
+	# compute stochastic model of residual
+	mYst = STM.stochasticModelAnal(xr, H, stocf)
+		
+	# synthesize sinusoids
+	ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+		
+	# synthesize stochastic component
+	yst = STM.stochasticModelSynth(mYst, H)
 
-	# synthesize the output sound from the sinusoidal representation
-	y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+	# sum sinusoids and stochastic
+	y = yst[:min(yst.size, ys.size)]+ys[:min(yst.size, ys.size)]
 
 	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModel.wav'
+	outputFileSines = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel_sines.wav'
+	outputFileStochastic = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel_residual.wav'
+	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_spsModel.wav'
 
-	# write the sound resulting from the inverse stft
+	# write sounds files for sinusoidal, residual, and the sum
+	UF.wavwrite(ys, fs, outputFileSines)
+	UF.wavwrite(yst, fs, outputFileStochastic)
 	UF.wavwrite(y, fs, outputFile)
 
 	# --------- plotting --------------------
 
-	# create figure to show plots
-	plt.figure(figsize=(12, 9))
+	# plot stochastic component
+	plt.figure(figsize=(12, 9)) 
 
 	# frequency range to plot
-	maxplotfreq = 5000.0
+	maxplotfreq = 10000.0
 
 	# plot the input sound
 	plt.subplot(3,1,1)
@@ -67,22 +83,26 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	plt.ylabel('amplitude')
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
-		
-	# plot the magnitude spectrogram
+
+
 	plt.subplot(3,1,2)
-	maxplotbin = int(N*maxplotfreq/fs)
-	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                       
-	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
+	numFrames = int(mYst[:,0].size)
+	sizeEnv = int(mYst[0,:].size)
+	frmTime = H*np.arange(numFrames)/float(fs)
+	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
 	plt.autoscale(tight=True)
-		
-	# plot the sinusoidal frequencies on top of the spectrogram
-	tracks = tfreq*np.less(tfreq, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	plt.plot(frmTime, tracks, color='k')
-	plt.title('magnitude spectrogram + sinusoidal tracks')
+
+	# plot sinusoidal frequencies on top of stochastic component
+	sines = tfreq*np.less(tfreq,maxplotfreq)
+	sines[sines==0] = np.nan
+	numFrames = int(sines[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs) 
+	plt.plot(frmTime, sines, color='k', ms=3, alpha=1)
+	plt.xlabel('time(s)')
+	plt.ylabel('Frequency(Hz)')
 	plt.autoscale(tight=True)
+	plt.title('sinusoidal + stochastic spectrogram')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -95,7 +115,5 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	plt.tight_layout()
 	plt.show()
 
-
 if __name__ == "__main__":
 	main()
-

@@ -1,8 +1,13 @@
 from Tkinter import *
-from notebook import *
+from notebook import *   # window with tabs
+
 from dftModel_frame import *
 from stft_frame import *
 from sineModel_frame import *
+from harmonicModel_frame import *
+from stochasticModel_frame import *
+from sprModel_frame import *
+from spsModel_frame import *
 
 root = Tk( ) 
 root.title('sms-tools GUI')
@@ -19,9 +24,17 @@ f3 = Frame(nb( ))
 sine = SineModel_frame(f3)
 
 f4 = Frame(nb( )) 
+harmonic = HarmonicModel_frame(f4)
+
 f5 = Frame(nb( )) 
+stochastic = StochasticModel_frame(f5)
+
 f6 = Frame(nb( )) 
+spr = SprModel_frame(f6)
+
 f7 = Frame(nb( )) 
+sps = SpsModel_frame(f7)
+
 f8 = Frame(nb( )) 
 f9 = Frame(nb( )) 
 
