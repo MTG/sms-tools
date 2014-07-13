@@ -1,7 +1,7 @@
 from Tkinter import *
 from notebook import *
-from Dft_frame import *
-from Stft_frame import *
+from dftModel_frame import *
+from stft_frame import *
 
 root = Tk( ) 
 root.title('sms-tools GUI')
@@ -9,7 +9,7 @@ nb = notebook(root, TOP) # make a few diverse frames (panels), each using the NB
 
 # uses the notebook's frame
 f1 = Frame(nb( )) 
-dft = Dft_frame(f1)
+dft = DftModel_frame(f1)
 
 f2 = Frame(nb( )) 
 stft = Stft_frame(f2)

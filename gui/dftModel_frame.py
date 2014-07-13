@@ -7,7 +7,7 @@ from scipy.io.wavfile import read
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../examples/'))
 import dftModel_example
  
-class Dft_frame:
+class DftModel_frame:
   
     def __init__(self, parent):  
          
@@ -42,7 +42,7 @@ class Dft_frame:
         wtype_label = "Analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris):"
         Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
         self.w_type = StringVar()
-        self.w_type.set("hamming") # initial value
+        self.w_type.set("blackman") # initial value
         window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
         window_option.grid(row=3, column=0, sticky=W, padx=10)
 
