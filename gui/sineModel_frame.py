@@ -7,7 +7,7 @@ from scipy.io.wavfile import read
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../examples/'))
 import sineModel_example
  
-class Sine_frame:
+class SineModel_frame:
   
     def __init__(self, parent):  
          
@@ -17,29 +17,29 @@ class Sine_frame:
 
     def initUI(self):
 
-        choose_label = "Choose an input audio file .wav (monophonic with sampling rate of 44100 Hz):"
+        choose_label = "Choose an input audio file .wav:"
         Label(self.parent, text=choose_label).grid(row=0, column=0, sticky=W, padx=5, pady=(10,2))
  
         #TEXTBOX TO PRINT PATH OF THE SOUND FILE
         self.filelocation = Entry(self.parent)
         self.filelocation.focus_set()
-        self.filelocation["width"] = 60
-        self.filelocation.grid(row=1,column=0, columnspan=3, sticky=W+E, padx=10)
+        self.filelocation["width"] = 25
+        self.filelocation.grid(row=1,column=0, sticky=W, padx=10)
         self.filelocation.delete(0, END)
-        self.filelocation.insert(0, '../sounds/piano.wav')
+        self.filelocation.insert(0, '../sounds/bendir.wav')
 
         #BUTTON TO BROWSE SOUND FILE
         self.open_file = Button(self.parent, text="Browse...", command=self.browse_file) #see: def browse_file(self)
-        self.open_file.grid(row=1, column=3, padx=2) #put it beside the filelocation textbox
+        self.open_file.grid(row=1, column=0, sticky=W, padx=(220, 6)) #put it beside the filelocation textbox
  
         #BUTTON TO PREVIEW SOUND FILE
         self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
-        self.preview.grid(row=1, column=4, padx=(2,6))
+        self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
         ## STFT MODEL
 
         #ANALYSIS WINDOW TYPE
-        wtype_label = "Analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris):"
+        wtype_label = "Analysis window type:"
         Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
         self.w_type = StringVar()
         self.w_type.set("hamming") # initial value
@@ -47,42 +47,77 @@ class Sine_frame:
         window_option.grid(row=3, column=0, sticky=W, padx=10)
 
         #WINDOW SIZE
-        wsize_label = "Analysis window size M (odd integer value, e.g. 511):"
-        Label(self.parent, text=wsize_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
-        self.M_entry = Entry(self.parent, justify=CENTER)
-        self.M_entry["width"] = 8
-        self.M_entry.grid(row=5,column=0, sticky=W, padx=10)
-        self.M_entry.delete(0, END)
-        self.M_entry.insert(0, "1024")
+        M_label = "Analysis window size 'M':"
+        Label(self.parent, text=M_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
+        self.M = Entry(self.parent, justify=CENTER)
+        self.M["width"] = 8
+        self.M.grid(row=5,column=0, sticky=W, padx=10)
+        self.M.delete(0, END)
+        self.M.insert(0, "2001")
 
         #FFT SIZE
-        fft_label = "FFT size N (power of two, bigger than M, e.g. 1024):"
-        Label(self.parent, text=fft_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
-        self.N_entry = Entry(self.parent, justify=CENTER)
-        self.N_entry["width"] = 8
-        self.N_entry.grid(row=7,column=0, sticky=W, padx=10)
-        self.N_entry.delete(0, END)
-        self.N_entry.insert(0, "1024")
+        N_label = "FFT size 'N' (power of two, bigger than 'M'):"
+        Label(self.parent, text=N_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
+        self.N = Entry(self.parent, justify=CENTER)
+        self.N["width"] = 8
+        self.N.grid(row=7,column=0, sticky=W, padx=10)
+        self.N.delete(0, END)
+        self.N.insert(0, "2048")
 
-        #HOP SIZE
-        hop_label = "Hop size H (at least 1/2 of analysis window size to have good overlap-add, e.g. 512):"
-        Label(self.parent, text=hop_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
-        self.H_entry = Entry(self.parent, justify=CENTER)
-        self.H_entry["width"] = 8
-        self.H_entry.grid(row=9, column=0, sticky=W, padx=10)
-        self.H_entry.delete(0, END)
-        self.H_entry.insert(0, "512")
+        #THRESHOLD MAGNITUDE
+        t_label = "Magnitude threshold of spectral peaks 't':"
+        Label(self.parent, text=t_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
+        self.t = Entry(self.parent, justify=CENTER)
+        self.t["width"] = 8
+        self.t.grid(row=9, column=0, sticky=W, padx=10)
+        self.t.delete(0, END)
+        self.t.insert(0, "-80")
+
+        #MIN DURATION SINUSOIDAL TRACKS
+        minSineDur_label = "Minimum duration of sinusoidal tracks:"
+        Label(self.parent, text=minSineDur_label).grid(row=10, column=0, sticky=W, padx=5, pady=(10,2))
+        self.minSineDur = Entry(self.parent, justify=CENTER)
+        self.minSineDur["width"] = 8
+        self.minSineDur.grid(row=11, column=0, sticky=W, padx=10)
+        self.minSineDur.delete(0, END)
+        self.minSineDur.insert(0, "0.02")
+
+        #MAX NUMBER PARALLEL SINUSOIDS
+        maxnSines_label = "Maximum number of parallel sinusoids:"
+        Label(self.parent, text=maxnSines_label).grid(row=12, column=0, sticky=W, padx=5, pady=(10,2))
+        self.maxnSines = Entry(self.parent, justify=CENTER)
+        self.maxnSines["width"] = 8
+        self.maxnSines.grid(row=13, column=0, sticky=W, padx=10)
+        self.maxnSines.delete(0, END)
+        self.maxnSines.insert(0, "150")
+
+        #FREQUENCY DEVIATION ALLOWED
+        freqDevOffset_label = "Frequency deviation allowed in the sinusoids from frame to frame at frequency 0:"
+        Label(self.parent, text=freqDevOffset_label).grid(row=14, column=0, sticky=W, padx=5, pady=(10,2))
+        self.freqDevOffset = Entry(self.parent, justify=CENTER)
+        self.freqDevOffset["width"] = 8
+        self.freqDevOffset.grid(row=15, column=0, sticky=W, padx=10)
+        self.freqDevOffset.delete(0, END)
+        self.freqDevOffset.insert(0, "10")
+
+        #SLOPE OF THE FREQ DEVIATION
+        freqDevSlope_label = "Slope of the frequency deviation, higher frequencies have bigger deviation:"
+        Label(self.parent, text=freqDevSlope_label).grid(row=16, column=0, sticky=W, padx=5, pady=(10,2))
+        self.freqDevSlope = Entry(self.parent, justify=CENTER)
+        self.freqDevSlope["width"] = 8
+        self.freqDevSlope.grid(row=17, column=0, sticky=W, padx=10)
+        self.freqDevSlope.delete(0, END)
+        self.freqDevSlope.insert(0, "0.001")
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=10, column=0, padx=5, pady=(20,2), sticky=W)
+        self.compute.grid(row=18, column=0, padx=5, pady=(20,2), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"
-        Label(self.parent, text=output_label).grid(row=11, column=0, sticky=W, padx=5, pady=(20,2))
+        Label(self.parent, text=output_label).grid(row=19, column=0, sticky=W, padx=5, pady=(20,15))
         self.output = Button(self.parent, text=">", command=self.play_out_sound, bg="gray30", fg="white")
-        self.output.grid(row=11, column=0, padx=(70,5), pady=(20,2), sticky=W)
-
+        self.output.grid(row=19, column=0, padx=(70,5), pady=(20,15), sticky=W)
 
         # define options for opening file
         self.file_opt = options = {}
@@ -120,17 +155,21 @@ class Sine_frame:
     def compute_model(self):
         
         try:
-            M = int(self.M_entry.get())
-            N = int(self.N_entry.get())
-            H = int(self.H_entry.get())
-            stft_example.main(self.filelocation.get(), self.w_type.get(), M, N, H)
+            M = int(self.M.get())
+            N = int(self.N.get())
+            t = int(self.t.get())
+            minSineDur = float(self.minSineDur.get())
+            maxnSines = int(self.maxnSines.get())
+            freqDevOffset = int(self.freqDevOffset.get())
+            freqDevSlope = float(self.freqDevSlope.get())
+            sineModel_example.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
         except ValueError:
             tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
 
     def play_out_sound(self):
 
-        filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_stft.wav'
+        filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_sineModel.wav'
         if os.path.isfile(filename):
             sound = pygame.mixer.Sound(filename)
             sound.play()

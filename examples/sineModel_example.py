@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import os, sys
 from scipy.signal import get_window
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
+import utilFunctions as UF
 import sineModel as SM
 import stft as STFT
-import utilFunctions as UF
 
 def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
 
@@ -18,7 +18,7 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 	# M: analysis window size 
 	# N: fft size (power of two, bigger or equal than M)
 	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimun duration of sinusoidal tracks
+	# minSineDur: minimum duration of sinusoidal tracks
 	# maxnSines: maximum number of parallel sinusoids
 	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
 	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
@@ -28,9 +28,6 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 
 	# hop size (has to be 1/4 of Ns)
 	H = 128
-
-	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = 'bendir_sineModel.wav'  
 
 	# --------- computation -----------------
 
@@ -48,6 +45,9 @@ def main(inputFile='../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-
 
 	# synthesize the output sound from the sinusoidal representation
 	y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
+
+	# output sound file (monophonic with sampling rate of 44100)
+	outputFile = '../gui/output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModel.wav'  
 
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)

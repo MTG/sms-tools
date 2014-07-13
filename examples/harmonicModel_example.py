@@ -2,15 +2,16 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os, sys
 from scipy.signal import get_window
-import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
+import utilFunctions as UF
 import sineModel as SM
 import stft as STFT
-import utilFunctions as UF
 import harmonicModel as HM
 
-def main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, Ns, H):
+def main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et):
+	
 	# ------- analysis parameters -------------------
 
 	# input sound (monophonic with sampling rate of 44100)
