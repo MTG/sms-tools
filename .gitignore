@@ -3,4 +3,4 @@
 *.pyc
 *.o
 work/*.*
- 
+gui/output_sounds/*.*
