@@ -2,5 +2,7 @@
 *.so
 *.pyc
 *.o
-work/*.*
+workspace/*.pyc
+workspace/*.py
+workspace/*.wav
 models/models_interface/output_sounds/*.*
