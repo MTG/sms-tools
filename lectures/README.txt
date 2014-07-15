@@ -1,1 +1,1 @@
-The content in this directory is the slides used in my class lectures and code used for the plots shown in the slides. 
+The content in this directory is the lectures and code examples used in my classes
