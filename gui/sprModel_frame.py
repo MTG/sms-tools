@@ -36,7 +36,7 @@ class SprModel_frame:
         self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
         self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
-        ## HARMONIC MODEL
+        ## SPR MODEL
 
         #ANALYSIS WINDOW TYPE
         wtype_label = "Analysis window type:"
@@ -115,15 +115,15 @@ class SprModel_frame:
 
         #BUTTON TO PLAY SINE OUTPUT
         output_label = "Sinusoidal:"
-        Label(self.parent, text=output_label).grid(row=19, column=0, sticky=W, padx=5, pady=(10,5))
+        Label(self.parent, text=output_label).grid(row=19, column=0, sticky=W, padx=5, pady=(10,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('sprModel_sines'), bg="gray30", fg="white")
-        self.output.grid(row=19, column=0, padx=(80,5), pady=(10,5), sticky=W)
+        self.output.grid(row=19, column=0, padx=(80,5), pady=(10,0), sticky=W)
 
         #BUTTON TO PLAY RESIDUAL OUTPUT
         output_label = "Residual:"
-        Label(self.parent, text=output_label).grid(row=20, column=0, sticky=W, padx=5, pady=(5,5))
+        Label(self.parent, text=output_label).grid(row=20, column=0, sticky=W, padx=5, pady=(5,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('sprModel_residual'), bg="gray30", fg="white")
-        self.output.grid(row=20, column=0, padx=(80,5), pady=(5,5), sticky=W)
+        self.output.grid(row=20, column=0, padx=(80,5), pady=(5,0), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"

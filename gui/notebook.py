@@ -8,9 +8,9 @@ class notebook(object):
 		if side in (TOP, BOTTOM): 
 			self.side = LEFT 
 		else: self.side = TOP 
-		self.rb_fr = Frame(master, borderwidth=2, relief=RIDGE) 
+		self.rb_fr = Frame(master, borderwidth=2, relief=GROOVE) 
 		self.rb_fr.pack(side=side, fill=BOTH) 
-		self.screen_fr = Frame(master, borderwidth=2, relief=RIDGE) 
+		self.screen_fr = Frame(master, borderwidth=2, relief=FLAT) 
 		self.screen_fr.pack(fill=BOTH) 
 
 	def __call__(self): 

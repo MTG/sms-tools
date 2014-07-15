@@ -55,5 +55,6 @@ nb.add_screen(f9, "HPS")
 
 nb.display(f1)
 
+#root.geometry('440x620+0+0')
 root.geometry('+0+0')
 root.mainloop( )

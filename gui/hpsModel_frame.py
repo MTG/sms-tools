@@ -142,15 +142,15 @@ class HpsModel_frame:
 
         #BUTTON TO PLAY SINE OUTPUT
         output_label = "Sinusoidal:"
-        Label(self.parent, text=output_label).grid(row=15, column=0, sticky=W, padx=5, pady=(10,5))
+        Label(self.parent, text=output_label).grid(row=15, column=0, sticky=W, padx=5, pady=(10,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModel_sines'), bg="gray30", fg="white")
-        self.output.grid(row=15, column=0, padx=(80,5), pady=(10,5), sticky=W)
+        self.output.grid(row=15, column=0, padx=(80,5), pady=(10,0), sticky=W)
 
         #BUTTON TO PLAY STOCHASTIC OUTPUT
         output_label = "Stochastic:"
-        Label(self.parent, text=output_label).grid(row=16, column=0, sticky=W, padx=5, pady=(5,5))
+        Label(self.parent, text=output_label).grid(row=16, column=0, sticky=W, padx=5, pady=(5,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModel_stochastic'), bg="gray30", fg="white")
-        self.output.grid(row=16, column=0, padx=(80,5), pady=(5,5), sticky=W)
+        self.output.grid(row=16, column=0, padx=(80,5), pady=(5,0), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"

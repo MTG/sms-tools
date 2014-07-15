@@ -44,117 +44,117 @@ class HprModel_frame:
         self.w_type = StringVar()
         self.w_type.set("blackman") # initial value
         window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-        window_option.grid(row=2, column=0, sticky=W, padx=150, pady=(10,2))
+        window_option.grid(row=2, column=0, sticky=W, padx=(150,5), pady=(10,2))
 
         #WINDOW SIZE
         M_label = "Analysis window size 'M':"
-        Label(self.parent, text=M_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=M_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
         self.M = Entry(self.parent, justify=CENTER)
-        self.M["width"] = 8
-        self.M.grid(row=5,column=0, sticky=W, padx=10)
+        self.M["width"] = 5
+        self.M.grid(row=3,column=0, sticky=W, padx=(165,5), pady=(10,2))
         self.M.delete(0, END)
         self.M.insert(0, "601")
 
         #FFT SIZE
         N_label = "FFT size 'N' (power of two, bigger than 'M'):"
-        Label(self.parent, text=N_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=N_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
         self.N = Entry(self.parent, justify=CENTER)
-        self.N["width"] = 8
-        self.N.grid(row=7,column=0, sticky=W, padx=10)
+        self.N["width"] = 5
+        self.N.grid(row=4,column=0, sticky=W, padx=(275,5), pady=(10,2))
         self.N.delete(0, END)
         self.N.insert(0, "1024")
 
         #THRESHOLD MAGNITUDE
         t_label = "Magnitude threshold of spectral peaks 't':"
-        Label(self.parent, text=t_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=t_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
         self.t = Entry(self.parent, justify=CENTER)
-        self.t["width"] = 8
-        self.t.grid(row=9, column=0, sticky=W, padx=10)
+        self.t["width"] = 5
+        self.t.grid(row=5, column=0, sticky=W, padx=(265,5), pady=(10,2))
         self.t.delete(0, END)
         self.t.insert(0, "-100")
 
         #MIN DURATION SINUSOIDAL TRACKS
         minSineDur_label = "Minimum duration of sinusoidal tracks:"
-        Label(self.parent, text=minSineDur_label).grid(row=10, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=minSineDur_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
         self.minSineDur = Entry(self.parent, justify=CENTER)
-        self.minSineDur["width"] = 8
-        self.minSineDur.grid(row=11, column=0, sticky=W, padx=10)
+        self.minSineDur["width"] = 5
+        self.minSineDur.grid(row=6, column=0, sticky=W, padx=(250,5), pady=(10,2))
         self.minSineDur.delete(0, END)
         self.minSineDur.insert(0, "0.1")
 
         #MAX NUMBER OF HARMONICS
         nH_label = "Maximum number of harmonics:"
-        Label(self.parent, text=nH_label).grid(row=12, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=nH_label).grid(row=7, column=0, sticky=W, padx=5, pady=(10,2))
         self.nH = Entry(self.parent, justify=CENTER)
-        self.nH["width"] = 8
-        self.nH.grid(row=13, column=0, sticky=W, padx=10)
+        self.nH["width"] = 5
+        self.nH.grid(row=7, column=0, sticky=W, padx=(215,5), pady=(10,2))
         self.nH.delete(0, END)
         self.nH.insert(0, "100")
 
         #MIN FUNDAMENTAL FREQUENCY
         minf0_label = "Minimum fundamental frequency in sound:"
-        Label(self.parent, text=minf0_label).grid(row=14, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=minf0_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
         self.minf0 = Entry(self.parent, justify=CENTER)
-        self.minf0["width"] = 8
-        self.minf0.grid(row=15, column=0, sticky=W, padx=10)
+        self.minf0["width"] = 5
+        self.minf0.grid(row=8, column=0, sticky=W, padx=(275,5), pady=(10,2))
         self.minf0.delete(0, END)
         self.minf0.insert(0, "350")
 
         #MAX FUNDAMENTAL FREQUENCY
         maxf0_label = "Maximum fundamental frequency in sound:"
-        Label(self.parent, text=maxf0_label).grid(row=16, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=maxf0_label).grid(row=9, column=0, sticky=W, padx=5, pady=(10,2))
         self.maxf0 = Entry(self.parent, justify=CENTER)
-        self.maxf0["width"] = 8
-        self.maxf0.grid(row=17, column=0, sticky=W, padx=10)
+        self.maxf0["width"] = 5
+        self.maxf0.grid(row=9, column=0, sticky=W, padx=(278,5), pady=(10,2))
         self.maxf0.delete(0, END)
         self.maxf0.insert(0, "700")
 
         #MAX ERROR ACCEPTED
         f0et_label = "Maximum error accepted in f0 detection algorithm:"
-        Label(self.parent, text=f0et_label).grid(row=18, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=f0et_label).grid(row=10, column=0, sticky=W, padx=5, pady=(10,2))
         self.f0et = Entry(self.parent, justify=CENTER)
-        self.f0et["width"] = 8
-        self.f0et.grid(row=19, column=0, sticky=W, padx=10)
+        self.f0et["width"] = 5
+        self.f0et.grid(row=10, column=0, sticky=W, padx=(325,5), pady=(10,2))
         self.f0et.delete(0, END)
         self.f0et.insert(0, "5")
 
         #ALLOWED DEVIATION OF HARMONIC TRACKS
         harmDevSlope_label = "Allowed deviation of harmonic tracks:"
-        Label(self.parent, text=harmDevSlope_label).grid(row=20, column=0, sticky=W, padx=5, pady=(10,2))
+        Label(self.parent, text=harmDevSlope_label).grid(row=11, column=0, sticky=W, padx=5, pady=(10,2))
         self.harmDevSlope = Entry(self.parent, justify=CENTER)
-        self.harmDevSlope["width"] = 8
-        self.harmDevSlope.grid(row=21, column=0, sticky=W, padx=10)
+        self.harmDevSlope["width"] = 5
+        self.harmDevSlope.grid(row=11, column=0, sticky=W, padx=(240,5), pady=(10,2))
         self.harmDevSlope.delete(0, END)
         self.harmDevSlope.insert(0, "0.01")
 
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-        self.compute.grid(row=22, column=0, padx=5, pady=(10,2), sticky=W)
+        self.compute.grid(row=12, column=0, padx=5, pady=(10,2), sticky=W)
 
         #BUTTON TO PLAY SINE OUTPUT
         output_label = "Sinusoidal:"
-        Label(self.parent, text=output_label).grid(row=23, column=0, sticky=W, padx=5, pady=(10,5))
+        Label(self.parent, text=output_label).grid(row=13, column=0, sticky=W, padx=5, pady=(10,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_sines'), bg="gray30", fg="white")
-        self.output.grid(row=23, column=0, padx=(80,5), pady=(10,5), sticky=W)
+        self.output.grid(row=13, column=0, padx=(80,5), pady=(10,0), sticky=W)
 
         #BUTTON TO PLAY RESIDUAL OUTPUT
         output_label = "Residual:"
-        Label(self.parent, text=output_label).grid(row=24, column=0, sticky=W, padx=5, pady=(5,5))
+        Label(self.parent, text=output_label).grid(row=14, column=0, sticky=W, padx=5, pady=(5,0))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_residual'), bg="gray30", fg="white")
-        self.output.grid(row=24, column=0, padx=(80,5), pady=(5,5), sticky=W)
+        self.output.grid(row=14, column=0, padx=(80,5), pady=(5,0), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Output:"
-        Label(self.parent, text=output_label).grid(row=25, column=0, sticky=W, padx=5, pady=(5,15))
+        Label(self.parent, text=output_label).grid(row=15, column=0, sticky=W, padx=5, pady=(5,15))
         self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel'), bg="gray30", fg="white")
-        self.output.grid(row=25, column=0, padx=(80,5), pady=(5,15), sticky=W)
+        self.output.grid(row=15, column=0, padx=(80,5), pady=(5,15), sticky=W)
 
 
         # define options for opening file
         self.file_opt = options = {}
         options['defaultextension'] = '.wav'
         options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
-        options['initialdir'] = '../../sounds/'
+        options['initialdir'] = '../sounds/'
         options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
     def preview_sound(self):
