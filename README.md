@@ -7,7 +7,7 @@ material.</p>
 
 <p>In order to use these software tools you have to install version 2.7
 of python and the following modules: ipython, matplotlib, numpy,
-scipy. 
+scipy, and pygame. 
 </p>
 <p>
 In Ubuntu (which we recommend) to install all the modules, plus the basic development tools, is as simple as typing in 
@@ -32,15 +32,14 @@ $ python compileModule.py build_ext --inplace </code>
 </p>
 
 <p>The code for the basic analysis/synthesis models is in the
-directory software/models. There are examples of analysis/transformation/synthesis in the
-examples directory. All the sounds used in the examples are in the
-sounds directory.</p>
+directory software/models. To use these models there is an interface and example functions in software/models_interface. All the sounds used in the examples are in the sounds directory.</p>
 
-<p>To start we recommend to download the whole package, then create a folder with the name workspace 
-under the top folder, then copy one of the example file (ex. example.py) into the workspace folder, go to this folder in the Terminal and type: </p>
+<p>To start we recommend to download the whole package, compile the C code and execute the GUI available in software/models_interface. You have to use the Termina, go to that directory and type: </p>
 <code class="western">
-$ python example.py </code>
+$ python models_GUI.py </code>
 </p>
+
+<p> To modify the existing code, or to create your own, we recommend to use the workspace directory. Typically you would copy a file from software/models_interface or from software/transformations_interface to that directory and execute the code from there (you will have to change some of the paths inside the files). </p>
 
 <p>All this code is used in several classes that I teach. The slides
 and demo code used in class are in the lectures directory.</p>
