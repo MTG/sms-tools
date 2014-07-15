@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 import sys, os, functools, time, copy
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/transformations/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../transformations/'))
 import hpsModel as HPS
 import harmonicModel as HM
 import stft as STFT
@@ -15,7 +15,7 @@ import harmonicTransformations as HT
 import utilFunctions as UF
 
 # read the sound
-(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../sounds/cello-phrase.wav'))
+(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/cello-phrase.wav'))
 
 # plot the waveform
 plt.figure(1, figsize=(16, 4.5))

@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackman, blackmanharris
 import sys, os, functools, time, math
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../software/models/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 import stft as STFT
 import harmonicModel as HM
@@ -13,7 +13,7 @@ import sineModel as SM
 # ------- analysis parameters -------------------
 
 # input sound (monophonic with sampling rate of 44100)
-(fs, x) = UF.wavread('../sounds/piano.wav')
+(fs, x) = UF.wavread('../../sounds/piano.wav')
 
 # analysis window size 
 M = 1501
@@ -72,4 +72,4 @@ plt.show()
 # --------- write output sound ---------
 
 # write the sinusoid of the fundamental
-UF.wavwrite(y, fs, 'piano-f0.wav')
+UF.wavwrite(yf0, fs, 'piano-f0.wav')
