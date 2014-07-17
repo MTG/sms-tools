@@ -1,1 +1,1 @@
-In this directory there is the software to be executed to run the models
+This directory includes the software with which to run the different models.

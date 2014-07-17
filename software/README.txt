@@ -1,1 +1,1 @@
-This directory include all the software
+This directory includes all the software included in the sms-tools.

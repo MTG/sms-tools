@@ -1,1 +1,1 @@
-This directory is empty, this is where the output sounds are placed
+This directory is empty, this is where the output sounds are placed.

@@ -1,1 +1,1 @@
-The content in this directory is code for all the spectral models
+This directory includes the code for all the spectral models.
