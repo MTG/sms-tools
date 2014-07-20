@@ -6,3 +6,4 @@ workspace/*.pyc
 workspace/*.py
 workspace/*.wav
 models/models_interface/output_sounds/*.*
+models/transformations_interface/output_sounds/*.*
