@@ -1,11 +1,7 @@
+# functions that implement time scale transformations using the hpsModel
+
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import hamming, hanning, triang, blackmanharris, resample
-import math, sys, os, functools, time
 from scipy.interpolate import interp1d
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
-import sineModel as SM 
-import utilFunctions as UF
 
 def sineTimeScaling(sfreq, smag, timeScaling):
   # time scaling of sinusoidal tracks
@@ -38,25 +34,3 @@ def sineFreqScaling(sfreq, freqScaling):
   for l in range(L):             # go through all frames
     ysfreq[l,:] = sfreq[l,:] * freqScaling[l]
   return ysfreq
-
-if __name__ == '__main__':
-  (fs, x) = UF.wavread('../../sounds/mridangam.wav')
-
-  w = np.hamming(801)
-  N = 2048
-  t = -90
-  minSineDur = .005
-  maxnSines = 150
-  freqDevOffset = 20
-  freqDevSlope = 0.02
-  Ns = 512
-  H = Ns/4
-  tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
-  freqScaling = np.array([0, 2.0, 1, .3])           
-  ytfreq = sineFreqScaling(tfreq, freqScaling)
-  timeScale = np.array([.01, .0, .03, .03, .335, .4, .355, .42, .671, .8, .691, .82, .858, 1.2, .878, 1.22, 1.185, 1.6, 1.205, 1.62, 1.497, 2.0, 1.517, 2.02, 1.686, 2.4, 1.706, 2.42, 1.978, 2.8])          
-  ytfreq, ytmag = sineTimeScaling(ytfreq, tmag, timeScale)
-  y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
-  UF.play(y, fs)
-
-

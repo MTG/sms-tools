@@ -11,10 +11,9 @@ import hpsTransformations as HPST
 import harmonicTransformations as HT
 import utilFunctions as UF
 
-# analyze a sound with the harmonic plus stochastic model
 def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
-	
+	# analyze a sound with the harmonic plus stochastic model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size 
@@ -28,7 +27,7 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 	# stocf: decimation factor used for the stochastic approximation
 	# returns inputFile: input file name; fs: sampling rate of input file,
-	#         hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
+	#         hfreq, hmag: harmonic frequencies, magnitude; mYst: stochastic residual
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -95,18 +94,17 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	plt.tight_layout()
 	plt.show()
 
-	return inputFile, fs, hfreq, hmag, hphase, mYst
+	return inputFile, fs, hfreq, hmag, mYst
 
 
-# transform the analysis values returned by the analysis function and synthesize the sound
-def transformation_synthesis(inputFile, fs, hfreq, hmag, hphase, mYst, 
+def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, 
 	freqScaling = np.array([0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]), 
 	freqStretching = np.array([0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]),
 	timbrePreservation = 1, timeScaling = np.array([0, 0, 2.138, 2.138-1.0, 3.146, 3.146])):
-
+# transform the analysis values returned by the analysis function and synthesize the sound
 # inputFile: name of input file
 # fs: sampling rate of input file	
-# hfreq, hmag, hphase: harmonic frequencies, magnitude and phases
+# hfreq, hmag: harmonic frequencies and magnitudes
 # mYst: stochastic residual
 # freqScaling: frequency scaling factors, in time-value pairs
 # freqStretchig: frequency stretching factors, in time-value pairs
@@ -175,10 +173,10 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, hphase, mYst,
 if __name__ == "__main__":
 	
 	# analysis
-	inputFile, fs, hfreq, hmag, hphase, mYst = analysis()
+	inputFile, fs, hfreq, hmag, mYst = analysis()
 
 	# transformation and synthesis
-	transformation_synthesis (inputFile, fs, hfreq, hmag, hphase, mYst)
+	transformation_synthesis (inputFile, fs, hfreq, hmag, mYst)
 
 
 
