@@ -101,10 +101,9 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	return inputFile, fs, hfreq, hmag, mYst
 
 
-def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, 
-	freqScaling = np.array([0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]), 
-	freqStretching = np.array([0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]),
-	timbrePreservation = 1, timeScaling = np.array([0, 0, 2.138, 2.138-1.0, 3.146, 3.146])):
+def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.array([0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]), 
+	freqStretching = np.array([0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]), timbrePreservation = 1, 
+	timeScaling = np.array([0, 0, 2.138, 2.138-1.0, 3.146, 3.146])):
 	# transform the analysis values returned by the analysis function and synthesize the sound
 	# inputFile: name of input file
 	# fs: sampling rate of input file	

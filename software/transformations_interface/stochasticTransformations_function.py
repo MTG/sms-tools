@@ -11,7 +11,7 @@ import utilFunctions as UF
 import stochasticTransformations as STCT
 
 def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([0, 0, 1, 2])):
-
+	# function to perform a time scaling using the stochastic model
 	# inputFile: name of input sound file
 	# stocf: decimation factor used for the stochastic approximation
 	# timeScaling: time scaling factors, in time-value pairs
@@ -58,7 +58,6 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
 	plt.title('stochastic approximation')
-
 
 	# plot modified stochastic representation
 	plt.subplot(4,1,3)

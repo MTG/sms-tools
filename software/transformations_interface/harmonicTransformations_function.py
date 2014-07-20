@@ -103,10 +103,8 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	return inputFile, fs, hfreq, hmag
 
 
-def transformation_synthesis(inputFile, fs, hfreq, hmag, 
-	freqScaling = np.array([0, 2.0, 1, .3]), 
-	freqStretching = np.array([0, 1, 1, 1.5]),
-	timbrePreservation = 1, 
+def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array([0, 2.0, 1, .3]), 
+	freqStretching = np.array([0, 1, 1, 1.5]), timbrePreservation = 1, 
 	timeScaling = np.array([0, .0, .671, .671, 1.978, 1.978+1.0])):
 	# transform the analysis values returned by the analysis function and synthesize the sound
 	# inputFile: name of input file
