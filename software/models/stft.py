@@ -46,8 +46,8 @@ def stftAnal(x, fs, w, N, H) :
 	w = w / sum(w)                                  # normalize analysis window
 	y = np.zeros(x.size)                            # initialize output array
 	while pin<=pend:                                # while sound pointer is smaller than last sample      
-		x1 = x[pin-hM1:pin+hM2]                       # select one frame of input sound
-		mX, pX = DFT.dftAnal(x1, w, N)                # compute dft
+		x1 = x[pin-hM1:pin+hM2]                     # select one frame of input sound
+		mX, pX = DFT.dftAnal(x1, w, N)              # compute dft
 		if pin == hM1: 
 			xmX = np.array([mX])
 			xpX = np.array([pX])
@@ -61,17 +61,17 @@ def stftSynth(mY, pY, M, H) :
 # synthesis of a sound using the short-time fourier transform
 # mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
 # returns y: output sound
-	hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
-	hM2 = int(math.floor(M/2))                              # half analysis window size by floor
-	nFrames = mY[:,0].size                                  # number of frames
-	y = np.zeros(nFrames*H + hM1 + hM2)                     # initialize output array
+	hM1 = int(math.floor((M+1)/2))                   # half analysis window size by rounding
+	hM2 = int(math.floor(M/2))                       # half analysis window size by floor
+	nFrames = mY[:,0].size                           # number of frames
+	y = np.zeros(nFrames*H + hM1 + hM2)              # initialize output array
 	pin = hM1                  
-	for i in range(nFrames):                                # iterate over all frames      
-		y1 = DFT.dftSynth(mY[i,:], pY[i,:], M)                # compute idft
-		y[pin-hM1:pin+hM2] += H*y1                            # overlap-add to generate output sound
-		pin += H                                              # advance sound pointer
-	y = np.delete(y, range(hM2))                            # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1, y.size))             # add zeros at the end to analyze last sample
+	for i in range(nFrames):                         # iterate over all frames      
+		y1 = DFT.dftSynth(mY[i,:], pY[i,:], M)       # compute idft
+		y[pin-hM1:pin+hM2] += H*y1                   # overlap-add to generate output sound
+		pin += H                                     # advance sound pointer
+	y = np.delete(y, range(hM2))                     # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1, y.size))      # add zeros at the end to analyze last sample
 	return y
 
  
