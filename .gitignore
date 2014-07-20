@@ -5,5 +5,5 @@
 workspace/*.pyc
 workspace/*.py
 workspace/*.wav
-software/models/models_interface/output_sounds/*.wav
-software/models/transformations_interface/output_sounds/*.wav
+software/models_interface/output_sounds/*.wav
+software/transformations_interface/output_sounds/*.wav
