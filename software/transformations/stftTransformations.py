@@ -1,6 +1,6 @@
 import numpy as np
-import time, os, sys, math
-from scipy.signal import hamming, resample
+import math
+from scipy.signal import resample
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import dftModel as DFT
 import utilFunctions as UF
@@ -71,29 +71,3 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 	y = np.delete(y, range(hM1_2))                   # delete half of first window which was added in stftAnal
 	y = np.delete(y, range(y.size-hM1_1, y.size))    # add zeros at the end to analyze last sample
 	return y
-
-# example call of stftMorph function
-if __name__ == '__main__':
-	(fs, x1) = UF.wavread('../../sounds/ocean.wav')
-	(fs, x2) = UF.wavread('../../sounds/speech-male.wav')
-	w1 = np.hamming(1024)
-	N1 = 1024
-	H1 = 256
-	w2 = np.hamming(1024)
-	N2 = 1024
-	smoothf = .5
-	balancef = 0.2
-	y = stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
-
-	w = np.hamming(1024)
-	N = 1024
-	H = 256
-	# design a band stop filter using a hanning window
-	startBin = int(N*2000.0/fs)
-	nBins = int(N*3000.0/fs)
-	bandstop = -np.hanning(nBins) * 40.0
-	filt = np.zeros(N/2)
-	filt[startBin:startBin+nBins] = bandstop
-
-	y = stftFiltering(y, fs, w, N, H, filt)
-	UF.play(y, fs)
