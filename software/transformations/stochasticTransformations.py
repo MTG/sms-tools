@@ -1,10 +1,9 @@
+# functions that implement transformations using the hpsModel
+
 import numpy as np
-import matplotlib.pyplot as plt
-import sys, os, functools, time
 from scipy.interpolate import interp1d
-
+import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
-
 import stochasticModel as STC
 import utilFunctions as UF
 
@@ -21,16 +20,3 @@ def stochasticTimeScale(stocEnv, timeScaling):
   for l in indexes[1:]:
     ystocEnv = np.vstack((ystocEnv, stocEnv[round(l),:]))
   return ystocEnv
-
-
-if __name__ == '__main__':
-  (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/rain.wav'))
-  H = 256
-  stocf = .2
-  mYst = STC.stochasticModelAnal(x, H, stocf)
-  timeScaling = np.array([0, 0, 1, 2])         
-  ystocEnv = stochasticTimeScale(mYst, timeScaling)
-  y = STC.stochasticModelSynth(ystocEnv, H)
-  UF.play(y, fs)
-
-

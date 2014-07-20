@@ -1,4 +1,4 @@
-# function call to the transformation function in software/transformations/hps
+# function call to the transformation functions of relevance for the hpsModel
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +11,7 @@ import hpsTransformations as HPST
 import harmonicTransformations as HT
 import utilFunctions as UF
 
+# analyze a sound with the harmonic plus stochastic model
 def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
 	
@@ -26,7 +27,8 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
 	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 	# stocf: decimation factor used for the stochastic approximation
-	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
+	# returns inputFile: input file name; fs: sampling rate of input file,
+	#         hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -96,10 +98,21 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	return inputFile, fs, hfreq, hmag, hphase, mYst
 
 
+# transform the analysis values returned by the analysis function and synthesize the sound
 def transformation_synthesis(inputFile, fs, hfreq, hmag, hphase, mYst, 
 	freqScaling = np.array([0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]), 
 	freqStretching = np.array([0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]),
 	timbrePreservation = 1, timeScaling = np.array([0, 0, 2.138, 2.138-1.0, 3.146, 3.146])):
+
+# inputFile: name of input file
+# fs: sampling rate of input file	
+# hfreq, hmag, hphase: harmonic frequencies, magnitude and phases
+# mYst: stochastic residual
+# freqScaling: frequency scaling factors, in time-value pairs
+# freqStretchig: frequency stretching factors, in time-value pairs
+# timbrePreservation: 1 preserves original timbre, 0 it does not
+# timeScaling: time scaling factors, in time-value pairs
+
 	
 	# size of fft used in synthesis
 	Ns = 512
@@ -159,16 +172,13 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, hphase, mYst,
 	plt.tight_layout()
 	plt.show()
 
-def main ():
-
+if __name__ == "__main__":
+	
 	# analysis
 	inputFile, fs, hfreq, hmag, hphase, mYst = analysis()
 
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, hfreq, hmag, hphase, mYst)
-
-if __name__ == "__main__":
-	main()
 
 
 
