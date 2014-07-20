@@ -32,7 +32,7 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	y = STC.stochasticModelSynth(ystocEnv, H)
 	
 	# write output sound
-	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticTransformations.wav'
+	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModelTransformation.wav'
 	UF.wavwrite(y, fs, outputFile)
 
 	# --------- plotting --------------------

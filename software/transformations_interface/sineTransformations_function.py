@@ -48,7 +48,7 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	y = SM.sineModelSynth(tfreq, tmag, np.array([]), Ns, H, fs)
 
 	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineTransformations.wav'
+	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModel.wav'
 
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)
@@ -126,7 +126,7 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag,
 	y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
 
 	# write output sound 
-	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineTransformation.wav'
+	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModelTransformation.wav'
 	UF.wavwrite(y,fs, outputFile)
 
 	# --------- plotting --------------------
