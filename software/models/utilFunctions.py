@@ -1,10 +1,7 @@
 import numpy as np
-import copy
-from scipy.signal import hamming, hanning, triang, blackmanharris, resample
+from scipy.signal import resample
 from scipy.fftpack import fft, ifft, fftshift
-import math
-import sys, os, time
-import os, copy, sys
+import math, copy, sys, os, time
 from scipy.io.wavfile import write
 from scipy.io.wavfile import read
 

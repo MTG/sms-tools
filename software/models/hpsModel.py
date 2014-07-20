@@ -1,8 +1,8 @@
 # functions that implement analysis and synthesis of sounds using the Harmonic plus Stochastic Model
-# (for example usage check the examples directory)
+# (for example usage check the examples models_interface)
 
 import numpy as np
-from scipy.signal import hamming, triang, blackmanharris, hanning, resample
+from scipy.signal import resample
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM

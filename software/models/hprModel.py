@@ -1,8 +1,7 @@
 # functions that implement analysis and synthesis of sounds using the Harmonic plus Residual Model
-# (for example usage check the examples directory)
+# (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM

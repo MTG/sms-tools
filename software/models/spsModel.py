@@ -1,8 +1,8 @@
 # functions that implement analysis and synthesis of sounds using the Sinusoidal plus Stochastic Model
-# (for example usage check the examples directory)
+# (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.signal import hamming, triang, blackmanharris, resample
+from scipy.signal import resample
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import utilFunctions as UF

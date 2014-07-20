@@ -1,4 +1,4 @@
-# functions that implement time scale transformations using the hpsModel
+# functions that implement transformations using the sineModel
 
 import numpy as np
 from scipy.interpolate import interp1d

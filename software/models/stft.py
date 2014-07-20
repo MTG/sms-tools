@@ -1,8 +1,7 @@
 # functions that implement analysis and synthesis of sounds using the Short-Time Fourier Transform
-# (for example usage check the examples directory)
+# (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.signal import hamming
 import math
 import dftModel as DFT
 import utilFunctions as UF

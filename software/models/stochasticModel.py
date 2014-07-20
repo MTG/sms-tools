@@ -1,5 +1,5 @@
 # functions that implement analysis and synthesis of sounds using the Stochastic Model
-# (for example usage check the examples directory)
+# (for example usage check the examples models_interface)
 
 import numpy as np
 from scipy.signal import hanning, resample

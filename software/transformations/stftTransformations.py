@@ -1,3 +1,5 @@
+# functions that implement transformations using the stft
+
 import numpy as np
 import math
 from scipy.signal import resample

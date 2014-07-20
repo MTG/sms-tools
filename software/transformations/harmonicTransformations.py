@@ -1,12 +1,10 @@
+# transformations applyed to the harmonics of a sound
+
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import hamming, hanning, triang, blackmanharris, resample
+from scipy.signal import resample
 from scipy.interpolate import interp1d
-import math
-import sys, os, functools, time
-
+import math, sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
-
 import utilFunctions as UF
 import harmonicModel as HM
 import sineModel as SM
@@ -42,10 +40,11 @@ def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreserva
 			yhfreq[l,ind_valid] = yhfreq[l,ind_valid] * (freqStretching[l]**ind_valid)
 	return yhfreq, yhmag
 
+########## not finished #####################
 def harmonicModulation(hfreq, hmag, frameRate, modRate, vibDepth, tremDepth):
 	# vibrato and tremolo modulation of harmonics
 	# hfreq, hmag: frequencies and magnitudes of input harmonics
-	# modFreq: 
+	# modRate, vibDepth, tremDepth: modulation rate, vibrato depth and tremolo depth
 	# returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
 	L = hfreq[:,0].size                                     # number of frames
 	nHarms = hfreq[0,:].size                                # number of harmonics
@@ -59,28 +58,4 @@ def harmonicModulation(hfreq, hmag, frameRate, modRate, vibDepth, tremDepth):
 	yhmag = hmag
 	for l in range(L):                                      # go through all frames
 		yhfreq[l,ind_valid] = yhfreq[l,ind_valid] * freqScaling[l]
-	
 	return yhfreq, yhmag
-
-if __name__ == '__main__':
-	(fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../sounds/soprano-E4.wav'))
-	w = np.blackman(801)
-	N = 1024
-	t = -90
-	nH = 100
-	minf0 = 250
-	maxf0 = 400
-	f0et = 8
-	minSineDur = .1
-	harmDevSlope = 0.01
-	Ns = 512
-	H = Ns/4
-	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
-	freqScaling = np.array([0, 3, 1, .5])
-	freqStretching = np.array([])
-	timbrePreservation = 1
-	hfreqt, hmagt = harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreservation, fs)
-	timeScaling = np.array([0, 0, 1, .5, 2, 4])
-	hfreqt, hmagt = ST.sineTimeScaling(hfreqt, hmagt, timeScaling)
-	yh = SM.sineModelSynth(hfreqt, hmagt, np.array([]), Ns, H, fs) 
-	UF.play(yh, fs)  

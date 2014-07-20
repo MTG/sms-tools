@@ -1,5 +1,5 @@
 # functions that implement analysis and synthesis of sounds using the Discrete Fourier Transform
-# (for example usage check the examples directory)
+# (for example usage check the models_interface directory)
 
 import matplotlib.pyplot as plt
 import numpy as np

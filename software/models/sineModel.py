@@ -1,8 +1,7 @@
 # functions that implement analysis and synthesis of sounds using the Sinusoidal Model
-# (for example usage check the examples directory)
+# (for example usage check the examples models_interface)
 
 import numpy as np
-from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import dftModel as DFT
