@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.signal import resample
+from scipy.signal import resample, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math, copy, sys, os, time
 from scipy.io.wavfile import write
