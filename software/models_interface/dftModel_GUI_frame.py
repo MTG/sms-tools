@@ -44,38 +44,38 @@ class DftModel_frame:
 		self.w_type = StringVar()
 		self.w_type.set("blackman") # initial value
 		window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-		window_option.grid(row=2, column=0, sticky=W, padx=150, pady=(10,2))
+		window_option.grid(row=2, column=0, sticky=W, padx=(150,5), pady=(10,2))
 
 		#WINDOW SIZE
 		M_label = "Analysis window size 'M':"
-		Label(self.parent, text=M_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=M_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.M = Entry(self.parent, justify=CENTER)
-		self.M["width"] = 8
-		self.M.grid(row=5,column=0, sticky=W, padx=10)
+		self.M["width"] = 5
+		self.M.grid(row=3,column=0, sticky=W, padx=(165,5), pady=(10,2))
 		self.M.delete(0, END)
 		self.M.insert(0, "511")
 
 		#FFT SIZE
 		N_label = "FFT size 'N' (power of two, bigger than 'M'):"
-		Label(self.parent, text=N_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=N_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
 		self.N = Entry(self.parent, justify=CENTER)
-		self.N["width"] = 8
-		self.N.grid(row=7,column=0, sticky=W, padx=10)
+		self.N["width"] = 5
+		self.N.grid(row=4,column=0, sticky=W, padx=(275,5), pady=(10,2))
 		self.N.delete(0, END)
 		self.N.insert(0, "1024")
 
 		#TIME TO START ANALYSIS
 		time_label = "Time to start analysis (in seconds):"
-		Label(self.parent, text=time_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=time_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
 		self.time = Entry(self.parent, justify=CENTER)
-		self.time["width"] = 8
-		self.time.grid(row=9,column=0, sticky=W, padx=10)
+		self.time["width"] = 5
+		self.time.grid(row=5, column=0, sticky=W, padx=(225,5), pady=(10,2))
 		self.time.delete(0, END)
 		self.time.insert(0, ".2")
 
 		#BUTTON TO COMPUTE EVERYTHING
 		self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
-		self.compute.grid(row=10, column=0, padx=5, pady=(10,15), sticky=W)
+		self.compute.grid(row=6, column=0, padx=5, pady=(10,15), sticky=W)
 
 		# define options for opening file
 		self.file_opt = options = {}
