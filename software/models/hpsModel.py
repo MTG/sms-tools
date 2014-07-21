@@ -2,7 +2,7 @@
 # (for example usage check the examples models_interface)
 
 import numpy as np
-from scipy.signal import resample
+from scipy.signal import resample, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM

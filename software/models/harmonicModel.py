@@ -2,6 +2,7 @@
 # (for example usage check the models_interface directory)
 
 import numpy as np
+from scipy.signal import blackmanharris, triang
 import math
 import dftModel as DFT
 import stft as STFT

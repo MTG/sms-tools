@@ -2,6 +2,7 @@
 # (for example usage check the examples models_interface)
 
 import numpy as np
+from scipy.signal import blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import sineModel as SM
