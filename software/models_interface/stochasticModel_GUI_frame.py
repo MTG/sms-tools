@@ -17,7 +17,7 @@ class StochasticModel_frame:
 
 	def initUI(self):
 
-		choose_label = "Choose an input audio file .wav:"
+		choose_label = "Input file (.wav, mono and 44100 sampling rate):"
 		Label(self.parent, text=choose_label).grid(row=0, column=0, sticky=W, padx=5, pady=(10,2))
 
 		#TEXTBOX TO PRINT PATH OF THE SOUND FILE
@@ -39,7 +39,7 @@ class StochasticModel_frame:
 		## STOCHASTIC MODEL
 
 		#HOP SIZE
-		H_label = "Hop size 'H':"
+		H_label = "Hop size (H):"
 		Label(self.parent, text=H_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
 		self.H = Entry(self.parent, justify=CENTER)
 		self.H["width"] = 5
@@ -48,11 +48,11 @@ class StochasticModel_frame:
 		self.H.insert(0, "256")
 
 		#DECIMATION FACTOR
-		stocf_label = "Decimation factor used for the stochastic approximation:"
+		stocf_label = "Stochastic approximation factor:"
 		Label(self.parent, text=stocf_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.stocf = Entry(self.parent, justify=CENTER)
 		self.stocf["width"] = 5
-		self.stocf.grid(row=3, column=0, sticky=W, padx=(360,5), pady=(10,2))
+		self.stocf.grid(row=3, column=0, sticky=W, padx=(210,5), pady=(10,2))
 		self.stocf.delete(0, END)
 		self.stocf.insert(0, "0.1")
 

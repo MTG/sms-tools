@@ -17,7 +17,7 @@ class SprModel_frame:
 
 	def initUI(self):
 
-		choose_label = "Choose an input audio file .wav:"
+		choose_label = "Input file (.wav, mono and 44100 sampling rate):"
 		Label(self.parent, text=choose_label).grid(row=0, column=0, sticky=W, padx=5, pady=(10,2))
  
 		#TEXTBOX TO PRINT PATH OF THE SOUND FILE
@@ -39,37 +39,37 @@ class SprModel_frame:
 		## SPR MODEL
 
 		#ANALYSIS WINDOW TYPE
-		wtype_label = "Analysis window type:"
+		wtype_label = "Window type:"
 		Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
 		self.w_type = StringVar()
 		self.w_type.set("hamming") # initial value
 		window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-		window_option.grid(row=2, column=0, sticky=W, padx=(150,5), pady=(10,2))
+		window_option.grid(row=2, column=0, sticky=W, padx=(95,5), pady=(10,2))
 
 		#WINDOW SIZE
-		M_label = "Analysis window size 'M':"
+		M_label = "Window size (M):"
 		Label(self.parent, text=M_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.M = Entry(self.parent, justify=CENTER)
 		self.M["width"] = 5
-		self.M.grid(row=3,column=0, sticky=W, padx=(165,5), pady=(10,2))
+		self.M.grid(row=3,column=0, sticky=W, padx=(115,5), pady=(10,2))
 		self.M.delete(0, END)
 		self.M.insert(0, "2001")
 
 		#FFT SIZE
-		N_label = "FFT size 'N' (power of two, bigger than 'M'):"
+		N_label = "FFT size (N) (power of two bigger than M):"
 		Label(self.parent, text=N_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
 		self.N = Entry(self.parent, justify=CENTER)
 		self.N["width"] = 5
-		self.N.grid(row=4,column=0, sticky=W, padx=(275,5), pady=(10,2))
+		self.N.grid(row=4,column=0, sticky=W, padx=(270,5), pady=(10,2))
 		self.N.delete(0, END)
 		self.N.insert(0, "2048")
 
 		#THRESHOLD MAGNITUDE
-		t_label = "Magnitude threshold of spectral peaks 't':"
+		t_label = "Magnitude threshold (t) (in dB):"
 		Label(self.parent, text=t_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
 		self.t = Entry(self.parent, justify=CENTER)
 		self.t["width"] = 5
-		self.t.grid(row=5, column=0, sticky=W, padx=(265,5), pady=(10,2))
+		self.t.grid(row=5, column=0, sticky=W, padx=(205,5), pady=(10,2))
 		self.t.delete(0, END)
 		self.t.insert(0, "-80")
 
@@ -92,20 +92,20 @@ class SprModel_frame:
 		self.maxnSines.insert(0, "150")
 
 		#FREQUENCY DEVIATION ALLOWED
-		freqDevOffset_label = "Frequency deviation allowed in the sinusoids from frame to frame at frequency 0:"
+		freqDevOffset_label = "Max frequency deviation in sinusoidal tracks (at freq 0):"
 		Label(self.parent, text=freqDevOffset_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,2))
 		self.freqDevOffset = Entry(self.parent, justify=CENTER)
 		self.freqDevOffset["width"] = 5
-		self.freqDevOffset.grid(row=8, column=0, sticky=W, padx=(505,5), pady=(10,2))
+		self.freqDevOffset.grid(row=8, column=0, sticky=W, padx=(350,5), pady=(10,2))
 		self.freqDevOffset.delete(0, END)
 		self.freqDevOffset.insert(0, "10")
 
 		#SLOPE OF THE FREQ DEVIATION
-		freqDevSlope_label = "Slope of the frequency deviation, higher frequencies have bigger deviation:"
+		freqDevSlope_label = "Slope of the frequency deviation (as function of freq):"
 		Label(self.parent, text=freqDevSlope_label).grid(row=9, column=0, sticky=W, padx=5, pady=(10,2))
 		self.freqDevSlope = Entry(self.parent, justify=CENTER)
 		self.freqDevSlope["width"] = 5
-		self.freqDevSlope.grid(row=9, column=0, sticky=W, padx=(470,5), pady=(10,2))
+		self.freqDevSlope.grid(row=9, column=0, sticky=W, padx=(340,5), pady=(10,2))
 		self.freqDevSlope.delete(0, END)
 		self.freqDevSlope.insert(0, "0.001")
 

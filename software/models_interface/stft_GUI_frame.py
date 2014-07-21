@@ -15,7 +15,7 @@ class Stft_frame:
 
 	def initUI(self):
 
-		choose_label = "Choose an input audio file .wav:"
+		choose_label = "Input file (.wav, mono and 44100 sampling rate):"
 		Label(self.parent, text=choose_label).grid(row=0, column=0, sticky=W, padx=5, pady=(10,2))
  
 		#TEXTBOX TO PRINT PATH OF THE SOUND FILE
@@ -37,37 +37,37 @@ class Stft_frame:
 		## STFT
 
 		#ANALYSIS WINDOW TYPE
-		wtype_label = "Analysis window type:"
+		wtype_label = "Window type:"
 		Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
 		self.w_type = StringVar()
 		self.w_type.set("hamming") # initial value
 		window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-		window_option.grid(row=2, column=0, sticky=W, padx=(150,5), pady=(10,2))
+		window_option.grid(row=2, column=0, sticky=W, padx=(95,5), pady=(10,2))
 
 		#WINDOW SIZE
-		M_label = "Analysis window size 'M':"
+		M_label = "Window size (M):"
 		Label(self.parent, text=M_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.M = Entry(self.parent, justify=CENTER)
 		self.M["width"] = 5
-		self.M.grid(row=3,column=0, sticky=W, padx=(165,5), pady=(10,2))
+		self.M.grid(row=3,column=0, sticky=W, padx=(115,5), pady=(10,2))
 		self.M.delete(0, END)
 		self.M.insert(0, "1024")
 
 		#FFT SIZE
-		N_label = "FFT size 'N' (power of two, bigger than 'M'):"
+		N_label = "FFT size (N) (power of two bigger than M):"
 		Label(self.parent, text=N_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
 		self.N = Entry(self.parent, justify=CENTER)
 		self.N["width"] = 5
-		self.N.grid(row=4,column=0, sticky=W, padx=(275,5), pady=(10,2))
+		self.N.grid(row=4,column=0, sticky=W, padx=(270,5), pady=(10,2))
 		self.N.delete(0, END)
 		self.N.insert(0, "1024")
 
 		#HOP SIZE
-		H_label = "Hop size 'H' (at least 1/2 of M to have good overlap-add):"
+		H_label = "Hop size (H) (at least 1/2 of M):"
 		Label(self.parent, text=H_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
 		self.H = Entry(self.parent, justify=CENTER)
 		self.H["width"] = 5
-		self.H.grid(row=5,column=0, sticky=W, padx=(355,5), pady=(10,2))
+		self.H.grid(row=5,column=0, sticky=W, padx=(200,5), pady=(10,2))
 		self.H.delete(0, END)
 		self.H.insert(0, "512")
 

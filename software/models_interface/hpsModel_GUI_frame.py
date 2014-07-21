@@ -17,7 +17,7 @@ class HpsModel_frame:
 
     def initUI(self):
 
-        choose_label = "Choose an input audio file .wav:"
+        choose_label = "Input file (.wav, mono and 44100 sampling rate):"
         Label(self.parent, text=choose_label).grid(row=0, column=0, sticky=W, padx=5, pady=(10,2))
  
         #TEXTBOX TO PRINT PATH OF THE SOUND FILE
@@ -39,37 +39,37 @@ class HpsModel_frame:
         ## HARMONIC MODEL
 
         #ANALYSIS WINDOW TYPE
-        wtype_label = "Analysis window type:"
+        wtype_label = "Window type:"
         Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10,2))
         self.w_type = StringVar()
         self.w_type.set("blackman") # initial value
         window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
-        window_option.grid(row=2, column=0, sticky=W, padx=(150,5), pady=(10,2))
+        window_option.grid(row=2, column=0, sticky=W, padx=(95,5), pady=(10,2))
 
         #WINDOW SIZE
-        M_label = "Analysis window size 'M':"
+        M_label = "Window size (M):"
         Label(self.parent, text=M_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
         self.M = Entry(self.parent, justify=CENTER)
         self.M["width"] = 5
-        self.M.grid(row=4,column=0, sticky=W, padx=(165,5), pady=(10,2))
+        self.M.grid(row=4,column=0, sticky=W, padx=(115,5), pady=(10,2))
         self.M.delete(0, END)
         self.M.insert(0, "601")
 
         #FFT SIZE
-        N_label = "FFT size 'N' (power of two, bigger than 'M'):"
+        N_label = "FFT size (N) (power of two bigger than M):"
         Label(self.parent, text=N_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
         self.N = Entry(self.parent, justify=CENTER)
         self.N["width"] = 5
-        self.N.grid(row=5,column=0, sticky=W, padx=(275,5), pady=(10,2))
+        self.N.grid(row=5,column=0, sticky=W, padx=(270,5), pady=(10,2))
         self.N.delete(0, END)
         self.N.insert(0, "1024")
 
         #THRESHOLD MAGNITUDE
-        t_label = "Magnitude threshold of spectral peaks 't':"
+        t_label = "Magnitude threshold (t) (in dB):"
         Label(self.parent, text=t_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
         self.t = Entry(self.parent, justify=CENTER)
         self.t["width"] = 5
-        self.t.grid(row=6, column=0, sticky=W, padx=(265,5), pady=(10,2))
+        self.t.grid(row=6, column=0, sticky=W, padx=(205,5), pady=(10,2))
         self.t.delete(0, END)
         self.t.insert(0, "-100")
 
@@ -92,47 +92,47 @@ class HpsModel_frame:
         self.nH.insert(0, "100")
 
         #MIN FUNDAMENTAL FREQUENCY
-        minf0_label = "Minimum fundamental frequency in sound:"
+        minf0_label = "Minimum fundamental frequency:"
         Label(self.parent, text=minf0_label).grid(row=9, column=0, sticky=W, padx=5, pady=(10,2))
         self.minf0 = Entry(self.parent, justify=CENTER)
         self.minf0["width"] = 5
-        self.minf0.grid(row=9, column=0, sticky=W, padx=(275,5), pady=(10,2))
+        self.minf0.grid(row=9, column=0, sticky=W, padx=(220,5), pady=(10,2))
         self.minf0.delete(0, END)
         self.minf0.insert(0, "350")
 
         #MAX FUNDAMENTAL FREQUENCY
-        maxf0_label = "Maximum fundamental frequency in sound:"
+        maxf0_label = "Maximum fundamental frequency:"
         Label(self.parent, text=maxf0_label).grid(row=10, column=0, sticky=W, padx=5, pady=(10,2))
         self.maxf0 = Entry(self.parent, justify=CENTER)
         self.maxf0["width"] = 5
-        self.maxf0.grid(row=10, column=0, sticky=W, padx=(278,5), pady=(10,2))
+        self.maxf0.grid(row=10, column=0, sticky=W, padx=(220,5), pady=(10,2))
         self.maxf0.delete(0, END)
         self.maxf0.insert(0, "700")
 
         #MAX ERROR ACCEPTED
-        f0et_label = "Maximum error accepted in f0 detection algorithm:"
+        f0et_label = "Maximum error in f0 detection algorithm:"
         Label(self.parent, text=f0et_label).grid(row=11, column=0, sticky=W, padx=5, pady=(10,2))
         self.f0et = Entry(self.parent, justify=CENTER)
         self.f0et["width"] = 5
-        self.f0et.grid(row=11, column=0, sticky=W, padx=(325,5), pady=(10,2))
+        self.f0et.grid(row=11, column=0, sticky=W, padx=(265,5), pady=(10,2))
         self.f0et.delete(0, END)
         self.f0et.insert(0, "5")
 
         #ALLOWED DEVIATION OF HARMONIC TRACKS
-        harmDevSlope_label = "Allowed deviation of harmonic tracks:"
+        harmDevSlope_label = "Max frequency deviation in harmonic tracks:"
         Label(self.parent, text=harmDevSlope_label).grid(row=12, column=0, sticky=W, padx=5, pady=(10,2))
         self.harmDevSlope = Entry(self.parent, justify=CENTER)
         self.harmDevSlope["width"] = 5
-        self.harmDevSlope.grid(row=12, column=0, sticky=W, padx=(240,5), pady=(10,2))
+        self.harmDevSlope.grid(row=12, column=0, sticky=W, padx=(285,5), pady=(10,2))
         self.harmDevSlope.delete(0, END)
         self.harmDevSlope.insert(0, "0.01")
 
         #DECIMATION FACTOR
-        stocf_label = "Decimation factor used for the stochastic approximation:"
+        stocf_label = "Stochastic approximation factor:"
         Label(self.parent, text=stocf_label).grid(row=13, column=0, sticky=W, padx=5, pady=(10,2))
         self.stocf = Entry(self.parent, justify=CENTER)
         self.stocf["width"] = 5
-        self.stocf.grid(row=13, column=0, sticky=W, padx=(355,5), pady=(10,2))
+        self.stocf.grid(row=13, column=0, sticky=W, padx=(210,5), pady=(10,2))
         self.stocf.delete(0, END)
         self.stocf.insert(0, "0.2")
 
