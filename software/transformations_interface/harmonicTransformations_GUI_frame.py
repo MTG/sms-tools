@@ -129,48 +129,61 @@ class HarmonicTransformations_frame:
 		self.harmDevSlope.insert(0, "0.01")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
-		self.compute = Button(self.parent, text="Analysis", command=self.analysis, bg="dark red", fg="white")
+		self.compute = Button(self.parent, text="Analysis/Synthesis", command=self.analysis, bg="dark red", fg="white")
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
+		#BUTTON TO PLAY ANALYSIS/SYNTHESIS OUTPUT
+		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModel'), bg="gray30", fg="white")
+		self.output.grid(row=4, column=0, padx=(145,5), pady=(10,5), sticky=W)
+
+		###
+		#SEPARATION LINE
+		Frame(self.parent,height=1,width=50,bg="black").grid(row=5, pady=5, sticky=W+E)
+		###
+
 		#FREQUENCY SCALING FACTORS
 		freqScaling_label = "Frequency scaling factors, in time-value pairs:"
-		Label(self.parent, text=freqScaling_label).grid(row=14, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=freqScaling_label).grid(row=6, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqScaling = Entry(self.parent, justify=CENTER)
 		self.freqScaling["width"] = 15
-		self.freqScaling.grid(row=14, column=0, sticky=W, padx=(290,5), pady=(10,2))
+		self.freqScaling.grid(row=7, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqScaling.delete(0, END)
-		self.freqScaling.insert(0, "[0, 2.0, 1, .3]")
+		self.freqScaling.insert(0, "[0, 2.0, 1, 0.3]")
 
-		#FREQUENCY STRETCHING FACTORS
+		#FREQUENCY STRETCHING FACTORSharmonicModelTransformation
 		freqStretching_label = "Frequency stretching factors, in time-value pairs:"
-		Label(self.parent, text=freqStretching_label).grid(row=15, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=freqStretching_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqStretching = Entry(self.parent, justify=CENTER)
 		self.freqStretching["width"] = 15
-		self.freqStretching.grid(row=15, column=0, sticky=W, padx=(310,5), pady=(10,2))
+		self.freqStretching.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqStretching.delete(0, END)
 		self.freqStretching.insert(0, "[0, 1, 1, 1.5]")
 
 		#TIMBRE PRESERVATION
 		timbrePreservation_label = "Timbre preservation (1 preserves original timbre, 0 it does not):"
-		Label(self.parent, text=timbrePreservation_label).grid(row=16, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=timbrePreservation_label).grid(row=10, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timbrePreservation = Entry(self.parent, justify=CENTER)
 		self.timbrePreservation["width"] = 2
-		self.timbrePreservation.grid(row=16, column=0, sticky=W, padx=(395,5), pady=(10,2))
+		self.timbrePreservation.grid(row=10, column=0, sticky=W+E, padx=(395,5), pady=(5,2))
 		self.timbrePreservation.delete(0, END)
 		self.timbrePreservation.insert(0, "1")
 
 		#TIME SCALING FACTORS
 		timeScaling_label = "Time scaling factors, in time-value pairs:"
-		Label(self.parent, text=timeScaling_label).grid(row=17, column=0, sticky=W, padx=5, pady=(10,2))
+		Label(self.parent, text=timeScaling_label).grid(row=11, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
 		self.timeScaling["width"] = 30
-		self.timeScaling.grid(row=17, column=0, sticky=W, padx=(260,5), pady=(10,2))
+		self.timeScaling.grid(row=12, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
-		self.timeScaling.insert(0, "[0, .0, .671, .671, 1.978, 1.978+1.0]")
+		self.timeScaling.insert(0, "[0, 0, 0.671, 0.671, 1.978, 1.978+1.0]")
 
 		#BUTTON TO DO THE SYNTHESIS
-		self.compute = Button(self.parent, text="Synthesis", command=self.transformation_synthesis, bg="dark green", fg="white")
-		self.compute.grid(row=18, column=0, padx=5, pady=(10,15), sticky=W)
+		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
+		self.compute.grid(row=13, column=0, padx=5, pady=(10,15), sticky=W)
+
+		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
+		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModelTransformation'), bg="gray30", fg="white")
+		self.transf_output.grid(row=13, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
 		self.file_opt = options = {}
@@ -227,7 +240,6 @@ class HarmonicTransformations_frame:
 
 	def transformation_synthesis(self):
 
-
 		try:
 			inputFile = self.inputFile
 			fs =  self.fs
@@ -245,3 +257,12 @@ class HarmonicTransformations_frame:
 
 		except AttributeError:
 			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+
+	def play_out_sound(self, extension):
+
+		filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_' + extension + '.wav'
+		if os.path.isfile(filename):
+			sound = pygame.mixer.Sound(filename)
+			sound.play()
+		else:
+			tkMessageBox.showerror("Output audio file not found", "The output audio file has not been computed yet")
