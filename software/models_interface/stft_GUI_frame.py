@@ -118,11 +118,13 @@ class Stft_frame:
 	def compute_model(self):
 		
 		try:
+			inputFile = self.filelocation.get()
+			window = self.w_type.get()
 			M = int(self.M.get())
 			N = int(self.N.get())
 			H = int(self.H.get())
 		
-			stft_function.main(self.filelocation.get(), self.w_type.get(), M, N, H)
+			stft_function.main(inputFile, window, M, N, H)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

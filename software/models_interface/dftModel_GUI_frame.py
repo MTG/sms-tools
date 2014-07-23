@@ -113,11 +113,13 @@ class DftModel_frame:
 	def compute_model(self):
 		
 		try:
+			inputFile = self.filelocation.get()
+			window = self.w_type.get()
 			M = int(self.M.get())
 			N = int(self.N.get())
 			time = float(self.time.get())
 			
-			dftModel_function.main(self.filelocation.get(), self.w_type.get(), M, N, time)
+			dftModel_function.main(inputFile, window, M, N, time)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

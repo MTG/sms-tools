@@ -155,6 +155,8 @@ class SineModel_frame:
 	def compute_model(self):
 		
 		try:
+			inputFile = self.filelocation.get()
+			window = self.w_type.get()
 			M = int(self.M.get())
 			N = int(self.N.get())
 			t = int(self.t.get())
@@ -163,7 +165,7 @@ class SineModel_frame:
 			freqDevOffset = int(self.freqDevOffset.get())
 			freqDevSlope = float(self.freqDevSlope.get())
 			
-			sineModel_function.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
+			sineModel_function.main(inputFile, window, M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

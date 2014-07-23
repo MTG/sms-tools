@@ -61,10 +61,10 @@ class StochasticModel_frame:
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,2), sticky=W)
 
 		#BUTTON TO PLAY OUTPUT
-		output_label = "Output:"
+		output_label = "Stochastic:"
 		Label(self.parent, text=output_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,15))
 		self.output = Button(self.parent, text=">", command=self.play_out_sound, bg="gray30", fg="white")
-		self.output.grid(row=5, column=0, padx=(60,5), pady=(10,15), sticky=W)
+		self.output.grid(row=5, column=0, padx=(80,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
 		self.file_opt = options = {}
@@ -102,10 +102,11 @@ class StochasticModel_frame:
 	def compute_model(self):
 			
 		try:
+			inputFile = self.filelocation.get()
 			H = int(self.H.get())
 			stocf = float(self.stocf.get())
 				
-			stochasticModel_function.main(self.filelocation.get(), H, stocf)
+			stochasticModel_function.main(inputFile, H, stocf)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

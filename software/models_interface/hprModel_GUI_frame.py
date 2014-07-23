@@ -186,6 +186,8 @@ class HprModel_frame:
 	def compute_model(self):
 		
 		try:
+			inputFile = self.filelocation.get()
+			window = self.w_type.get()
 			M = int(self.M.get())
 			N = int(self.N.get())
 			t = int(self.t.get())
@@ -196,7 +198,7 @@ class HprModel_frame:
 			f0et = int(self.f0et.get())
 			harmDevSlope = float(self.harmDevSlope.get())
 
-			hprModel_function.main(self.filelocation.get(), self.w_type.get(), M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
+			hprModel_function.main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

@@ -5,7 +5,8 @@ import tkFileDialog, tkMessageBox
 import sys, os
 import pygame
 from scipy.io.wavfile import read
-import harmonicTransformations_function
+import numpy as np
+import harmonicTransformations_function as hT
  
 class HarmonicTransformations_frame:
   
@@ -128,7 +129,7 @@ class HarmonicTransformations_frame:
 		self.harmDevSlope.insert(0, "0.01")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
-		self.compute = Button(self.parent, text="Analysis", command=self.compute_model, bg="dark red", fg="white")
+		self.compute = Button(self.parent, text="Analysis", command=self.analysis, bg="dark red", fg="white")
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
 		#FREQUENCY SCALING FACTORS
@@ -168,7 +169,7 @@ class HarmonicTransformations_frame:
 		self.timeScaling.insert(0, "[0, .0, .671, .671, 1.978, 1.978+1.0]")
 
 		#BUTTON TO DO THE SYNTHESIS
-		self.compute = Button(self.parent, text="Synthesis", command=self.compute_model, bg="dark green", fg="white")
+		self.compute = Button(self.parent, text="Synthesis", command=self.transformation_synthesis, bg="dark green", fg="white")
 		self.compute.grid(row=18, column=0, padx=5, pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -204,14 +205,43 @@ class HarmonicTransformations_frame:
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0,self.filename)
 
-	def compute_model(self):
+	def analysis(self):
 		
 		try:
+			inputFile = self.filelocation.get()
+			window =  self.w_type.get()
 			M = int(self.M.get())
 			N = int(self.N.get())
-			time = float(self.time.get())
-			
-			#dftModel_function.main(self.filelocation.get(), self.w_type.get(), M, N, time)
+			t = int(self.t.get())
+			minSineDur = float(self.minSineDur.get())
+			nH = int(self.nH.get())
+			minf0 = int(self.minf0.get())
+			maxf0 = int(self.maxf0.get())
+			f0et = int(self.f0et.get())
+			harmDevSlope = float(self.harmDevSlope.get())
+
+			self.inputFile, self.fs, self.hfreq, self.hmag = hT.analysis(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+
+	def transformation_synthesis(self):
+
+
+		try:
+			inputFile = self.inputFile
+			fs =  self.fs
+			hfreq = self.hfreq
+			hmag = self.hmag
+			freqScaling = np.array(eval(self.freqScaling.get()))
+			freqStretching = np.array(eval(self.freqStretching.get()))
+			timbrePreservation = int(self.timbrePreservation.get())
+			timeScaling = np.array(eval(self.timeScaling.get()))
+
+			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling, freqStretching, timbrePreservation, timeScaling)
+
+		except ValueError:
+			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+
+		except AttributeError:
+			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
