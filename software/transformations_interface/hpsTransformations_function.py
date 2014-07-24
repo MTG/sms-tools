@@ -96,7 +96,7 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 	return inputFile, fs, hfreq, hmag, mYst
 
@@ -180,5 +180,4 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, hfreq, hmag, mYst)
 
-
-
+	plt.show()

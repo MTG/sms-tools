@@ -1,4 +1,4 @@
-# GUI frame for the harmonicTransformations_function.py
+# GUI frame for the sineTransformations_function.py
 
 from Tkinter import *
 import tkFileDialog, tkMessageBox
@@ -6,9 +6,9 @@ import sys, os
 import pygame
 from scipy.io.wavfile import read
 import numpy as np
-import harmonicTransformations_function as hT
+import sineTransformations_function as sT
  
-class HarmonicTransformations_frame:
+class SineTransformations_frame:
   
 	def __init__(self, parent):  
 		 
@@ -27,7 +27,7 @@ class HarmonicTransformations_frame:
 		self.filelocation["width"] = 25
 		self.filelocation.grid(row=0,column=0, sticky=W, padx=(70, 5), pady=(10,2))
 		self.filelocation.delete(0, END)
-		self.filelocation.insert(0, '../../sounds/vignesh.wav')
+		self.filelocation.insert(0, '../../sounds/mridangam.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
 		self.open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
@@ -37,13 +37,13 @@ class HarmonicTransformations_frame:
 		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
 		self.preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
 
-		## HARMONIC TRANSFORMATIONS ANALYSIS
+		## SINE TRANSFORMATIONS ANALYSIS
 
 		#ANALYSIS WINDOW TYPE
 		wtype_label = "window:"
 		Label(self.parent, text=wtype_label).grid(row=1, column=0, sticky=W, padx=5, pady=(10,2))
 		self.w_type = StringVar()
-		self.w_type.set("blackman") # initial value
+		self.w_type.set("hamming") # initial value
 		window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman", "blackmanharris")
 		window_option.grid(row=1, column=0, sticky=W, padx=(65,5), pady=(10,2))
 
@@ -54,7 +54,7 @@ class HarmonicTransformations_frame:
 		self.M["width"] = 5
 		self.M.grid(row=1,column=0, sticky=W, padx=(200,5), pady=(10,2))
 		self.M.delete(0, END)
-		self.M.insert(0, "1201")
+		self.M.insert(0, "801")
 
 		#FFT SIZE
 		N_label = "N:"
@@ -83,57 +83,39 @@ class HarmonicTransformations_frame:
 		self.minSineDur.delete(0, END)
 		self.minSineDur.insert(0, "0.1")
 
-		#MAX NUMBER OF HARMONICS
-		nH_label = "nH:"
-		Label(self.parent, text=nH_label).grid(row=2, column=0, sticky=W, padx=(145,5), pady=(10,2))
-		self.nH = Entry(self.parent, justify=CENTER)
-		self.nH["width"] = 5
-		self.nH.grid(row=2, column=0, sticky=W, padx=(172,5), pady=(10,2))
-		self.nH.delete(0, END)
-		self.nH.insert(0, "100")
+		#MAX NUMBER OF SINES
+		maxnSines_label = "maxnSines:"
+		Label(self.parent, text=maxnSines_label).grid(row=2, column=0, sticky=W, padx=(145,5), pady=(10,2))
+		self.maxnSines = Entry(self.parent, justify=CENTER)
+		self.maxnSines["width"] = 5
+		self.maxnSines.grid(row=2, column=0, sticky=W, padx=(220,5), pady=(10,2))
+		self.maxnSines.delete(0, END)
+		self.maxnSines.insert(0, "150")
 
-		#MIN FUNDAMENTAL FREQUENCY
-		minf0_label = "minf0:"
-		Label(self.parent, text=minf0_label).grid(row=2, column=0, sticky=W, padx=(227,5), pady=(10,2))
-		self.minf0 = Entry(self.parent, justify=CENTER)
-		self.minf0["width"] = 5
-		self.minf0.grid(row=2, column=0, sticky=W, padx=(275,5), pady=(10,2))
-		self.minf0.delete(0, END)
-		self.minf0.insert(0, "130")
+		#FREQUENCY DEVIATION ALLOWED
+		freqDevOffset_label = "freqDevOffset:"
+		Label(self.parent, text=freqDevOffset_label).grid(row=2, column=0, sticky=W, padx=(275,5), pady=(10,2))
+		self.freqDevOffset = Entry(self.parent, justify=CENTER)
+		self.freqDevOffset["width"] = 5
+		self.freqDevOffset.grid(row=2, column=0, sticky=W, padx=(368,5), pady=(10,2))
+		self.freqDevOffset.delete(0, END)
+		self.freqDevOffset.insert(0, "20")
 
-		#MAX FUNDAMENTAL FREQUENCY
-		maxf0_label = "maxf0:"
-		Label(self.parent, text=maxf0_label).grid(row=2, column=0, sticky=W, padx=(330,5), pady=(10,2))
-		self.maxf0 = Entry(self.parent, justify=CENTER)
-		self.maxf0["width"] = 5
-		self.maxf0.grid(row=2, column=0, sticky=W, padx=(380,5), pady=(10,2))
-		self.maxf0.delete(0, END)
-		self.maxf0.insert(0, "300")
-
-		#MAX ERROR ACCEPTED
-		f0et_label = "f0et:"
-		Label(self.parent, text=f0et_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
-		self.f0et = Entry(self.parent, justify=CENTER)
-		self.f0et["width"] = 5
-		self.f0et.grid(row=3, column=0, sticky=W, padx=(45,5), pady=(10,2))
-		self.f0et.delete(0, END)
-		self.f0et.insert(0, "7")
-
-		#ALLOWED DEVIATION OF HARMONIC TRACKS
-		harmDevSlope_label = "harmDevSlope:"
-		Label(self.parent, text=harmDevSlope_label).grid(row=3, column=0, sticky=W, padx=(110,5), pady=(10,2))
-		self.harmDevSlope = Entry(self.parent, justify=CENTER)
-		self.harmDevSlope["width"] = 5
-		self.harmDevSlope.grid(row=3, column=0, sticky=W, padx=(210,5), pady=(10,2))
-		self.harmDevSlope.delete(0, END)
-		self.harmDevSlope.insert(0, "0.01")
+		#SLOPE OF THE FREQUENCY DEVIATION
+		freqDevSlope_label = "freqDevSlope:"
+		Label(self.parent, text=freqDevSlope_label).grid(row=3, column=0, sticky=W, padx=(5,5), pady=(10,2))
+		self.freqDevSlope = Entry(self.parent, justify=CENTER)
+		self.freqDevSlope["width"] = 5
+		self.freqDevSlope.grid(row=3, column=0, sticky=W, padx=(98,5), pady=(10,2))
+		self.freqDevSlope.delete(0, END)
+		self.freqDevSlope.insert(0, "0.02")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
 		self.compute = Button(self.parent, text="Analysis/Synthesis", command=self.analysis, bg="dark red", fg="white")
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
 		#BUTTON TO PLAY ANALYSIS/SYNTHESIS OUTPUT
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModel'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('sineModel'), bg="gray30", fg="white")
 		self.output.grid(row=4, column=0, padx=(145,5), pady=(10,5), sticky=W)
 
 		###
@@ -147,38 +129,22 @@ class HarmonicTransformations_frame:
 		self.freqScaling = Entry(self.parent, justify=CENTER)
 		self.freqScaling.grid(row=7, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqScaling.delete(0, END)
-		self.freqScaling.insert(0, "[0, 2.0, 1, 0.3]")
-
-		#FREQUENCY STRETCHING FACTORSharmonicModelTransformation
-		freqStretching_label = "Frequency stretching factors, in time-value pairs:"
-		Label(self.parent, text=freqStretching_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
-		self.freqStretching = Entry(self.parent, justify=CENTER)
-		self.freqStretching.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
-		self.freqStretching.delete(0, END)
-		self.freqStretching.insert(0, "[0, 1, 1, 1.5]")
-
-		#TIMBRE PRESERVATION
-		timbrePreservation_label = "Timbre preservation (1 preserves original timbre, 0 it does not):"
-		Label(self.parent, text=timbrePreservation_label).grid(row=10, column=0, sticky=W, padx=5, pady=(5,2))
-		self.timbrePreservation = Entry(self.parent, justify=CENTER)
-		self.timbrePreservation.grid(row=10, column=0, sticky=W+E, padx=(395,5), pady=(5,2))
-		self.timbrePreservation.delete(0, END)
-		self.timbrePreservation.insert(0, "1")
+		self.freqScaling.insert(0, "[0, 2.0, 1, .3]")
 
 		#TIME SCALING FACTORS
 		timeScaling_label = "Time scaling factors, in time-value pairs:"
-		Label(self.parent, text=timeScaling_label).grid(row=11, column=0, sticky=W, padx=5, pady=(5,2))
+		Label(self.parent, text=timeScaling_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
-		self.timeScaling.grid(row=12, column=0, sticky=W+E, padx=5, pady=(0,2))
+		self.timeScaling.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
-		self.timeScaling.insert(0, "[0, 0, 0.671, 0.671, 1.978, 1.978+1.0]")
+		self.timeScaling.insert(0, "[0, .0, .671, .671, 1.978, 1.978+1.0]")
 
 		#BUTTON TO DO THE SYNTHESIS
 		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
 		self.compute.grid(row=13, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModelTransformation'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('sineModelTransformation'), bg="gray30", fg="white")
 		self.transf_output.grid(row=13, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -223,13 +189,11 @@ class HarmonicTransformations_frame:
 			N = int(self.N.get())
 			t = int(self.t.get())
 			minSineDur = float(self.minSineDur.get())
-			nH = int(self.nH.get())
-			minf0 = int(self.minf0.get())
-			maxf0 = int(self.maxf0.get())
-			f0et = int(self.f0et.get())
-			harmDevSlope = float(self.harmDevSlope.get())
+			maxnSines = int(self.maxnSines.get())
+			freqDevOffset = int(self.freqDevOffset.get())
+			freqDevSlope = float(self.harmDevSlope.get())
 
-			self.inputFile, self.fs, self.hfreq, self.hmag = hT.analysis(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
+			self.inputFile, self.fs, self.tfreq, self.tmag = sT.analysis(inputFile, window, M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
@@ -239,14 +203,12 @@ class HarmonicTransformations_frame:
 		try:
 			inputFile = self.inputFile
 			fs =  self.fs
-			hfreq = self.hfreq
-			hmag = self.hmag
+			tfreq = self.tfreq
+			tmag = self.tmag
 			freqScaling = np.array(eval(self.freqScaling.get()))
-			freqStretching = np.array(eval(self.freqStretching.get()))
-			timbrePreservation = int(self.timbrePreservation.get())
 			timeScaling = np.array(eval(self.timeScaling.get()))
 
-			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling, freqStretching, timbrePreservation, timeScaling)
+			sT.transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling, timeScaling)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")

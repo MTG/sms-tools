@@ -1,4 +1,4 @@
-# GUI frame for the harmonicTransformations_function.py
+# GUI frame for the hpsTransformations_function.py
 
 from Tkinter import *
 import tkFileDialog, tkMessageBox
@@ -6,9 +6,9 @@ import sys, os
 import pygame
 from scipy.io.wavfile import read
 import numpy as np
-import harmonicTransformations_function as hT
+import hpsTransformations_function as hT
  
-class HarmonicTransformations_frame:
+class HpsTransformations_frame:
   
 	def __init__(self, parent):  
 		 
@@ -27,7 +27,7 @@ class HarmonicTransformations_frame:
 		self.filelocation["width"] = 25
 		self.filelocation.grid(row=0,column=0, sticky=W, padx=(70, 5), pady=(10,2))
 		self.filelocation.delete(0, END)
-		self.filelocation.insert(0, '../../sounds/vignesh.wav')
+		self.filelocation.insert(0, '../../sounds/sax-phrase.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
 		self.open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
@@ -37,7 +37,7 @@ class HarmonicTransformations_frame:
 		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
 		self.preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
 
-		## HARMONIC TRANSFORMATIONS ANALYSIS
+		## HPS TRANSFORMATIONS ANALYSIS
 
 		#ANALYSIS WINDOW TYPE
 		wtype_label = "window:"
@@ -54,7 +54,7 @@ class HarmonicTransformations_frame:
 		self.M["width"] = 5
 		self.M.grid(row=1,column=0, sticky=W, padx=(200,5), pady=(10,2))
 		self.M.delete(0, END)
-		self.M.insert(0, "1201")
+		self.M.insert(0, "601")
 
 		#FFT SIZE
 		N_label = "N:"
@@ -63,7 +63,7 @@ class HarmonicTransformations_frame:
 		self.N["width"] = 5
 		self.N.grid(row=1,column=0, sticky=W, padx=(275,5), pady=(10,2))
 		self.N.delete(0, END)
-		self.N.insert(0, "2048")
+		self.N.insert(0, "1024")
 
 		#THRESHOLD MAGNITUDE
 		t_label = "t:"
@@ -72,7 +72,7 @@ class HarmonicTransformations_frame:
 		self.t["width"] = 5
 		self.t.grid(row=1, column=0, sticky=W, padx=(348,5), pady=(10,2))
 		self.t.delete(0, END)
-		self.t.insert(0, "-90")
+		self.t.insert(0, "-100")
 
 		#MIN DURATION SINUSOIDAL TRACKS
 		minSineDur_label = "minSineDur:"
@@ -99,7 +99,7 @@ class HarmonicTransformations_frame:
 		self.minf0["width"] = 5
 		self.minf0.grid(row=2, column=0, sticky=W, padx=(275,5), pady=(10,2))
 		self.minf0.delete(0, END)
-		self.minf0.insert(0, "130")
+		self.minf0.insert(0, "350")
 
 		#MAX FUNDAMENTAL FREQUENCY
 		maxf0_label = "maxf0:"
@@ -108,7 +108,7 @@ class HarmonicTransformations_frame:
 		self.maxf0["width"] = 5
 		self.maxf0.grid(row=2, column=0, sticky=W, padx=(380,5), pady=(10,2))
 		self.maxf0.delete(0, END)
-		self.maxf0.insert(0, "300")
+		self.maxf0.insert(0, "700")
 
 		#MAX ERROR ACCEPTED
 		f0et_label = "f0et:"
@@ -117,7 +117,7 @@ class HarmonicTransformations_frame:
 		self.f0et["width"] = 5
 		self.f0et.grid(row=3, column=0, sticky=W, padx=(45,5), pady=(10,2))
 		self.f0et.delete(0, END)
-		self.f0et.insert(0, "7")
+		self.f0et.insert(0, "5")
 
 		#ALLOWED DEVIATION OF HARMONIC TRACKS
 		harmDevSlope_label = "harmDevSlope:"
@@ -128,12 +128,21 @@ class HarmonicTransformations_frame:
 		self.harmDevSlope.delete(0, END)
 		self.harmDevSlope.insert(0, "0.01")
 
+		#DECIMATION FACTOR
+		stocf_label = "stocf:"
+		Label(self.parent, text=stocf_label).grid(row=3, column=0, sticky=W, padx=(275,5), pady=(10,2))
+		self.stocf = Entry(self.parent, justify=CENTER)
+		self.stocf["width"] = 5
+		self.stocf.grid(row=3, column=0, sticky=W, padx=(315,5), pady=(10,2))
+		self.stocf.delete(0, END)
+		self.stocf.insert(0, "0.1")
+
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
 		self.compute = Button(self.parent, text="Analysis/Synthesis", command=self.analysis, bg="dark red", fg="white")
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
 		#BUTTON TO PLAY ANALYSIS/SYNTHESIS OUTPUT
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModel'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModel'), bg="gray30", fg="white")
 		self.output.grid(row=4, column=0, padx=(145,5), pady=(10,5), sticky=W)
 
 		###
@@ -147,7 +156,7 @@ class HarmonicTransformations_frame:
 		self.freqScaling = Entry(self.parent, justify=CENTER)
 		self.freqScaling.grid(row=7, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqScaling.delete(0, END)
-		self.freqScaling.insert(0, "[0, 2.0, 1, 0.3]")
+		self.freqScaling.insert(0, "[0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]")
 
 		#FREQUENCY STRETCHING FACTORSharmonicModelTransformation
 		freqStretching_label = "Frequency stretching factors, in time-value pairs:"
@@ -155,7 +164,7 @@ class HarmonicTransformations_frame:
 		self.freqStretching = Entry(self.parent, justify=CENTER)
 		self.freqStretching.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqStretching.delete(0, END)
-		self.freqStretching.insert(0, "[0, 1, 1, 1.5]")
+		self.freqStretching.insert(0, "[0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]")
 
 		#TIMBRE PRESERVATION
 		timbrePreservation_label = "Timbre preservation (1 preserves original timbre, 0 it does not):"
@@ -171,14 +180,14 @@ class HarmonicTransformations_frame:
 		self.timeScaling = Entry(self.parent, justify=CENTER)
 		self.timeScaling.grid(row=12, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
-		self.timeScaling.insert(0, "[0, 0, 0.671, 0.671, 1.978, 1.978+1.0]")
+		self.timeScaling.insert(0, "[0, 0, 2.138, 2.138-1.0, 3.146, 3.146]")
 
 		#BUTTON TO DO THE SYNTHESIS
 		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
 		self.compute.grid(row=13, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('harmonicModelTransformation'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModelTransformation'), bg="gray30", fg="white")
 		self.transf_output.grid(row=13, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
