@@ -30,12 +30,12 @@ class StochasticTransformations_frame:
 		self.filelocation.insert(0, '../../sounds/rain.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
-		self.open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
-		self.open_file.grid(row=0, column=0, sticky=W, padx=(280, 6), pady=(10,2)) #put it beside the filelocation textbox
+		open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
+		open_file.grid(row=0, column=0, sticky=W, padx=(280, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
-		self.preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
+		preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
 
 		## STOCHASTIC TRANSFORMATIONS ANALYSIS
 
@@ -52,6 +52,7 @@ class StochasticTransformations_frame:
 		timeScaling_label = "Time scaling factors, in time-value pairs:"
 		Label(self.parent, text=timeScaling_label).grid(row=2, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
+		self.timeScaling["width"] = 35
 		self.timeScaling.grid(row=3, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
 		self.timeScaling.insert(0, "[0, 0, 1, 2]")
@@ -72,7 +73,6 @@ class StochasticTransformations_frame:
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
 	def preview_sound(self):
-		self.dummy = 2
 		filename = self.filelocation.get()
 
 		if filename[-4:] == '.wav':
@@ -97,45 +97,17 @@ class StochasticTransformations_frame:
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0,self.filename)
 
-	def analysis(self):
-		
-		try:
-			inputFile = self.filelocation.get()
-			window =  self.w_type.get()
-			M = int(self.M.get())
-			N = int(self.N.get())
-			t = int(self.t.get())
-			minSineDur = float(self.minSineDur.get())
-			maxnSines = int(self.maxnSines.get())
-			minf0 = int(self.minf0.get())
-			maxf0 = int(self.maxf0.get())
-			f0et = int(self.f0et.get())
-			harmDevSlope = float(self.harmDevSlope.get())
-
-			self.inputFile, self.fs, self.hfreq, self.hmag = hT.analysis(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
-
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
-
 	def transformation_synthesis(self):
 
 		try:
-			inputFile = self.inputFile
-			fs =  self.fs
-			hfreq = self.hfreq
-			hmag = self.hmag
-			freqScaling = np.array(eval(self.freqScaling.get()))
-			freqStretching = np.array(eval(self.freqStretching.get()))
-			timbrePreservation = int(self.timbrePreservation.get())
+			inputFile = self.filelocation.get()
+			stocf = float(self.stocf.get())
 			timeScaling = np.array(eval(self.timeScaling.get()))
 
-			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling, freqStretching, timbrePreservation, timeScaling)
+			sT.main(inputFile, stocf, timeScaling)
 
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
-
-		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
 
 	def play_out_sound(self, extension):
 

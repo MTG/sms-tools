@@ -5,6 +5,7 @@ from harmonicTransformations_GUI_frame import *
 from hpsTransformations_GUI_frame import *
 from sineTransformations_GUI_frame import *
 from stochasticTransformations_GUI_frame import *
+from stftMorph_GUI_frame import *
 
 root = Tk( ) 
 root.title('sms-tools GUI')
@@ -24,6 +25,7 @@ f4 = Frame(nb( ))
 stochastic = StochasticTransformations_frame(f4)
 
 f5 = Frame(nb( )) 
+stft = StftMorph_frame(f5)
 
 nb.add_screen(f1, "Harmonic") 
 nb.add_screen(f2, "HPS")

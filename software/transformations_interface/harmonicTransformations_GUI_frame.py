@@ -24,18 +24,18 @@ class HarmonicTransformations_frame:
 		#TEXTBOX TO PRINT PATH OF THE SOUND FILE
 		self.filelocation = Entry(self.parent)
 		self.filelocation.focus_set()
-		self.filelocation["width"] = 25
+		self.filelocation["width"] = 32
 		self.filelocation.grid(row=0,column=0, sticky=W, padx=(70, 5), pady=(10,2))
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0, '../../sounds/vignesh.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
-		self.open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
-		self.open_file.grid(row=0, column=0, sticky=W, padx=(280, 6), pady=(10,2)) #put it beside the filelocation textbox
+		open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
+		open_file.grid(row=0, column=0, sticky=W, padx=(340, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
-		self.preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
+		preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		preview.grid(row=0, column=0, sticky=W, padx=(385,6), pady=(10,2))
 
 		## HARMONIC TRANSFORMATIONS ANALYSIS
 
@@ -114,17 +114,17 @@ class HarmonicTransformations_frame:
 		f0et_label = "f0et:"
 		Label(self.parent, text=f0et_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.f0et = Entry(self.parent, justify=CENTER)
-		self.f0et["width"] = 5
-		self.f0et.grid(row=3, column=0, sticky=W, padx=(45,5), pady=(10,2))
+		self.f0et["width"] = 3
+		self.f0et.grid(row=3, column=0, sticky=W, padx=(42,5), pady=(10,2))
 		self.f0et.delete(0, END)
 		self.f0et.insert(0, "7")
 
 		#ALLOWED DEVIATION OF HARMONIC TRACKS
 		harmDevSlope_label = "harmDevSlope:"
-		Label(self.parent, text=harmDevSlope_label).grid(row=3, column=0, sticky=W, padx=(110,5), pady=(10,2))
+		Label(self.parent, text=harmDevSlope_label).grid(row=3, column=0, sticky=W, padx=(90,5), pady=(10,2))
 		self.harmDevSlope = Entry(self.parent, justify=CENTER)
 		self.harmDevSlope["width"] = 5
-		self.harmDevSlope.grid(row=3, column=0, sticky=W, padx=(210,5), pady=(10,2))
+		self.harmDevSlope.grid(row=3, column=0, sticky=W, padx=(190,5), pady=(10,2))
 		self.harmDevSlope.delete(0, END)
 		self.harmDevSlope.insert(0, "0.01")
 
@@ -145,6 +145,7 @@ class HarmonicTransformations_frame:
 		freqScaling_label = "Frequency scaling factors, in time-value pairs:"
 		Label(self.parent, text=freqScaling_label).grid(row=6, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqScaling = Entry(self.parent, justify=CENTER)
+		self.freqScaling["width"] = 35
 		self.freqScaling.grid(row=7, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqScaling.delete(0, END)
 		self.freqScaling.insert(0, "[0, 2.0, 1, 0.3]")
@@ -153,6 +154,7 @@ class HarmonicTransformations_frame:
 		freqStretching_label = "Frequency stretching factors, in time-value pairs:"
 		Label(self.parent, text=freqStretching_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqStretching = Entry(self.parent, justify=CENTER)
+		self.freqStretching["width"] = 35
 		self.freqStretching.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqStretching.delete(0, END)
 		self.freqStretching.insert(0, "[0, 1, 1, 1.5]")
@@ -161,6 +163,7 @@ class HarmonicTransformations_frame:
 		timbrePreservation_label = "Timbre preservation (1 preserves original timbre, 0 it does not):"
 		Label(self.parent, text=timbrePreservation_label).grid(row=10, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timbrePreservation = Entry(self.parent, justify=CENTER)
+		self.timbrePreservation["width"] = 2
 		self.timbrePreservation.grid(row=10, column=0, sticky=W+E, padx=(395,5), pady=(5,2))
 		self.timbrePreservation.delete(0, END)
 		self.timbrePreservation.insert(0, "1")
@@ -169,6 +172,7 @@ class HarmonicTransformations_frame:
 		timeScaling_label = "Time scaling factors, in time-value pairs:"
 		Label(self.parent, text=timeScaling_label).grid(row=11, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
+		self.timeScaling["width"] = 35
 		self.timeScaling.grid(row=12, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
 		self.timeScaling.insert(0, "[0, 0, 0.671, 0.671, 1.978, 1.978+1.0]")
@@ -189,7 +193,6 @@ class HarmonicTransformations_frame:
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
 	def preview_sound(self):
-		self.dummy = 2
 		filename = self.filelocation.get()
 
 		if filename[-4:] == '.wav':

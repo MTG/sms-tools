@@ -24,18 +24,18 @@ class SineTransformations_frame:
 		#TEXTBOX TO PRINT PATH OF THE SOUND FILE
 		self.filelocation = Entry(self.parent)
 		self.filelocation.focus_set()
-		self.filelocation["width"] = 25
+		self.filelocation["width"] = 32
 		self.filelocation.grid(row=0,column=0, sticky=W, padx=(70, 5), pady=(10,2))
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0, '../../sounds/mridangam.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
-		self.open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
-		self.open_file.grid(row=0, column=0, sticky=W, padx=(280, 6), pady=(10,2)) #put it beside the filelocation textbox
+		open_file = Button(self.parent, text="...", command=self.browse_file) #see: def browse_file(self)
+		open_file.grid(row=0, column=0, sticky=W, padx=(340, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
-		self.preview.grid(row=0, column=0, sticky=W, padx=(325,6), pady=(10,2))
+		preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		preview.grid(row=0, column=0, sticky=W, padx=(385,6), pady=(10,2))
 
 		## SINE TRANSFORMATIONS ANALYSIS
 
@@ -94,10 +94,10 @@ class SineTransformations_frame:
 
 		#FREQUENCY DEVIATION ALLOWED
 		freqDevOffset_label = "freqDevOffset:"
-		Label(self.parent, text=freqDevOffset_label).grid(row=2, column=0, sticky=W, padx=(275,5), pady=(10,2))
+		Label(self.parent, text=freqDevOffset_label).grid(row=2, column=0, sticky=W, padx=(280,5), pady=(10,2))
 		self.freqDevOffset = Entry(self.parent, justify=CENTER)
 		self.freqDevOffset["width"] = 5
-		self.freqDevOffset.grid(row=2, column=0, sticky=W, padx=(368,5), pady=(10,2))
+		self.freqDevOffset.grid(row=2, column=0, sticky=W, padx=(372,5), pady=(10,2))
 		self.freqDevOffset.delete(0, END)
 		self.freqDevOffset.insert(0, "20")
 
@@ -127,6 +127,7 @@ class SineTransformations_frame:
 		freqScaling_label = "Frequency scaling factors, in time-value pairs:"
 		Label(self.parent, text=freqScaling_label).grid(row=6, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqScaling = Entry(self.parent, justify=CENTER)
+		self.freqScaling["width"] = 35
 		self.freqScaling.grid(row=7, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.freqScaling.delete(0, END)
 		self.freqScaling.insert(0, "[0, 2.0, 1, .3]")
@@ -135,6 +136,7 @@ class SineTransformations_frame:
 		timeScaling_label = "Time scaling factors, in time-value pairs:"
 		Label(self.parent, text=timeScaling_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
+		self.timeScaling["width"] = 35
 		self.timeScaling.grid(row=9, column=0, sticky=W+E, padx=5, pady=(0,2))
 		self.timeScaling.delete(0, END)
 		self.timeScaling.insert(0, "[0, .0, .671, .671, 1.978, 1.978+1.0]")
@@ -155,7 +157,6 @@ class SineTransformations_frame:
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
 	def preview_sound(self):
-		self.dummy = 2
 		filename = self.filelocation.get()
 
 		if filename[-4:] == '.wav':
@@ -191,7 +192,7 @@ class SineTransformations_frame:
 			minSineDur = float(self.minSineDur.get())
 			maxnSines = int(self.maxnSines.get())
 			freqDevOffset = int(self.freqDevOffset.get())
-			freqDevSlope = float(self.harmDevSlope.get())
+			freqDevSlope = float(self.freqDevSlope.get())
 
 			self.inputFile, self.fs, self.tfreq, self.tmag = sT.analysis(inputFile, window, M, N, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 
@@ -213,8 +214,8 @@ class SineTransformations_frame:
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
 
-		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+		#except AttributeError:
+		#	tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
 
 	def play_out_sound(self, extension):
 
