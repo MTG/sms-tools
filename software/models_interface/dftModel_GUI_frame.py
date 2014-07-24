@@ -85,7 +85,7 @@ class DftModel_frame:
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
 	def preview_sound(self):
-		self.dummy = 2
+		
 		filename = self.filelocation.get()
 
 		if filename[-4:] == '.wav':

@@ -94,19 +94,19 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 	return inputFile, fs, tfreq, tmag
 
 
 def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array([0, 2.0, 1, .3]), 
 	timeScaling = np.array([0, .0, .671, .671, 1.978, 1.978+1.0])):
-# transform the analysis values returned by the analysis function and synthesize the sound
-# inputFile: name of input file
-# fs: sampling rate of input file	
-# tfreq, tmag: sinusoidal frequencies and magnitudes
-# freqScaling: frequency scaling factors, in time-value pairs
-# timeScaling: time scaling factors, in time-value pairs
+	# transform the analysis values returned by the analysis function and synthesize the sound
+	# inputFile: name of input file
+	# fs: sampling rate of input file	
+	# tfreq, tmag: sinusoidal frequencies and magnitudes
+	# freqScaling: frequency scaling factors, in time-value pairs
+	# timeScaling: time scaling factors, in time-value pairs
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -164,5 +164,5 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, tfreq, tmag)
 
-
+	plt.show()
 
