@@ -214,8 +214,8 @@ class SineTransformations_frame:
 		except ValueError:
 			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
 
-		#except AttributeError:
-		#	tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+		except AttributeError:
+			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
 
 	def play_out_sound(self, extension):
 
