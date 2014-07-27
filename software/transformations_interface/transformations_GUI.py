@@ -13,25 +13,25 @@ nb = notebook(root, TOP) # make a few diverse frames (panels), each using the NB
 
 # uses the notebook's frame
 f1 = Frame(nb( )) 
-harmonic = HarmonicTransformations_frame(f1)
+stft = StftMorph_frame(f1)
 
 f2 = Frame(nb( )) 
-hps = HpsTransformations_frame(f2)
+sine = SineTransformations_frame(f2)
 
 f3 = Frame(nb( )) 
-sine = SineTransformations_frame(f3)
+harmonic = HarmonicTransformations_frame(f3)
 
 f4 = Frame(nb( )) 
 stochastic = StochasticTransformations_frame(f4)
 
 f5 = Frame(nb( )) 
-stft = StftMorph_frame(f5)
+hps = HpsTransformations_frame(f5)
 
-nb.add_screen(f1, "Harmonic") 
-nb.add_screen(f2, "HPS")
-nb.add_screen(f3, "Sine")
+nb.add_screen(f1, "STFTMorph") 
+nb.add_screen(f2, "Sine")
+nb.add_screen(f3, "Harmonic") 
 nb.add_screen(f4, "Stochastic") 
-nb.add_screen(f5, "STFTMorph") 
+nb.add_screen(f5, "HPS")
 
 
 nb.display(f1)

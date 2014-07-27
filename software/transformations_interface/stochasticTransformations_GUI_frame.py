@@ -49,7 +49,7 @@ class StochasticTransformations_frame:
 		self.stocf.insert(0, "0.1")
 
 		#TIME SCALING FACTORS
-		timeScaling_label = "Time scaling factors, in time-value pairs:"
+		timeScaling_label = "Time scaling factors (time, value pairs):"
 		Label(self.parent, text=timeScaling_label).grid(row=2, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
 		self.timeScaling["width"] = 35

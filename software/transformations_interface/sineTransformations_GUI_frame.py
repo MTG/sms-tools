@@ -124,7 +124,7 @@ class SineTransformations_frame:
 		###
 
 		#FREQUENCY SCALING FACTORS
-		freqScaling_label = "Frequency scaling factors, in time-value pairs:"
+		freqScaling_label = "Frequency scaling factors (time, value pairs):"
 		Label(self.parent, text=freqScaling_label).grid(row=6, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqScaling = Entry(self.parent, justify=CENTER)
 		self.freqScaling["width"] = 35
@@ -133,7 +133,7 @@ class SineTransformations_frame:
 		self.freqScaling.insert(0, "[0, 2.0, 1, .3]")
 
 		#TIME SCALING FACTORS
-		timeScaling_label = "Time scaling factors, in time-value pairs:"
+		timeScaling_label = "Time scaling factors (in time, value pairs):"
 		Label(self.parent, text=timeScaling_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
 		self.timeScaling["width"] = 35

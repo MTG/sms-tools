@@ -128,30 +128,30 @@ class StftMorph_frame:
 
 
 		#SMOOTHING FACTOR
-		smoothf_label = "smoothf:"
+		smoothf_label = "Smooth factor of sound 2 (bigger than 0 to max of 1, where 1 is no smothing):"
 		Label(self.parent, text=smoothf_label).grid(row=4, column=0, sticky=W, padx=(5, 5), pady=(10,2))
 		self.smoothf = Entry(self.parent, justify=CENTER)
 		self.smoothf["width"] = 5
-		self.smoothf.grid(row=4, column=0, sticky=W, padx=(67,5), pady=(10,2))
+		self.smoothf.grid(row=5, column=0, sticky=W, padx=(5,5), pady=(10,2))
 		self.smoothf.delete(0, END)
 		self.smoothf.insert(0, "0.5")
 
 		#BALANCE FACTOR
-		balancef_label = "balancef:"
-		Label(self.parent, text=balancef_label).grid(row=4, column=0, sticky=W, padx=(145,5), pady=(10,2))
+		balancef_label = "Balance factor (from 0 to 1, where 0 is sound 1 and 1 is sound 2):"
+		Label(self.parent, text=balancef_label).grid(row=6, column=0, sticky=W, padx=(5,5), pady=(10,2))
 		self.balancef = Entry(self.parent, justify=CENTER)
 		self.balancef["width"] = 5
-		self.balancef.grid(row=4, column=0, sticky=W, padx=(210,5), pady=(10,2))
+		self.balancef.grid(row=7, column=0, sticky=W, padx=(5,5), pady=(10,2))
 		self.balancef.delete(0, END)
 		self.balancef.insert(0, "0.2")
 
 		#BUTTON TO DO THE SYNTHESIS
 		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
-		self.compute.grid(row=6, column=0, padx=5, pady=(10,15), sticky=W)
+		self.compute.grid(row=9, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
 		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('stftMorph'), bg="gray30", fg="white")
-		self.transf_output.grid(row=6, column=0, padx=(165,5), pady=(10,15), sticky=W)
+		self.transf_output.grid(row=9, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
 		self.file_opt = options = {}

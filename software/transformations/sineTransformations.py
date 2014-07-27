@@ -12,7 +12,7 @@ def sineTimeScaling(sfreq, smag, timeScaling):
   maxInTime = max(timeScaling[::2])                      # maximum value used as input times
   maxOutTime = max(timeScaling[1::2])                    # maximum value used in output times
   outL = int(L*maxOutTime/maxInTime)                     # number of output frames
-  inFrames = (L-1)*timeScaling[::2]/maxInTime                # input time values in frames
+  inFrames = (L-1)*timeScaling[::2]/maxInTime            # input time values in frames
   outFrames = outL*timeScaling[1::2]/maxOutTime          # output time values in frames
   timeScalingEnv = interp1d(outFrames, inFrames, fill_value=0)    # interpolation function
   indexes = timeScalingEnv(np.arange(outL))              # generate frame indexes for the output

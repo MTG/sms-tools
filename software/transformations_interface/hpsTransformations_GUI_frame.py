@@ -151,7 +151,7 @@ class HpsTransformations_frame:
 		###
 
 		#FREQUENCY SCALING FACTORS
-		freqScaling_label = "Frequency scaling factors, in time-value pairs:"
+		freqScaling_label = "Frequency scaling factors (time, value pairs):"
 		Label(self.parent, text=freqScaling_label).grid(row=6, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqScaling = Entry(self.parent, justify=CENTER)
 		self.freqScaling["width"] = 35
@@ -160,7 +160,7 @@ class HpsTransformations_frame:
 		self.freqScaling.insert(0, "[0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]")
 
 		#FREQUENCY STRETCHING FACTORSharmonicModelTransformation
-		freqStretching_label = "Frequency stretching factors, in time-value pairs:"
+		freqStretching_label = "Frequency stretching factors (time, value pairs):"
 		Label(self.parent, text=freqStretching_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqStretching = Entry(self.parent, justify=CENTER)
 		self.freqStretching["width"] = 35
@@ -178,7 +178,7 @@ class HpsTransformations_frame:
 		self.timbrePreservation.insert(0, "1")
 
 		#TIME SCALING FACTORS
-		timeScaling_label = "Time scaling factors, in time-value pairs:"
+		timeScaling_label = "Time scaling factors (time, value pairs):"
 		Label(self.parent, text=timeScaling_label).grid(row=11, column=0, sticky=W, padx=5, pady=(5,2))
 		self.timeScaling = Entry(self.parent, justify=CENTER)
 		self.timeScaling["width"] = 35

@@ -71,7 +71,7 @@ def main(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, N=10
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 
-	# plot spectrogram stochastic compoment
+	# plot spectrogram stochastic component
 	plt.subplot(3,1,2)
 	numFrames = int(mYst[:,0].size)
 	sizeEnv = int(mYst[0,:].size)
