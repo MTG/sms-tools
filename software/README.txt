@@ -1,1 +1,1 @@
-This directory includes all the software included in the sms-tools.
+This directory includes all the software included in the sms-tools. The spectral models, the transformations and the interfaces.

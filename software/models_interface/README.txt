@@ -1,1 +1,1 @@
-This directory includes the software with which to run the different models.
+Directory with the interfaces to call the model functions. The main graphical interface is models_GUI.py, from which all the other functions are called.
