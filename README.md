@@ -30,12 +30,12 @@ $ python compileModule.py build_ext --inplace </code>
 <p>The code for the basic analysis/synthesis models is in the
 directory software/models. To use these models there is an interface and example functions in software/models_interface. All the sounds used in the examples are in the sounds directory.</p>
 
-<p>To start we recommend to download the whole package, compile the C code with Cython and execute the GUI available in software/models_interface. To execute the GUI to call all the analysis/synthesis you have to use the Terminal, go to that directory and type: </p>
+<p>To start we recommend to download the whole package, compile the C code with Cython and execute the GUI available in software/models_interface. To execute the GUI that calls all the analysis/synthesis models you have to use the Terminal, go to the directory software/models_interface and type: </p>
 <code class="western">
 $ python models_GUI.py </code>
 </p>
 
-<p>To execute the GUI to call various sound transformation go to that directory software/transformations_interface and type: </p>
+<p>To execute the GUI that calls various sound transformation functions go to the directory software/transformations_interface and type: </p>
 <code class="western">
 $ python transformations_GUI.py </code>
 </p>
