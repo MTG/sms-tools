@@ -1,11 +1,12 @@
 from Tkinter import *
 from notebook import *   # window with tabs
 
-from harmonicTransformations_GUI_frame import *
-from hpsTransformations_GUI_frame import *
-from sineTransformations_GUI_frame import *
-from stochasticTransformations_GUI_frame import *
 from stftMorph_GUI_frame import *
+from sineTransformations_GUI_frame import *
+from harmonicTransformations_GUI_frame import *
+from stochasticTransformations_GUI_frame import *
+from hpsTransformations_GUI_frame import *
+from hpsMorph_GUI_frame import *
 
 root = Tk( ) 
 root.title('sms-tools GUI')
@@ -27,11 +28,15 @@ stochastic = StochasticTransformations_frame(f4)
 f5 = Frame(nb( )) 
 hps = HpsTransformations_frame(f5)
 
-nb.add_screen(f1, "STFTMorph") 
+f6 = Frame(nb( ))
+hpsmorph = HpsMorph_frame(f6)
+
+nb.add_screen(f1, "STFT Morph") 
 nb.add_screen(f2, "Sine")
 nb.add_screen(f3, "Harmonic") 
 nb.add_screen(f4, "Stochastic") 
 nb.add_screen(f5, "HPS")
+nb.add_screen(f6, "HPS Morph")
 
 
 nb.display(f1)

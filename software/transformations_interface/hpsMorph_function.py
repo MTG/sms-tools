@@ -94,7 +94,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	plt.title('harmonics + stochastic spectrogram of sound 2')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 	
 	return inputFile1, fs1, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2
 
@@ -119,11 +119,11 @@ def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2
 	yhfreq, yhmag, ystocEnv = HPST.hpsMorph(hfreq1, hmag1, stocEnv1, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp)
 
 	# synthesis 
-	y, yh, yst = HPS.hpsModelSynth(yhfreq, yhmag, np.array([]), ystocEnv, Ns, H, fs1)
+	y, yh, yst = HPS.hpsModelSynth(yhfreq, yhmag, np.array([]), ystocEnv, Ns, H, fs)
 
 	# write output sound 
-	outputFile = 'output_sounds/' + os.path.basename(inputFile1)[:-4] + '_' + os.path.basename(inputFile2)[:-4] + '_hpsModelTransformation.wav'
-	UF.wavwrite(y, fs1, outputFile)
+	outputFile = 'output_sounds/' + os.path.basename(inputFile1)[:-4] + '_hpsMorph.wav'
+	UF.wavwrite(y, fs, outputFile)
 
 	# --------- plotting --------------------
 

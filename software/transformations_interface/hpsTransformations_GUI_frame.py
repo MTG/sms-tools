@@ -159,7 +159,7 @@ class HpsTransformations_frame:
 		self.freqScaling.delete(0, END)
 		self.freqScaling.insert(0, "[0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]")
 
-		#FREQUENCY STRETCHING FACTORSharmonicModelTransformation
+		#FREQUENCY STRETCHING FACTORS
 		freqStretching_label = "Frequency stretching factors (time, value pairs):"
 		Label(self.parent, text=freqStretching_label).grid(row=8, column=0, sticky=W, padx=5, pady=(5,2))
 		self.freqStretching = Entry(self.parent, justify=CENTER)
