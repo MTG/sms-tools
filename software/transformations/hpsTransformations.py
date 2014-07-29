@@ -22,8 +22,8 @@ def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	outFrames = outL*timeScaling[1::2]/maxOutTime          # output time values in frames
 	timeScalingEnv = interp1d(outFrames, inFrames, fill_value=0)    # interpolation function
 	indexes = timeScalingEnv(np.arange(outL))              # generate frame indexes for the output
-	yhfreq = yhfreq[round(indexes[0]),:]                   # first output frame
-	yhfreq = yhfreq[round(indexes[0]),:]                   # first output frame
+	yhfreq = hfreq[round(indexes[0]),:]                   # first output frame
+	yhmag = hmag[round(indexes[0]),:]                     # first output frame
 	ystocEnv = stocEnv[round(indexes[0]),:]                # first output frame
 	for l in indexes[1:]:
 		yhfreq = np.vstack((yhfreq, hfreq[round(l),:]))
