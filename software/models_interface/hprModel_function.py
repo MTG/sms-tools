@@ -97,8 +97,8 @@ def main(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, N=10
 	numFrames = int(harms[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs) 
 	plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-	plt.xlabel('Time(s)')
-	plt.ylabel('Frequency(Hz)')
+	plt.xlabel('time(s)')
+	plt.ylabel('frequency(Hz)')
 	plt.autoscale(tight=True)
 	plt.title('harmonics + residual spectrogram')
 
