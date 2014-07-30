@@ -101,14 +101,14 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2,
 	hfreqIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1]), hmagIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1]), stocIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1])):
 	# transform the analysis values returned by the analysis function and synthesize the sound
-	# inputFile: name of input file
-	# fs: sampling rate of input file	
-	# hfreq, hmag: harmonic frequencies and magnitudes
-	# mYst: stochastic residual
-	# freqScaling: frequency scaling factors, in time-value pairs
-	# freqStretchig: frequency stretching factors, in time-value pairs
-	# timbrePreservation: 1 preserves original timbre, 0 it does not
-	# timeScaling: time scaling factors, in time-value pairs
+	# inputFile1: name of input file 1
+	# fs: sampling rate of input file	1
+	# hfreq1, hmag1, stocEnv1: hps representation of sound 1
+	# inputFile2: name of input file 2
+	# hfreq2, hmag2, stocEnv2: hps representation of sound 2
+	# hfreqIntp: interpolation factor between the harmonic frequencies of the two sounds, 0 is sound 1 and 1 is sound 2 (time,value pairs)
+	# hmagIntp: interpolation factor between the harmonic magnitudes of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
+	# stocIntp: interpolation factor between the stochastic representation of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
 	
 	# size of fft used in synthesis
 	Ns = 512

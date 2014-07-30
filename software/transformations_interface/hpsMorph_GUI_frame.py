@@ -257,7 +257,7 @@ class HpsMorph_frame:
 		###
 
 		#
-		hfreqIntp_label = "hfreqIntp:"
+		hfreqIntp_label = "harmonic frequencies interpolation factors, 0 to 1 (time,value pairs)"
 		Label(self.parent, text=hfreqIntp_label).grid(row=12, column=0, sticky=W, padx=5, pady=(2,2))
 		self.hfreqIntp = Entry(self.parent, justify=CENTER)
 		self.hfreqIntp["width"] = 35
@@ -266,7 +266,7 @@ class HpsMorph_frame:
 		self.hfreqIntp.insert(0, "[0, 0, .1, 0, .9, 1, 1, 1]")
 
 		#
-		hmagIntp_label = "hmagIntp:"
+		hmagIntp_label = "harmonic magnitudes interpolation factors, 0 to 1 (time,value pairs)"
 		Label(self.parent, text=hmagIntp_label).grid(row=14, column=0, sticky=W, padx=5, pady=(5,2))
 		self.hmagIntp = Entry(self.parent, justify=CENTER)
 		self.hmagIntp["width"] = 35
@@ -275,7 +275,7 @@ class HpsMorph_frame:
 		self.hmagIntp.insert(0, "[0, 0, .1, 0, .9, 1, 1, 1]")
 
 		#
-		stocIntp_label = "stocIntp:"
+		stocIntp_label = "stochastic component interpolation factors, 0 to 1 (time,value pairs)"
 		Label(self.parent, text=stocIntp_label).grid(row=16, column=0, sticky=W, padx=5, pady=(5,2))
 		self.stocIntp = Entry(self.parent, justify=CENTER)
 		self.stocIntp["width"] = 35
