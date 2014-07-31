@@ -1,4 +1,4 @@
-# utility functions used commonly by many function within all the sms-tools files
+# utility functions used commonly by many functions within all the sms-tools files
 
 import numpy as np
 from scipy.signal import resample, blackmanharris, triang
