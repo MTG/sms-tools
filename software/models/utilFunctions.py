@@ -1,17 +1,18 @@
+# utility functions used commonly by many function within all the sms-tools files
+
 import numpy as np
 from scipy.signal import resample, blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math, copy, sys, os, time
 from scipy.io.wavfile import write
 from scipy.io.wavfile import read
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utilFunctions_C/'))
 
+# some functions are written in C and need to me imported
 try:
 	import utilFunctions_C as UF_C
 except ImportError:
 	print "module could not be imported"
-
 
 def printError(errorID):
 		if errorID == 1:
@@ -26,7 +27,7 @@ def printWarning(warningID):
 				print "Cython modules for some of the core functions were not imported."
 				print "The processing might be significantly slower in such case"
 				print "Please refer to the README file for instructions to compile cython modules"
-				print "https://github.com/MTG/sms-tools/blob/master/README.md"
+				print "https://github.com/MTG/sms-tools/README.md"
 				print "-------------------------------------------------------------------------------"
 				print "\n"
 
@@ -371,24 +372,29 @@ def peakDetection(mX, hN, t):
 	ploc = ploc.nonzero()[0] + 1
 	return ploc
 	
-def wavread(filename):
-	# read a sound file and return an array with the sound and the sampling rate
-	(fs, x) = read(filename)
-	if len(x.shape) ==2 :
-		print "ERROR: Input audio file is stereo. This software only works for mono audio files."
-		sys.exit()
-		#scaling down and converting audio into floating point number between range -1 to 1
-	x = np.float32(x)/norm_fact[x.dtype.name]
-	return fs, x
-
 INT16_FAC = (2**15)-1
 INT32_FAC = (2**31)-1
 INT64_FAC = (2**63)-1
 
 norm_fact = {'int16':INT16_FAC, 'int32':INT32_FAC, 'int64':INT64_FAC,'float32':1.0,'float64':1.0}
+
+def wavread(filename):
+	# read a sound file and return a normalized floating point array (values from -1 to 1) with the sound and the sampling rate value
+	(fs, x) = read(filename)
+	# only accept mono files
+	if len(x.shape) ==2 :
+		print "ERROR: Input audio file is stereo. This software only works for mono audio files."
+		sys.exit()
+	# give a warning if sampling rate different than 44100
+	if fs != 44100 :
+		print "WARNING: Input audio file has a sampling rate different that 44100, this may cause some problems."
+		#scaling down
+		#scaling down and converting audio into floating point number between range -1 to 1
+	x = np.float32(x)/norm_fact[x.dtype.name]
+	return fs, x
 			
 def wavwrite(y, fs, filename):
-	# write a sound file from an array with the sound and the sampling rate
+	# write a sound file from a floating point array (values from -1 to 1) with the sound and the sampling rate
 	x = copy.deepcopy(y)  #just deepcopying to modify signal to write and to not change original array
 	x *= INT16_FAC  #scaling floating point -1 to 1 range signal to int16 range
 	x = np.int16(x) #converting to int16 type
