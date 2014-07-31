@@ -8,12 +8,6 @@ from scipy.io.wavfile import write
 from scipy.io.wavfile import read
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utilFunctions_C/'))
 
-# some functions are written in C and need to me imported
-try:
-	import utilFunctions_C as UF_C
-except ImportError:
-	print "module could not be imported"
-
 def printError(errorID):
 		if errorID == 1:
 				print "Error opening file"
@@ -30,6 +24,14 @@ def printWarning(warningID):
 				print "https://github.com/MTG/sms-tools/README.md"
 				print "-------------------------------------------------------------------------------"
 				print "\n"
+
+
+#some functions are written in C and need to me imported
+try:
+	import utilFunctions_C as UF_C
+except ImportError:
+	printWarning(1)
+
 
 
 def f0DetectionTwm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
