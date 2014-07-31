@@ -11,26 +11,19 @@ In Ubuntu (which we strongly recommend) to install all the modules, plus the bas
 the Terminal:</p>
 <p>
 <code class="western">
-$ sudo apt-get install python-dev python-setuptools build-essential ipython python-matplotlib python-numpy python-scipy python-pygame
+$ sudo apt-get install python-dev python-setuptools build-essential ipython python-matplotlib python-numpy python-scipy python-pygame cython
 </code>
 </p>
-<p>Some of the core functions are written in C and have to be compiled. For that,
-you first have to install Cython, by typing on the Terminal: </p>
-<p>
-<code class="western">
-$ easy_install cython
-</code>
-</p>
-Once Cython is installed go to the directory software/models/utilFunctions_C and type:</p>
+Then to compile the C functions, go to the directory software/models/utilFunctions_C and type:</p>
 <p>
 <code class="western">
 $ python compileModule.py build_ext --inplace </code>
 </p>
 
-<p>The code for the basic analysis/synthesis models is in the
-directory software/models. To use these models there is an interface and example functions in software/models_interface. All the sounds used in the examples are in the sounds directory.</p>
+<p>The basic sound analysis/synthesis functions, or models, are in the
+directory software/models. To use these them there is a graphical interface and individual example functions in software/models_interface. All the sounds used are in the sounds directory.</p>
 
-<p>To start we recommend to download the whole package, compile the C code with Cython and execute the GUI available in software/models_interface. To execute the GUI that calls all the analysis/synthesis models you have to use the Terminal, go to the directory software/models_interface and type: </p>
+<p>To start we recommend to download the whole package, compile the C functions (as described above) and execute the GUI available in software/models_interface. To execute the GUI you have to use the Terminal, going to the directory software/models_interface and typing: </p>
 <code class="western">
 $ python models_GUI.py </code>
 </p>
@@ -40,7 +33,7 @@ $ python models_GUI.py </code>
 $ python transformations_GUI.py </code>
 </p>
 
-<p> To modify the existing code, or to create your own, we recommend to use the workspace directory. Typically you would copy a file from software/models_interface or from software/transformations_interface to that directory and execute the code from there (you will have to change some of the paths inside the files). </p>
+<p> To modify the existing code, or to create your own, we recommend to use the workspace directory. Typically you would copy a file from software/models_interface or from software/transformations_interface to that directory, modify the code, and execute the it from there (you will have to change some of the paths inside the files). </p>
 
 <p>All this code is used in several classes that I teach. The slides
 and demo code used in class are in the lectures directory.</p>
