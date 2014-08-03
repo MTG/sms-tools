@@ -131,7 +131,7 @@ def sinewaveSynth(freqs, amp, H, fs):
 
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	# Synthesis of a sound using the sinusoidal model
-	# tfreq,tmag, tphase: frequencies, magnitudes and phases of sinusoids,
+	# tfreq,tmag,tphase: frequencies, magnitudes and phases of sinusoids
 	# N: synthesis FFT size, H: hop size, fs: sampling rate
 	# returns y: output array sound
 	hN = N/2                                                # half of FFT size for synthesis

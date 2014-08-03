@@ -2,17 +2,15 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import os, sys
 from scipy.signal import get_window
+import os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 import sineModel as SM
 import stft as STFT
 
-def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
-
-	# ------- analysis parameters -------------------
-
+def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02, 
+					maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size 
@@ -29,8 +27,6 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# --------- computation -----------------
-
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
@@ -40,19 +36,17 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	# compute the magnitude and phase spectrogram of input sound
 	mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
-	# compute the sinusoidal model
+	# analyze the sound with the sinusoidal model
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
 	# synthesize the output sound from the sinusoidal representation
 	y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
-	# output sound file (monophonic with sampling rate of 44100)
+	# output sound file name
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModel.wav'
 
-	# write the sound resulting from the inverse stft
+	# write the synthesized sound obtained from the sinusoidal synthesis
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to show plots
 	plt.figure(figsize=(12, 9))
@@ -68,7 +62,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 		
-	# plot the magnitude spectrogram
+	# plot the magnitude spectrogram of the input sound
 	plt.subplot(3,1,2)
 	maxplotbin = int(N*maxplotfreq/fs)
 	numFrames = int(mX[:,0].size)
