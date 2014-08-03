@@ -4,7 +4,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 def sineTimeScaling(sfreq, smag, timeScaling):
-  # time scaling of sinusoidal tracks
+  # Time scaling of sinusoidal tracks
   # sfreq, smag: frequencies and magnitudes of input sinusoidal tracks
   # timeScaling: scaling factors, in time-value pairs
   # returns ysfreq, ysmag: frequencies and magnitudes of output sinusoidal tracks
@@ -24,13 +24,16 @@ def sineTimeScaling(sfreq, smag, timeScaling):
   return ysfreq, ysmag
 
 def sineFreqScaling(sfreq, freqScaling):
-  # frequency scaling of sinusoidal tracks
+  # Frequency scaling of sinusoidal tracks
   # sfreq: frequencies of input sinusoidal tracks
-  # freqScaling: scaling factors, in time-value pairs
-  # returns sfreq: frequencies of output sinusoidal tracks
+  # freqScaling: scaling factors, in time-value pairs (value of 1 is no scaling)
+  # returns ysfreq: frequencies of output sinusoidal tracks
   L = sfreq[:,0].size            # number of frames
-  freqScaling = np.interp(np.arange(L), L*freqScaling[::2]/freqScaling[-2], freqScaling[1::2]) 
+  freqScalingEnv = np.interp(np.arange(L), L*freqScaling[::2]/freqScaling[-2], freqScaling[1::2]) 
   ysfreq = np.empty_like(sfreq)  # create empty output matrix
   for l in range(L):             # go through all frames
-    ysfreq[l,:] = sfreq[l,:] * freqScaling[l]
+  	ind_valid = np.where(sfreq[l,:]!=0)[0]              # check if there are frequency values
+		if ind_valid.size == 0:                             # if no values go to next frame
+			continue
+    ysfreq[l,ind_valid] = sfreq[l,ind_valid] * freqScalingEnv[l] # scale of frequencies 
   return ysfreq

@@ -97,7 +97,7 @@ class Stft_frame:
 			(fs, x) = read(filename)
 		else:
 			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-		return
+			return
 
 		if len(x.shape) > 1 :
 			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")

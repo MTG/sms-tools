@@ -109,8 +109,8 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	# fs: sampling rate of input file	
 	# hfreq, hmag: harmonic frequencies and magnitudes
 	# mYst: stochastic residual
-	# freqScaling: frequency scaling factors, in time-value pairs
-	# freqStretchig: frequency stretching factors, in time-value pairs
+	# freqScaling: frequency scaling factors, in time-value pairs (value of 1 no scaling)
+	# freqStretchig: frequency stretching factors, in time-value pairs (value of 1 no stretching)
 	# timbrePreservation: 1 preserves original timbre, 0 it does not
 	# timeScaling: time scaling factors, in time-value pairs
 	
@@ -119,14 +119,14 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 
 	# hop size (has to be 1/4 of Ns)
 	H = 128
-
+	
 	# frequency scaling of the harmonics 
 	hfreqt, hmagt = HT.harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreservation, fs)
 
-	# time scale the sound
+	# time scaling the sound
 	yhfreq, yhmag, ystocEnv = HPST.hpsTimeScale(hfreqt, hmagt, mYst, timeScaling)
 
-	# synthesis 
+	# synthesis from the trasformed hps representation 
 	y, yh, yst = HPS.hpsModelSynth(yhfreq, yhmag, np.array([]), ystocEnv, Ns, H, fs)
 
 	# write output sound 
