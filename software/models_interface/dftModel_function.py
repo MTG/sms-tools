@@ -38,7 +38,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 	# --------- plotting --------------------
 
 	# create figure
-	plt.figure(figsize=(9.5, 7))
+	plt.figure(figsize=(12, 9))
 
 	# plot the sound fragment
 	plt.subplot(4,1,1)
