@@ -2,12 +2,6 @@
 
 import numpy as np
 from scipy.interpolate import interp1d
-import matplotlib.pyplot as plt
-from scipy.signal import get_window
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
-import hpsModel as HPS
-import utilFunctions as UF
 
 def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	# time scaling of the harmonic plus stochastic representation
@@ -33,13 +27,13 @@ def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	
 	
 def hpsMorph(hfreq1, hmag1, stocEnv1, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp):
-  # morph between two sounds using the harmonic plus stochastic model
-  # hfreq1, hmag1, stocEnv1: hps representation of sound 1
-  # hfreq2, hmag2, stocEnv2: hps representation of sound 2
+	# morph between two sounds using the harmonic plus stochastic model
+	# hfreq1, hmag1, stocEnv1: hps representation of sound 1
+	# hfreq2, hmag2, stocEnv2: hps representation of sound 2
 	# hfreqIntp: interpolation factor between the harmonic frequencies of the two sounds, 0 is sound 1 and 1 is sound 2 (time,value pairs)
 	# hmagIntp: interpolation factor between the harmonic magnitudes of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
 	# stocIntp: interpolation factor between the stochastic representation of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
-  # returns yhfreq, yhmag, ystocEnv: hps output representation
+	# returns yhfreq, yhmag, ystocEnv: hps output representation
 	L1 = hfreq1[:,0].size                                  # number of frames of sound 1
 	L2 =  hfreq2[:,0].size                                 # number of frames of sound 2
 	hfreqIntp[::2] = (L1-1)*hfreqIntp[::2]/hfreqIntp[-2]   # normalize input values
@@ -67,5 +61,5 @@ def hpsMorph(hfreq1, hmag1, stocEnv1, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIn
 			yhmag[l,harmonics] =  (1-hmagIndexes[l])* hmag1[l,harmonics] + hmagIndexes[l] * hmag2[round(L2*l/float(L1)),harmonics]
 		ystocEnv[l,:] =  (1-stocIndexes[l])* stocEnv1[l,:] + stocIndexes[l] * stocEnv2[round(L2*l/float(L1)),:]
 	return yhfreq, yhmag, ystocEnv
-  
+	
 

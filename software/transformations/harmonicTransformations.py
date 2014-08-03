@@ -3,8 +3,6 @@
 import numpy as np
 from scipy.signal import resample
 from scipy.interpolate import interp1d
-import math, sys, os, functools, time
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 
 def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreservation, fs):
 	# Frequency scaling of the harmonics of a sound

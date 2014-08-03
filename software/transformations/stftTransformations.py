@@ -5,10 +5,9 @@ import sys, os, math
 from scipy.signal import resample
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import dftModel as DFT
-import utilFunctions as UF
 
 def stftFiltering(x, fs, w, N, H, filter):
-# apply a filter to a sound by using the STFT
+# Apply a filter to a sound by using the STFT
 # x: input sound, w: analysis window, N: FFT size, H: hop size
 # filter: magnitude response of filter with frequency-magnitude pairs (in dB)
 # returns y: output sound
@@ -36,7 +35,7 @@ def stftFiltering(x, fs, w, N, H, filter):
 	return y
 
 def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
-# morph of two sounds using the STFT
+# Morph of two sounds using the STFT
 # x1, x2: input sounds, fs: sampling rate
 # w1, w2: analysis windows, N1, N2: FFT sizes, H1: hop size
 # smoothf: smooth factor of sound 2, bigger than 0 to max of 1, where 1 is no smothing,
