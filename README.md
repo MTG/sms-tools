@@ -4,14 +4,14 @@ sms-tools
 <p>Spectral modeling analysis and synthesis tools for sound and music applications written in python
 and C, plus complementary teaching material.</p>
 
-<p>In order to use these software tools you have to install version 2.7 of python and the following modules: ipython, matplotlib, numpy, scipy, and pygame. 
+<p>In order to use these software tools you have to install version 2.7 of python and the following modules: ipython, numpy, matplotlib, scipy, pygame, and cython. 
 </p>
 <p>
-In Ubuntu (which we strongly recommend) to install all the modules, plus the basic development tools, is as simple as typing on 
+In Ubuntu (which we strongly recommend) to install all the modules is as simple as typing on 
 the Terminal:</p>
 <p>
 <code class="western">
-$ sudo apt-get install python-dev python-setuptools build-essential ipython python-matplotlib python-numpy python-scipy python-pygame cython
+$ sudo apt-get install ipython python-numpy python-matplotlib python-scipy python-pygame cython
 </code>
 </p>
 Then to compile the C functions, go to the directory software/models/utilFunctions_C and type:</p>
