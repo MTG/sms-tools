@@ -1,15 +1,13 @@
 # functions that implement analysis and synthesis of sounds using the Discrete Fourier Transform
-# (for example usage check the models_interface directory)
+# (for example usage check dftModel_function.py in the models_interface directory)
 
-import matplotlib.pyplot as plt
 import numpy as np
-import time, os, sys, math
+import math
 from scipy.fftpack import fft, ifft
-import utilFunctions as UF
 
 def dftModel(x, w, N):
-# Analysis/synthesis of a signal using the discrete fourier transform
-# x: input signal, w: analysis window, N: FFT size, 
+# Analysis/synthesis of a signal using the discrete Fourier transform
+# x: input signal, w: analysis window, N: FFT size
 # returns y: output signal
 
 	hN = N/2                                                # size of positive spectrum
@@ -35,8 +33,8 @@ def dftModel(x, w, N):
 
 def dftAnal(x, w, N):
 # Analysis of a signal using the discrete fourier transform
-# x: input signal, w: analysis window, N: FFT size, 
-# returns mX: magnitude spectrum, pX: phase spectrum
+# x: input signal, w: analysis window, N: FFT size 
+# returns mX, pX: magnitude and phase spectrum
 
 	hN = N/2                                  # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))       # half analysis window size by rounding

@@ -2,23 +2,18 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import os, sys
 from scipy.signal import get_window
+import os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 import dftModel as DFT
 
 def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N = 1024, time = .2):
-	
-	# ------- analysis parameters -------------------
-
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size (odd integer value)
 	# N: fft size (power of two, bigger or equal than than M)
 	# time: time  to start analysis (in seconds)          
-
-	# --------- computation -----------------
 
 	# read input sound (monophonic with sampling rate of 44100)
 	(fs, x) = UF.wavread(inputFile)
@@ -26,7 +21,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 	# compute analysis window
 	w = get_window(window, M)
 		
-	# get a fragment of the input sound 
+	# get a fragment of the input sound of size M
 	x1 = x[int(time*fs):int(time*fs)+M]
 	 
 	# compute the dft of the sound fragment
@@ -34,8 +29,6 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 
 	# compute the inverse dft of the spectrum
 	y = DFT.dftSynth(mX, pX, w.size)*sum(w)
-
-	# --------- plotting --------------------
 
 	# create figure
 	plt.figure(figsize=(12, 9))
