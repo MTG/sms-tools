@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './uti
 try:
 	import utilFunctions_C as UF_C
 except ImportError:
-	print "module could not be imported"
+	print "C modules could not be imported because there were not compiled."
 
 def printError(errorID):
 	if errorID == 1:

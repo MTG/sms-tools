@@ -11,7 +11,7 @@ In Ubuntu (which we strongly recommend) to install all the modules is as simple 
 the Terminal:</p>
 <p>
 <code class="western">
-$ sudo apt-get install ipython python-numpy python-matplotlib python-scipy python-pygame cython
+$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy python-pygame cython
 </code>
 </p>
 Then to compile the C functions, go to the directory software/models/utilFunctions_C and type:</p>
