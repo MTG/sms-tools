@@ -22,18 +22,18 @@ plt.axis([-M/2,M/2,-1,1])
 
 mX1 = 20 * np.log10(np.abs(fftshift(fft(x1, M)))/M)
 plt.subplot(3,2,3)
-plt.title('mX1')
+plt.title('X1')
 plt.plot(np.arange(-N/2, N/2),mX1, 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mX1)])
 
 mX2 = 20 * np.log10(np.abs(fftshift(fft(x2, M)))/M)
 plt.subplot(3,2,4)
-plt.title('mX2')
+plt.title('X2')
 plt.plot(np.arange(-N/2, N/2),mX2, 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mX2)])
 
 plt.subplot(3,2,5)
-plt.title('magnitude spectrum of x1 x x2')
+plt.title('DFT(x1 x x2)')
 plt.plot(np.arange(-N/2, N/2),mY1, 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mY1)])
 
@@ -42,7 +42,7 @@ mY2 = 20 * np.log10(np.abs(Y2)) - 40
 
 
 plt.subplot(3,2,6)
-plt.title('magnitude spectrum of X1 * X2')
+plt.title('X1 * X2')
 plt.plot(np.arange(-N/2, N/2),mY2[M/2:M+M/2], 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mY2)])
 
