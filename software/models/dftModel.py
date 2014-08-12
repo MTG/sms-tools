@@ -36,7 +36,10 @@ def dftAnal(x, w, N):
 # x: input signal, w: analysis window, N: FFT size 
 # returns mX, pX: magnitude and phase spectrum
 
+
 	hN = N/2                                  # size of positive spectrum
+	if all(x==0):							  # if input array is zeros return with empty spectrum
+		return -140*np.ones(hN), np.zeros(hN)
 	hM1 = int(math.floor((w.size+1)/2))       # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))           # half analysis window size by floor
 	fftbuffer = np.zeros(N)                   # initialize buffer for FFT
