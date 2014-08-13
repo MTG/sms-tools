@@ -10,6 +10,8 @@ def dftModel(x, w, N):
 # x: input signal, w: analysis window, N: FFT size
 # returns y: output signal
 
+	if all(x==0):                                           # if input array is zeros return with empty output
+		return np.zeros(x.size)
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -32,28 +34,27 @@ def dftModel(x, w, N):
 	return y
 
 def dftAnal(x, w, N):
-# Analysis of a signal using the discrete fourier transform
+# Analysis of a signal using the discrete Fourier transform
 # x: input signal, w: analysis window, N: FFT size 
 # returns mX, pX: magnitude and phase spectrum
 
-
-	hN = N/2                                  # size of positive spectrum
-	if all(x==0):							  # if input array is zeros return with empty spectrum
+	hN = N/2                                                # size of positive spectrum
+	if all(x==0):                                           # if input array is zeros return with empty spectrum
 		return -140*np.ones(hN), np.zeros(hN)
-	hM1 = int(math.floor((w.size+1)/2))       # half analysis window size by rounding
-	hM2 = int(math.floor(w.size/2))           # half analysis window size by floor
-	fftbuffer = np.zeros(N)                   # initialize buffer for FFT
-	w = w / sum(w)                            # normalize analysis window
-	xw = x*w                                  # window the input sound
-	fftbuffer[:hM1] = xw[hM2:]                # zero-phase window in fftbuffer
+	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
+	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
+	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
+	w = w / sum(w)                                          # normalize analysis window
+	xw = x*w                                                # window the input sound
+	fftbuffer[:hM1] = xw[hM2:]                              # zero-phase window in fftbuffer
 	fftbuffer[N-hM2:] = xw[:hM2]        
-	X = fft(fftbuffer)                       # compute FFT
-	mX = 20 * np.log10(abs(X[:hN]))          # magnitude spectrum of positive frequencies in dB     
-	pX = np.unwrap(np.angle(X[:hN]))         # unwrapped phase spectrum of positive frequencies
+	X = fft(fftbuffer)                                      # compute FFT
+	mX = 20 * np.log10(abs(X[:hN]))                         # magnitude spectrum of positive frequencies in dB     
+	pX = np.unwrap(np.angle(X[:hN]))                        # unwrapped phase spectrum of positive frequencies
 	return mX, pX
 
 def dftSynth(mX, pX, M):
-# Synthesis of a signal using the discrete fourier transform
+# Synthesis of a signal using the discrete Fourier transform
 # mX: magnitude spectrum, pX: phase spectrum, M: window size
 # returns y: output signal
 
