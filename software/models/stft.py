@@ -6,7 +6,7 @@ import math
 import dftModel as DFT
 
 def stft(x, fs, w, N, H):
-# Analysis/synthesis of a sound using the short-time fourier transform
+# Analysis/synthesis of a sound using the short-time Fourier transform
 # x: input sound, w: analysis window, N: FFT size, H: hop size
 # returns y: output sound
 	M = w.size                                     # size of analysis window
@@ -31,7 +31,7 @@ def stft(x, fs, w, N, H):
 	return y
 
 def stftAnal(x, fs, w, N, H) :
-	# Analysis of a sound using the short-time fourier transform
+	# Analysis of a sound using the short-time Fourier transform
 	# x: input array sound, w: analysis window, N: FFT size, H: hop size
 	# returns xmX, xpX: magnitude and phase spectra
 	M = w.size                                      # size of analysis window
@@ -56,7 +56,7 @@ def stftAnal(x, fs, w, N, H) :
 	return xmX, xpX
 
 def stftSynth(mY, pY, M, H) :
-# Synthesis of a sound using the short-time fourier transform
+# Synthesis of a sound using the short-time Fourier transform
 # mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
 # returns y: output sound
 	hM1 = int(math.floor((M+1)/2))                   # half analysis window size by rounding
