@@ -7,7 +7,6 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 import sineModel as SM
-import stft as STFT
 
 def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02, 
 					maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
@@ -32,9 +31,6 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 
 	# compute analysis window
 	w = get_window(window, M)
-
-	# compute the magnitude and phase spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
 	# analyze the sound with the sinusoidal model
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
@@ -61,22 +57,15 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.ylabel('amplitude')
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
-		
-	# plot the magnitude spectrogram of the input sound
+				
+	# plot the sinusoidal frequencies
 	plt.subplot(3,1,2)
-	maxplotbin = int(N*maxplotfreq/fs)
-	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                       
-	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
-	plt.autoscale(tight=True)
-		
-	# plot the sinusoidal frequencies on top of the spectrogram
-	tracks = tfreq*np.less(tfreq, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	plt.plot(frmTime, tracks, color='k')
-	plt.title('magnitude spectrogram + sinusoidal tracks')
-	plt.autoscale(tight=True)
+	numFrames = int(tfreq[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs)
+	tfreq[tfreq<=0] = np.nan
+	plt.plot(frmTime, tfreq, color='k')
+	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+	plt.title('frequencies of sinusoidal tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

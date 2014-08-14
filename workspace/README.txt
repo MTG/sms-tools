@@ -1,1 +1,0 @@
-This is an empty directory to be used as a workspace by users.

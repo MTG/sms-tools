@@ -7,7 +7,6 @@ from scipy.signal import get_window
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 import sineModel as SM
-import stft as STFT
 import harmonicModel as HM
 
 def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
@@ -39,9 +38,6 @@ def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t
 	# compute analysis window
 	w = get_window(window, M)
 
-	# compute spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
-
 	# computer harmonics of input sound
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 
@@ -70,23 +66,14 @@ def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 
-	# plot magnitude spectrogram
+	# plot the harmonic frequencies
 	plt.subplot(3,1,2)
-	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = fs*np.arange(N*maxplotfreq/fs)/N  
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
-	plt.autoscale(tight=True)
-	  
-	# plot harmonics on top of spectrogram of input sound
-	harms = hfreq*np.less(hfreq,maxplotfreq)
-	harms[harms==0] = np.nan
 	numFrames = int(hfreq[:,0].size)
-	plt.plot(frmTime, harms, color='k')
-	plt.xlabel('time (sec)')
-	plt.ylabel('frequency (Hz)')
-	plt.title('magnitude spectrogram + harmonic tracks')
-	plt.autoscale(tight=True)
+	frmTime = H*np.arange(numFrames)/float(fs)
+	hfreq[hfreq<=0] = np.nan
+	plt.plot(frmTime, hfreq, color='k')
+	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+	plt.title('frequencies of harmonic tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
