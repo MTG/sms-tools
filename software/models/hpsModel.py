@@ -6,7 +6,6 @@ from scipy.signal import resample, blackmanharris, triang, hanning
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM
-import stft as STFT
 import dftModel as DFT
 import utilFunctions as UF
 
@@ -119,7 +118,7 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 	#-----analysis-----             
 		x1 = x[pin-hM1:pin+hM2]                              # select frame
 		mX, pX = DFT.dftAnal(x1, w, N)                       # compute dft
-		ploc = UF.peakDetection(mX, hN, t)                   # find peaks                
+		ploc = UF.peakDetection(mX, t)                       # find peaks                
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
 		ipfreq = fs * iploc/N                                # convert peak locations to Hz
 		f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0

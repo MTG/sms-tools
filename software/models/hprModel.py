@@ -2,10 +2,8 @@
 # (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM
-import stft as STFT
 import dftModel as DFT
 import utilFunctions as UF
 import sineModel as SM
@@ -48,7 +46,7 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   #-----analysis-----             
     x1 = x[pin-hM1:pin+hM2]                          # select frame
     mX, pX = DFT.dftAnal(x1, w, N)                   # compute dft
-    ploc = UF.peakDetection(mX, hN, t)               # find peaks 
+    ploc = UF.peakDetection(mX, t)                   # find peaks 
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
     ipfreq = fs * iploc/N
     f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0

@@ -3,7 +3,6 @@
 
 import numpy as np
 from scipy.signal import resample, blackmanharris, triang
-from scipy.fftpack import fft, ifft, fftshift
 import math
 import utilFunctions as UF
 import sineModel as SM
@@ -46,7 +45,7 @@ def spsModel(x, fs, w, N, t, stocf):
 		fftbuffer[N-hM2:] = xw[:hM2]                           
 		X = fft(fftbuffer)                                           # compute FFT
 		mX = 20 * np.log10(abs(X[:hN]))                              # magnitude spectrum of positive frequencies
-		ploc = UF.peakDetection(mX, hN, t)                
+		ploc = UF.peakDetection(mX, t)                
 		pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)          # refine peak values
 				

@@ -3,10 +3,8 @@
 
 import numpy as np
 from scipy.signal import blackmanharris, triang
-from scipy.fftpack import fft, ifft, fftshift
 import math
 import sineModel as SM
-import stft as STFT
 import utilFunctions as UF
   
   
@@ -45,7 +43,7 @@ def sprModel(x, fs, w, N, t):
     fftbuffer[N-hM2:] = xw[:hM2]                           
     X = fft(fftbuffer)                                           # compute FFT
     mX = 20 * np.log10(abs(X[:hN]))                              # magnitude spectrum of positive frequencies
-    ploc = UF.peakDetection(mX, hN, t)                
+    ploc = UF.peakDetection(mX, t)                
     pX = np.unwrap(np.angle(X[:hN]))                             # unwrapped phase spect. of positive freq.    
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)          # refine peak values
     iploc = (iploc!=0) * (iploc*Ns/N)                            # synth. locs

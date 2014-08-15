@@ -5,7 +5,6 @@ import numpy as np
 from scipy.signal import blackmanharris, triang
 import math
 import dftModel as DFT
-import stft as STFT
 import utilFunctions as UF
 import sineModel as SM
 
@@ -31,7 +30,7 @@ def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
   while pin<pend:             
     x1 = x[pin-hM1:pin+hM2]                       # select frame
     mX, pX = DFT.dftAnal(x1, w, N)                # compute dft           
-    ploc = UF.peakDetection(mX, hN, t)            # detect peak locations   
+    ploc = UF.peakDetection(mX, t)                # detect peak locations   
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
     f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
@@ -56,8 +55,8 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
-  x = np.append(np.zeros(hM2),x)                 # add zeros at beginning to center first window at sample 0
-  x = np.append(x,np.zeros(hM1))                 # add zeros at the end to analyze last sample
+  x = np.append(np.zeros(hM2),x)                          # add zeros at beginning to center first window at sample 0
+  x = np.append(x,np.zeros(hM1))                          # add zeros at the end to analyze last sample
   Ns = 512                                                # FFT size for synthesis (even)
   H = Ns/4                                                # Hop size used for analysis and synthesis
   hNs = Ns/2      
@@ -79,8 +78,8 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   while pin<pend:             
   #-----analysis-----             
     x1 = x[pin-hM1:pin+hM2]                               # select frame
-    mX, pX = DFT.dftAnal(x1, w, N)                    # compute dft
-    ploc = UF.peakDetection(mX, hN, t)                    # detect peak locations     
+    mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft
+    ploc = UF.peakDetection(mX, t)                        # detect peak locations     
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
     f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
@@ -127,7 +126,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
   while pin<=pend:           
     x1 = x[pin-hM1:pin+hM2]                               # select frame
     mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft            
-    ploc = UF.peakDetection(mX, hN, t)                    # detect peak locations   
+    ploc = UF.peakDetection(mX, t)                        # detect peak locations   
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
     f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0

@@ -6,13 +6,11 @@ from scipy.signal import blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import dftModel as DFT
-import stft as STFT
 import utilFunctions as UF
 	
 def sineModel(x, fs, w, N, t):
-	# Analysis/synthesis of a sound using the sinusoidal model
-	# x: input array sound, w: analysis window, N: size of complex spectrum,
-	# t: threshold in negative dB 
+	# Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
+	# x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB 
 	# returns y: output array sound
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
@@ -36,7 +34,7 @@ def sineModel(x, fs, w, N, t):
 	#-----analysis-----             
 		x1 = x[pin-hM1:pin+hM2]                               # select frame
 		mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft
-		ploc = UF.peakDetection(mX, hN, t)                    # detect locations of peaks
+		ploc = UF.peakDetection(mX, t)                        # detect locations of peaks
 		pmag = mX[ploc]                                       # get the magnitude of the peaks
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
 	#-----synthesis-----
@@ -50,14 +48,11 @@ def sineModel(x, fs, w, N, t):
 	return y
 
 def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOffset=20, freqDevSlope=0.01):
-	# Analysis of a sound using the sinusoidal model
-	# x: input array sound, w: analysis window, N: size of complex spectrum,
-	# H: hop-size, t: threshold in negative dB
-	# maxnSines: maximum number of sines per frame
-	# minSineDur: minimum duration of sines in seconds
-	# freqDevOffset: minimum frequency deviation at 0Hz 
-	# freqDevSlope: slope increase of minimum frequency deviation
-	# returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoids
+	# Analysis of a sound using the sinusoidal model with sine tracking
+	# x: input array sound, w: analysis window, N: size of complex spectrum, H: hop-size, t: threshold in negative dB
+	# maxnSines: maximum number of sines per frame, minSineDur: minimum duration of sines in seconds
+	# freqDevOffset: minimum frequency deviation at 0Hz, freqDevSlope: slope increase of minimum frequency deviation
+	# returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoidal tracks
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -70,63 +65,65 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
 	while pin<pend:                                         # while input sound pointer is within sound            
 		x1 = x[pin-hM1:pin+hM2]                               # select frame
 		mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft
-		ploc = UF.peakDetection(mX, hN, t)                    # detect locations of peaks
+		ploc = UF.peakDetection(mX, t)                        # detect locations of peaks
 		pmag = mX[ploc]                                       # get the magnitude of the peaks
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
-		ipfreq = fs*iploc/float(N)
+		ipfreq = fs*iploc/float(N)                            # convert peak locations to Hertz
+		# perform sinusoidal tracking by adding peaks to trajectories
 		tfreq, tmag, tphase = UF.sineTracking(ipfreq, ipmag, ipphase, tfreq, freqDevOffset, freqDevSlope)
-		tfreq = np.resize(tfreq, min(maxnSines, tfreq.size))
-		tmag = np.resize(tmag, min(maxnSines, tmag.size))
-		tphase = np.resize(tphase, min(maxnSines, tphase.size))
-		jtfreq = np.zeros(maxnSines) 
-		jtmag = np.zeros(maxnSines)  
-		jtphase = np.zeros(maxnSines)    
-		jtfreq[:tfreq.size]=tfreq 
-		jtmag[:tmag.size]=tmag
-		jtphase[:tphase.size]=tphase 
-		if pin == hM1:
+		tfreq = np.resize(tfreq, min(maxnSines, tfreq.size))  # limit number of tracks to maxnSines
+		tmag = np.resize(tmag, min(maxnSines, tmag.size))     # limit number of tracks to maxnSines
+		tphase = np.resize(tphase, min(maxnSines, tphase.size)) # limit number of tracks to maxnSines
+		jtfreq = np.zeros(maxnSines)                          # temporary output array
+		jtmag = np.zeros(maxnSines)                           # temporary output array
+		jtphase = np.zeros(maxnSines)                         # temporary output array   
+		jtfreq[:tfreq.size]=tfreq                             # save track frequencies to temporary array
+		jtmag[:tmag.size]=tmag                                # save track magnitudes to temporary array
+		jtphase[:tphase.size]=tphase                          # save track magnitudes to temporary array
+		if pin == hM1:                                        # if first frame initialize output sine tracks
 			xtfreq = jtfreq 
 			xtmag = jtmag
 			xtphase = jtphase
-		else:
+		else:                                                 # rest of frames append values to sine tracks
 			xtfreq = np.vstack((xtfreq, jtfreq))
 			xtmag = np.vstack((xtmag, jtmag))
 			xtphase = np.vstack((xtphase, jtphase))
 		pin += H
-	xtfreq = UF.cleaningSineTracks(xtfreq, round(fs*minSineDur/H))  # delete short tracks
+	# delete sine tracks shorter than minSineDur
+	xtfreq = UF.cleaningSineTracks(xtfreq, round(fs*minSineDur/H))  
 	return xtfreq, xtmag, xtphase
 
 
 def sinewaveSynth(freqs, amp, H, fs):
-	# Synthesis of a sinusoid with time-varying frequency
-	# freqs: array of frequencies of sinusoid, amp: amplitude of sinusoid
+	# Synthesis of one sinusoid with time-varying frequency
+	# freqs, amps: array of frequencies and amplitudes of sinusoids
 	# H: hop size, fs: sampling rate
 	# returns y: output array sound
-	t = np.arange(H)/float(fs)
-	lastphase = 0                                           # initialize synthesis phases
-	lastfreq = freqs[0]
-	y = np.array([])
+	t = np.arange(H)/float(fs)                              # time array
+	lastphase = 0                                           # initialize synthesis phase
+	lastfreq = freqs[0]                                     # initialize synthesis frequency
+	y = np.array([])                                        # initialize output array
 	for l in range(freqs.size):                             # iterate over all frames
-		if (lastfreq==0) & (freqs[l]==0):
+		if (lastfreq==0) & (freqs[l]==0):                     # if 0 freq add zeros
 			A = np.zeros(H)
 			freq = np.zeros(H)
-		elif (lastfreq==0) & (freqs[l]>0):
+		elif (lastfreq==0) & (freqs[l]>0):                    # if starting freq ramp up the amplitude
 			A = np.arange(0,amp, amp/H)
 			freq = np.ones(H)*freqs[l]
-		elif (lastfreq>0) & (freqs[l]>0):
+		elif (lastfreq>0) & (freqs[l]>0):                     # if freqs in boundaries use both
 			A = np.ones(H)*amp
 			if (lastfreq==freqs[l]):
 				freq = np.ones(H)*lastfreq
 			else:
 				freq = np.arange(lastfreq,freqs[l], (freqs[l]-lastfreq)/H)
-		elif (lastfreq>0) & (freqs[l]==0):
+		elif (lastfreq>0) & (freqs[l]==0):                    # if ending freq ramp down the amplitude
 			A = np.arange(amp,0,-amp/H)
 			freq = np.ones(H)*lastfreq
-		phase = 2*np.pi*freq*t+lastphase
-		yh = A * np.cos(phase) 
+		phase = 2*np.pi*freq*t+lastphase                      # generate phase values
+		yh = A * np.cos(phase)                                # compute sine for one frame
 		lastfreq = freqs[l]                                   # save frequency for phase propagation
-		lastphase = np.remainder(phase[H-1], 2*np.pi)
-		y = np.append(y, yh)    
+		lastphase = np.remainder(phase[H-1], 2*np.pi)         # save phase to be use for next frame
+		y = np.append(y, yh)                                  # append frame to previous one
 	return y
 
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
