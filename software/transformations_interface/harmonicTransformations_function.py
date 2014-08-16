@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../transformations/'))
 import sineModel as SM
 import harmonicModel as HM
-import stft as STFT
 import sineTransformations as ST
 import harmonicTransformations as HT
 import utilFunctions as UF
@@ -42,9 +41,6 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	# compute analysis window
 	w = get_window(window, M)
 
-	# compute the magnitude and phase spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
-
 	# compute the harmonic model of the whole sound
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 
@@ -73,21 +69,15 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 		
-	# plot the magnitude spectrogram
+	# plot the harmonic frequencies
 	plt.subplot(3,1,2)
-	maxplotbin = int(N*maxplotfreq/fs)
-	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                       
-	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
-	plt.autoscale(tight=True)
-		
-	# plot the sinusoidal frequencies on top of the spectrogram
-	tracks = hfreq*np.less(hfreq, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	plt.plot(frmTime, tracks, color='k')
-	plt.title('magnitude spectrogram + harmonic tracks')
-	plt.autoscale(tight=True)
+	numFrames = int(hfreq[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs)
+	yhfreq = np.copy(hfreq)
+	yhfreq[yhfreq<=0] = np.nan
+	plt.plot(frmTime, yhfreq)
+	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+	plt.title('frequencies of harmonic tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -148,7 +138,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array(
 	tracks[tracks<=0] = np.nan
 	numFrames = int(tracks[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
-	plt.plot(frmTime, tracks, color='k')
+	plt.plot(frmTime, tracks)
 	plt.title('transformed harmonic tracks')
 	plt.autoscale(tight=True)
 

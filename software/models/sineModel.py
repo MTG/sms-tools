@@ -25,7 +25,7 @@ def sineModel(x, fs, w, N, t):
 	y = np.zeros(x.size)                                    # initialize output array
 	w = w / sum(w)                                          # normalize analysis window
 	sw = np.zeros(Ns)                                       # initialize synthesis window
-	ow = triang(2*H);                                       # triangular window
+	ow = triang(2*H)                                        # triangular window
 	sw[hNs-H:hNs+H] = ow                                    # add triangular window
 	bh = blackmanharris(Ns)                                 # blackmanharris window
 	bh = bh / sum(bh)                                       # normalized blackmanharris window
@@ -137,7 +137,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	ysize = H*(L+3)                                         # output sound size
 	y = np.zeros(ysize)                                     # initialize output array
 	sw = np.zeros(N)                                        # initialize synthesis window
-	ow = triang(2*H);                                       # triangular window
+	ow = triang(2*H)                                        # triangular window
 	sw[hN-H:hN+H] = ow                                      # add triangular window
 	bh = blackmanharris(N)                                  # blackmanharris window
 	bh = bh / sum(bh)                                       # normalized blackmanharris window

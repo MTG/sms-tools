@@ -7,19 +7,16 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../transformations/'))
 import sineModel as SM
-import stft as STFT
 import sineTransformations as ST
 import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=2048, t=-90, 
 	minSineDur=0.1, maxnSines=150, freqDevOffset=20, freqDevSlope=0.02):
-	# analyze a sound with the sine model
+	# Analyze a sound with the sine model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
+	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
 	# maxnSines: maximum number of parallel sinusoids
 	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
 	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
@@ -37,9 +34,6 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 
 	# compute analysis window
 	w = get_window(window, M)
-
-	# compute the magnitude and phase spectrogram of input sound
-	mX, pX = STFT.stftAnal(x, fs, w, N, H)
 
 	# compute the sine model of the whole sound
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
@@ -69,21 +63,15 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
 		
-	# plot the magnitude spectrogram
+	# plot the sinusoidal frequencies
 	plt.subplot(3,1,2)
-	maxplotbin = int(N*maxplotfreq/fs)
-	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                       
-	binFreq = np.arange(maxplotbin+1)*float(fs)/N                         
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:maxplotbin+1]))
-	plt.autoscale(tight=True)
-		
-	# plot the sinusoidal frequencies on top of the spectrogram
-	tracks = tfreq*np.less(tfreq, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	plt.plot(frmTime, tracks, color='k')
-	plt.title('magnitude spectrogram + sinusoidal tracks')
-	plt.autoscale(tight=True)
+	numFrames = int(tfreq[:,0].size)
+	frmTime = H*np.arange(numFrames)/float(fs)
+	ytfreq = np.copy(tfreq)
+	ytfreq[ytfreq<=0] = np.nan
+	plt.plot(frmTime, ytfreq)
+	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+	plt.title('frequencies of sinusoidal tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -101,9 +89,8 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 
 def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array([0, 2.0, 1, .3]), 
 	timeScaling = np.array([0, .0, .671, .671, 1.978, 1.978+1.0])):
-	# transform the analysis values returned by the analysis function and synthesize the sound
-	# inputFile: name of input file
-	# fs: sampling rate of input file	
+	# Transform the analysis values returned by the analysis function and synthesize the sound
+	# inputFile: name of input file; fs: sampling rate of input file	
 	# tfreq, tmag: sinusoidal frequencies and magnitudes
 	# freqScaling: frequency scaling factors, in time-value pairs
 	# timeScaling: time scaling factors, in time-value pairs
@@ -114,10 +101,10 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# frequency scaling of the harmonics 
+	# frequency scaling of the sinusoidal tracks 
 	ytfreq = ST.sineFreqScaling(tfreq, freqScaling)
 
-	# time scale the sound
+	# time scale the sinusoidal tracks 
 	ytfreq, ytmag = ST.sineTimeScaling(ytfreq, tmag, timeScaling)
 
 	# synthesis 
@@ -141,7 +128,7 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 	tracks[tracks<=0] = np.nan
 	numFrames = int(tracks[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
-	plt.plot(frmTime, tracks, color='k')
+	plt.plot(frmTime, tracks)
 	plt.title('transformed sinusoidal tracks')
 	plt.autoscale(tight=True)
 

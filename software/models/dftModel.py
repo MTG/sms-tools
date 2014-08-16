@@ -20,7 +20,7 @@ def dftModel(x, w, N):
 	#----analysis--------
 	xw = x*w                                                # window the input sound
 	fftbuffer[:hM1] = xw[hM2:]                              # zero-phase window in fftbuffer
-	fftbuffer[N-hM2:] = xw[:hM2]        
+	fftbuffer[-hM2:] = xw[:hM2]        
 	X = fft(fftbuffer)                                      # compute FFT
 	absX = abs(X[:hN])                                      # compute ansolute value of positive side
 	absX[absX<np.finfo(float).eps] = np.finfo(float).eps    # if zeros add epsilon to handle log
@@ -31,7 +31,7 @@ def dftModel(x, w, N):
 	Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                    # generate positive frequencies
 	Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1])   # generate negative frequencies
 	fftbuffer = np.real(ifft(Y))                            # compute inverse FFT
-	y[:hM2] = fftbuffer[N-hM2:]                             # undo zero-phase window
+	y[:hM2] = fftbuffer[-hM2:]                              # undo zero-phase window
 	y[hM2:] = fftbuffer[:hM1]
 	return y
 
@@ -47,7 +47,7 @@ def dftAnal(x, w, N):
 	w = w / sum(w)                                          # normalize analysis window
 	xw = x*w                                                # window the input sound
 	fftbuffer[:hM1] = xw[hM2:]                              # zero-phase window in fftbuffer
-	fftbuffer[N-hM2:] = xw[:hM2]        
+	fftbuffer[-hM2:] = xw[:hM2]        
 	X = fft(fftbuffer)                                      # compute FFT
 	absX = abs(X[:hN])                                      # compute ansolute value of positive side
 	absX[absX<np.finfo(float).eps] = np.finfo(float).eps    # if zeros add epsilon to handle log
@@ -70,6 +70,6 @@ def dftSynth(mX, pX, M):
 	Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                    # generate positive frequencies
 	Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1])   # generate negative frequencies
 	fftbuffer = np.real(ifft(Y))                            # compute inverse FFT
-	y[:hM2] = fftbuffer[N-hM2:]                             # undo zero-phase window
+	y[:hM2] = fftbuffer[-hM2:]                              # undo zero-phase window
 	y[hM2:] = fftbuffer[:hM1]
 	return y

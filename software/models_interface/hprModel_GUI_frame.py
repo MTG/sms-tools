@@ -26,7 +26,7 @@ class HprModel_frame:
 		self.filelocation["width"] = 25
 		self.filelocation.grid(row=1,column=0, sticky=W, padx=10)
 		self.filelocation.delete(0, END)
-		self.filelocation.insert(0, '../../sounds/sax-phrase.wav')
+		self.filelocation.insert(0, '../../sounds/sax-phrase-short.wav')
 
 		#BUTTON TO BROWSE SOUND FILE
 		self.open_file = Button(self.parent, text="Browse...", command=self.browse_file) #see: def browse_file(self)

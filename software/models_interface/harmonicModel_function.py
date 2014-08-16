@@ -11,18 +11,14 @@ import harmonicModel as HM
 
 def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
 	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
-	# analysis and synthesis using the harmonic model
+	# Analysis and synthesis using the harmonic model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics
-	# minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound
-	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
-	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics could have higher allowed deviation
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -30,27 +26,23 @@ def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# --------- computation -----------------
-
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
 
-	# computer harmonics of input sound
+	# detect harmonics of input sound
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 
-	# synthesize harmonics
+	# synthesize the harmonics
 	y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_harmonicModel.wav'
 
-	# write the sound resulting from the inverse stft
+	# write the sound resulting from harmonic analysis
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to show plots
 	plt.figure(figsize=(12, 9))
@@ -71,7 +63,7 @@ def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t
 	numFrames = int(hfreq[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	hfreq[hfreq<=0] = np.nan
-	plt.plot(frmTime, hfreq, color='k')
+	plt.plot(frmTime, hfreq)
 	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
 	plt.title('frequencies of harmonic tracks')
 
