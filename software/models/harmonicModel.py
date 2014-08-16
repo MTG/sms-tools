@@ -8,13 +8,14 @@ import dftModel as DFT
 import utilFunctions as UF
 import sineModel as SM
 
-def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
-  # fundamental frequency detection using twm algorithm
-  # x: input sound, fs: sampling rate, w: analysis window, 
+def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):
+  # Fundamental frequency detection using twm algorithm
+  # x: input sound; fs: sampling rate; w: analysis window; 
   # N: FFT size (minimum 512), t: threshold in negative dB, 
   # minf0: minimum f0 frequency in Hz, maxf0: maximim f0 frequency in Hz, 
   # f0et: error threshold in the f0 detection (ex: 5),
   # returns f0: fundamental frequency
+
   hN = N/2                                        # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))             # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                 # half analysis window size by floor
@@ -33,7 +34,7 @@ def f0Twm(x, fs, w, N, H, t, minf0, maxf0, f0et):
     ploc = UF.peakDetection(mX, t)                # detect peak locations   
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
-    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+    f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
     if ((f0stable==0)&(f0t>0)) \
         or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
       f0stable = f0t                                # consider a stable f0 if it is close to the previous one
@@ -52,6 +53,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   # maxf0: maximim f0 frequency in Hz, 
   # f0et: error threshold in the f0 detection (ex: 5),
   # returns y: output array sound
+
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -82,7 +84,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
     ploc = UF.peakDetection(mX, t)                        # detect peak locations     
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
-    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+    f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
     if ((f0stable==0)&(f0t>0)) \
         or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
       f0stable = f0t                                # consider a stable f0 if it is close to the previous one
@@ -104,13 +106,12 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
 def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.01, minSineDur=.02):
   # Analysis of a sound using the sinusoidal harmonic model
   # x: input sound, fs: sampling rate, w: analysis window, 
-  # N: FFT size (minimum 512), t: threshold in negative dB, 
+  # N: FFT size (minimum 512); t: threshold in negative dB, 
   # nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
-  # maxf0: maximim f0 frequency in Hz, 
-  # f0et: error threshold in the f0 detection (ex: 5),
-  # harmDevSlope: slope of harmonic deviation
-  # minSineDur: minimum length of harmonics
+  # maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
+  # harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
   # returns xhfreq, xhmag, xhphase: harmonic frequencies, magnitudes and phases
+
   hN = N/2                                                # size of positive spectrum
   hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
   hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -129,7 +130,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
     ploc = UF.peakDetection(mX, t)                        # detect peak locations   
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values
     ipfreq = fs * iploc/N
-    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+    f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
     if ((f0stable==0)&(f0t>0)) \
         or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
       f0stable = f0t                                # consider a stable f0 if it is close to the previous one

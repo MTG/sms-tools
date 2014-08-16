@@ -12,6 +12,7 @@ def sineModel(x, fs, w, N, t):
 	# Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
 	# x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB 
 	# returns y: output array sound
+
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -53,6 +54,7 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
 	# maxnSines: maximum number of sines per frame, minSineDur: minimum duration of sines in seconds
 	# freqDevOffset: minimum frequency deviation at 0Hz, freqDevSlope: slope increase of minimum frequency deviation
 	# returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoidal tracks
+
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
@@ -99,6 +101,7 @@ def sinewaveSynth(freqs, amp, H, fs):
 	# freqs, amps: array of frequencies and amplitudes of sinusoids
 	# H: hop size, fs: sampling rate
 	# returns y: output array sound
+
 	t = np.arange(H)/float(fs)                              # time array
 	lastphase = 0                                           # initialize synthesis phase
 	lastfreq = freqs[0]                                     # initialize synthesis frequency
@@ -131,6 +134,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	# tfreq,tmag,tphase: frequencies, magnitudes and phases of sinusoids
 	# N: synthesis FFT size, H: hop size, fs: sampling rate
 	# returns y: output array sound
+	
 	hN = N/2                                                # half of FFT size for synthesis
 	L = tfreq[:,0].size                                     # number of frames
 	pout = 0                                                # initialize output sound pointer         

@@ -30,7 +30,7 @@ def isPower2(num):
 	# Check if num is power of two
 	return ((num & (num - 1)) == 0) and num > 0
 
-def f0DetectionTwm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
+def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	# Function that wraps the f0 detection function TWM, selecting the possible f0 candidates
 	# and calling the function TWM with them
 	# pfreq, pmag: peak frequencies and magnitudes, 
@@ -38,31 +38,31 @@ def f0DetectionTwm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	# f0t: f0 of previous frame if stable
 	# returns f0: fundamental frequency in Hz
 
-	if (pfreq.size < 3) & (f0t == 0):             # quit if less than 3 peaks and not previous f0
+	if (pfreq.size < 3) & (f0t == 0):                # return 0 if less than 3 peaks and not previous f0
 		return 0
 	
-	f0c = np.argwhere((pfreq>minf0) & (pfreq<maxf0))[:,0] # use only peaks within range
-	if (f0c.size == 0):                           # quit if no peaks within range
+	f0c = np.argwhere((pfreq>minf0) & (pfreq<maxf0))[:,0] # use only peaks within given range
+	if (f0c.size == 0):                              # return 0 if no peaks within range
 		return 0
-	f0cf = pfreq[f0c]                             # frequencies of candidates
-	f0cm = pmag[f0c]                              # magnitude of candidates
+	f0cf = pfreq[f0c]                                # frequencies of peak candidates
+	f0cm = pmag[f0c]                                 # magnitude of peak candidates
 
-	if f0t>0:                                     # if stable f0 in previous frame 
+	if f0t>0:                                        # if stable f0 in previous frame 
 		shortlist = np.argwhere(np.abs(f0cf-f0t)<f0t/2.0)[:,0]   # use only peaks close to it
 		maxc = np.argmax(f0cm)
 		maxcfd = f0cf[maxc]%f0t
 		if maxcfd > f0t/2:
 			maxcfd = f0t - maxcfd
-		if (maxc not in shortlist) and (maxcfd>(f0t/4)):# or the maximum magnitude peak is not a harmonic
+		if (maxc not in shortlist) and (maxcfd>(f0t/4)): # or the maximum magnitude peak is not a harmonic
 			shortlist = np.append(maxc, shortlist)
-		f0cf = f0cf[shortlist]                      # frequencies of candidates                     
+		f0cf = f0cf[shortlist]                         # frequencies of candidates                     
 
-	if (f0cf.size == 0):                          # quit if no candidates
+	if (f0cf.size == 0):                             # return 0 if no peak candidates
 		return 0
 
-	f0, f0error = UF_C.twm(pfreq, pmag, f0cf)      # call the TWM function
+	f0, f0error = UF_C.twm(pfreq, pmag, f0cf)        # call the TWM function with peak candidates
 	
-	if (f0>0) and (f0error<ef0max):               # accept f0 if below max error allowed
+	if (f0>0) and (f0error<ef0max):                  # accept and return f0 if below max error allowed
 		return f0
 	else:
 		return 0
@@ -70,9 +70,11 @@ def f0DetectionTwm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 
 def TWM_p(pfreq, pmag, f0c):
 	# Two-way mismatch algorithm for f0 detection (by Beauchamp&Maher)
+	# [better to use the C version of this function: UF_C.twm]
 	# pfreq, pmag: peak frequencies in Hz and magnitudes, 
 	# f0c: frequencies of f0 candidates
 	# returns f0: fundamental frequency detected
+
 	p = 0.5                                          # weighting by frequency value
 	q = 1.4                                          # weighting related to magnitude of peaks
 	r = 0.5                                          # scaling related to magnitude of peaks
@@ -118,6 +120,7 @@ def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs, harmDevSlope=0.01
 	# hfreqp: harmonic frequencies of previous frame,
 	# fs: sampling rate, harmDevSlope: slope of change of the deviation allowed to perfect harmonic
 	# returns hfreq, hmag, hphase: harmonic frequencies, magnitudes, phases
+
 	if (f0<=0):
 		return np.zeros(nH), np.zeros(nH), np.zeros(nH)
 	hfreq = np.zeros(nH)                                 # initialize harmonic frequencies
@@ -146,6 +149,7 @@ def stochasticResidual(x, N, H, sfreq, smag, sphase, fs, stocf):
 	# sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
 	# fs: sampling rate; stocf: stochastic factor, used in the approximation
 	# returns mYst: stochastic approximation of residual 
+
 	hN = N/2  
 	x = np.append(np.zeros(hN),x)                    # add zeros at beginning to center first window at sample 0
 	x = np.append(x,np.zeros(hN))                    # add zeros at the end to analyze last sample
@@ -173,6 +177,7 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	# x: input sound, N: fft-size, H: hop-size
 	# sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
 	# returns xr: residual sound 
+
 	hN = N/2  
 	x = np.append(np.zeros(hN),x)                    # add zeros at beginning to center first window at sample 0
 	x = np.append(x,np.zeros(hN))                    # add zeros at the end to analyze last sample
@@ -200,20 +205,21 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
 	# tfreq: frequency of tracks
 	# minTrackLength: minimum duration of tracks in number of frames
 	# returns tfreqn: output frequency of tracks
-	nFrames = tfreq[:,0].size                        # number of frames
-	nTracks = tfreq[0,:].size                        # number of tracks in a frame
-	for t in range(nTracks):                         # iterate over all tracks
-		trackFreqs = tfreq[:,t]                        # frequencies of one track
-		trackBegs = np.nonzero((trackFreqs[:nFrames-1] <= 0) # begining of track contours
+
+	nFrames = tfreq[:,0].size                               # number of frames
+	nTracks = tfreq[0,:].size                               # number of tracks in a frame
+	for t in range(nTracks):                                # iterate over all tracks
+		trackFreqs = tfreq[:,t]                               # frequencies of one track
+		trackBegs = np.nonzero((trackFreqs[:nFrames-1] <= 0)  # begining of track contours
 								& (trackFreqs[1:]>0))[0] + 1
 		if trackFreqs[0]>0:
 			trackBegs = np.insert(trackBegs, 0, 0)
-		trackEnds = np.nonzero((trackFreqs[:nFrames-1] > 0)  # end of track contours
+		trackEnds = np.nonzero((trackFreqs[:nFrames-1] > 0)   # end of track contours
 								& (trackFreqs[1:] <=0))[0] + 1
 		if trackFreqs[nFrames-1]>0:
 			trackEnds = np.append(trackEnds, nFrames-1)
-		trackLengths = 1 + trackEnds - trackBegs             # lengths of trach contours
-		for i,j in zip(trackBegs, trackLengths):             # delete short track contours
+		trackLengths = 1 + trackEnds - trackBegs              # lengths of trach contours
+		for i,j in zip(trackBegs, trackLengths):              # delete short track contours
 			if j <= minTrackLength:
 				trackFreqs[i:i+j] = 0
 	return tfreq
@@ -222,6 +228,7 @@ def cleaningTrack(track, minTrackLength=3):
 	# Delete fragments of one single track smaller than minTrackLength
 	# track: array of values; minTrackLength: minimum duration of tracks in number of frames
 	# returns cleanTrack: array of clean values
+
 	nFrames = track.size                                # number of frames
 	cleanTrack = np.copy(track)                         # copy arrat
 	trackBegs = np.nonzero((track[:nFrames-1] <= 0)     # begining of track contours
@@ -244,6 +251,7 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
 	# freqDevOffset: minimum frequency deviation at 0Hz 
 	# freqDevSlope: slope increase of minimum frequency deviation
 	# returns tfreqn, tmagn, tphasen: frequency, magnitude and phase of tracks
+
 	tfreqn = np.zeros(tfreq.size)                              # initialize array for output frequencies
 	tmagn = np.zeros(tfreq.size)                               # initialize array for output magnitudes
 	tphasen = np.zeros(tfreq.size)                             # initialize array for output phases
@@ -297,6 +305,7 @@ def genSpecSines(ipfreq, ipmag, ipphase, N, fs):
 	# ipfreq, ipmag, ipphase: sine peaks frequencies, magnitudes and phases
 	# N: size of the complex spectrum to generate; fs: sampling frequency
 	# returns Y: generated complex spectrum of sines
+
 	Y = UF_C.genSpecSines(N*ipfreq/float(fs), ipmag, ipphase, N)
 	return Y
 
@@ -305,6 +314,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
 	# iploc, ipmag, ipphase: sine peaks locations, magnitudes and phases
 	# N: size of the complex spectrum to generate; fs: sampling rate
 	# returns Y: generated complex spectrum of sines
+
 	Y = np.zeros(N, dtype = complex)                 # initialize output complex spectrum  
 	hN = N/2                                         # size of positive freq. spectrum
 	for i in range(0, ipfreq.size):                  # generate all sine spectral lobes
@@ -330,6 +340,7 @@ def genBhLobe(x):
 	# Generate the main lobe of a Blackman-Harris window
 	# x: bin positions to compute (real values)
 	# returns y: transform values
+
 	N = 512
 	f = x*np.pi*2/N                                    # frequency sampling
 	df = 2*np.pi/N  
@@ -342,6 +353,7 @@ def genBhLobe(x):
 
 def D(x, N):
 	# Generate a sinc function (Dirichlet kernel)
+
 	y = np.sin(N * x/2) / np.sin(x/2)
 	y[np.isnan(y)] = N                                 # avoid NaN if x == 0
 	return y
@@ -350,6 +362,7 @@ def peakInterp(mX, pX, ploc):
 	# Interpolate peak values using parabolic interpolation
 	# mX, pX: magnitude and phase spectrum, ploc: locations of peaks
 	# returns iploc, ipmag, ipphase: interpolated peak location, magnitude and phase values
+
 	val = mX[ploc]                                          # magnitude of peak bin 
 	lval = mX[ploc-1]                                       # magnitude of bin at left
 	rval = mX[ploc+1]                                       # magnitude of bin at right
@@ -362,6 +375,7 @@ def peakDetection(mX, t):
 	# Detect spectral peak locations
 	# mX: magnitude spectrum, t: threshold
 	# returns ploc: peak locations
+
 	thresh = np.where(mX[1:-1]>t, mX[1:-1], 0);             # locations above threshold
 	next_minor = np.where(mX[1:-1]>mX[2:], mX[1:-1], 0)     # locations higher than the next one
 	prev_minor = np.where(mX[1:-1]>mX[:-2], mX[1:-1], 0)    # locations higher than the previous one
@@ -378,6 +392,7 @@ def wavread(filename):
 	# Read a sound file and convert it to a normalized floating point array
 	# filename: name of file to read
 	# returns x: floating point array, fs: samplint rate of file
+
 	(fs, x) = read(filename)
 	if len(x.shape) ==2:
 		print "ERROR: Input audio file is stereo. This software only works for mono audio files."
@@ -394,6 +409,7 @@ def wavwrite(y, fs, filename):
 	# Write a sound file from an array with the sound and the sampling rate
 	# y: floating point array of one dimension, fs: sampling rate
 	# filename: name of file to create
+
 	x = copy.deepcopy(y)                         # copy array 
 	x *= INT16_FAC                               # scaling floating point -1 to 1 range signal to int16 range
 	x = np.int16(x)                              # converting to int16 type

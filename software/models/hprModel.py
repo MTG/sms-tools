@@ -49,7 +49,7 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
     ploc = UF.peakDetection(mX, t)                   # find peaks 
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
     ipfreq = fs * iploc/N
-    f0t = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+    f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
     if ((f0stable==0)&(f0t>0)) \
       or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
       f0stable = f0t                                # consider a stable f0 if it is close to the previous one

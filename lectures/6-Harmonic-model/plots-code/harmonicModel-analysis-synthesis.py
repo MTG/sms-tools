@@ -36,7 +36,7 @@ plt.title('x (vignesh.wav)')
 plt.subplot(3,1,2)
 yhfreq = hfreq
 yhfreq[hfreq==0] = np.nan
-plt.plot(frmTime, hfreq, color='k', lw=1.2)
+plt.plot(frmTime, hfreq, lw=1.2)
 plt.axis([0,y.size/float(fs),0,8000])
 plt.title('f_h, harmonic frequencies')
 
