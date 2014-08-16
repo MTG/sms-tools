@@ -26,6 +26,10 @@ def printWarning(warningID):
 		print "-------------------------------------------------------------------------------"
 		print "\n"
 
+def isPower2(num):
+	# Check if num is power of two
+	return ((num & (num - 1)) == 0) and num > 0
+
 def f0DetectionTwm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	# Function that wraps the f0 detection function TWM, selecting the possible f0 candidates
 	# and calling the function TWM with them
