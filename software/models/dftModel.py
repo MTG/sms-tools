@@ -14,7 +14,7 @@ def dftModel(x, w, N):
 	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
 		raise ValueError("FFT size is not a power of 2")
 
-	if not(w.size < N):                                    # raise error if window size smaller than FFT size
+	if (w.size > N):                                        # raise error if window size bigger than fft size
 		raise ValueError("window size bigger than FFT size")
 
 	if all(x==0):                                           # if input array is zeros return empty output
@@ -50,9 +50,9 @@ def dftAnal(x, w, N):
 	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
 		raise ValueError("FFT size is not a power of 2")
 
-	if not(w.size < N):                                    # raise error if window size smaller than FFT size
+	if (w.size > N):                                        # raise error if window size bigger than fft size
 		raise ValueError("window size bigger than FFT size")
-
+		
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
