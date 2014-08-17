@@ -67,13 +67,12 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	else:
 		return 0
 
-
 def TWM_p(pfreq, pmag, f0c):
 	# Two-way mismatch algorithm for f0 detection (by Beauchamp&Maher)
 	# [better to use the C version of this function: UF_C.twm]
 	# pfreq, pmag: peak frequencies in Hz and magnitudes, 
 	# f0c: frequencies of f0 candidates
-	# returns f0: fundamental frequency detected
+	# returns f0, f0Error: fundamental frequency detected and its error
 
 	p = 0.5                                          # weighting by frequency value
 	q = 1.4                                          # weighting related to magnitude of peaks
@@ -82,12 +81,12 @@ def TWM_p(pfreq, pmag, f0c):
 	Amax = max(pmag)                                 # maximum peak magnitude
 	maxnpeaks = 10                                   # maximum number of peaks used
 	harmonic = np.matrix(f0c)
-	ErrorPM = np.zeros(harmonic.size)                 # initialize PM errors
+	ErrorPM = np.zeros(harmonic.size)                # initialize PM errors
 	MaxNPM = min(maxnpeaks, pfreq.size)
-	for i in range(0, MaxNPM) :                       # predicted to measured mismatch error
+	for i in range(0, MaxNPM) :                      # predicted to measured mismatch error
 		difmatrixPM = harmonic.T * np.ones(pfreq.size)
 		difmatrixPM = abs(difmatrixPM - np.ones((harmonic.size, 1))*pfreq)
-		FreqDistance = np.amin(difmatrixPM, axis=1)     # minimum along rows
+		FreqDistance = np.amin(difmatrixPM, axis=1)    # minimum along rows
 		peakloc = np.argmin(difmatrixPM, axis=1)
 		Ponddif = np.array(FreqDistance) * (np.array(harmonic.T)**(-p))
 		PeakMag = pmag[peakloc]
@@ -111,66 +110,6 @@ def TWM_p(pfreq, pmag, f0c):
 	f0 = f0c[f0index]                                # f0 with the smallest error
 
 	return f0, Error[f0index]
-
-def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs, harmDevSlope=0.01):
-	# Detection of the harmonics from a set of spectral peaks, finds the peaks that are closer
-	# to the ideal harmonic series built on top of a fundamental frequency
-	# pfreq, pmag, pphase: peak frequencies, magnitudes and phases
-	# f0: fundamental frequency, nH: number of harmonics,
-	# hfreqp: harmonic frequencies of previous frame,
-	# fs: sampling rate, harmDevSlope: slope of change of the deviation allowed to perfect harmonic
-	# returns hfreq, hmag, hphase: harmonic frequencies, magnitudes, phases
-
-	if (f0<=0):
-		return np.zeros(nH), np.zeros(nH), np.zeros(nH)
-	hfreq = np.zeros(nH)                                 # initialize harmonic frequencies
-	hmag = np.zeros(nH)-100                              # initialize harmonic magnitudes
-	hphase = np.zeros(nH)                                # initialize harmonic phases
-	hf = f0*np.arange(1, nH+1)                           # initialize harmonic frequencies
-	hi = 0                                               # initialize harmonic index
-	if hfreqp == []:
-		hfreqp = hf
-	while (f0>0) and (hi<nH) and (hf[hi]<fs/2):          # find harmonic peaks
-		pei = np.argmin(abs(pfreq - hf[hi]))             # closest peak
-		dev1 = abs(pfreq[pei] - hf[hi])                  # deviation from perfect harmonic
-		dev2 = (abs(pfreq[pei] - hfreqp[hi]) if hfreqp[hi]>0 else fs) # deviation from previous frame
-		threshold = f0/3 + harmDevSlope * pfreq[pei]
-		if ((dev1<threshold) or (dev2<threshold)):       # accept peak if deviation is small
-			hfreq[hi] = pfreq[pei]                         # harmonic frequencies
-			hmag[hi] = pmag[pei]                           # harmonic magnitudes
-			hphase[hi] = pphase[pei]                       # harmonic phases
-		hi += 1                                          # increase harmonic index
-	return hfreq, hmag, hphase
-
-
-def stochasticResidual(x, N, H, sfreq, smag, sphase, fs, stocf):
-	# Subtract sinusoids from a sound and approximate the residual with an envelope
-	# x: input sound, N: fft size, H: hop-size
-	# sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
-	# fs: sampling rate; stocf: stochastic factor, used in the approximation
-	# returns mYst: stochastic approximation of residual 
-
-	hN = N/2  
-	x = np.append(np.zeros(hN),x)                    # add zeros at beginning to center first window at sample 0
-	x = np.append(x,np.zeros(hN))                    # add zeros at the end to analyze last sample
-	bh = blackmanharris(N)                           # synthesis window
-	w = bh/ sum(bh)                                  # normalize synthesis window
-	L = sfreq[:,0].size                              # number of frames   
-	pin = 0
-	for l in range(L):
-		xw = x[pin:pin+N]*w                            # window the input sound                               
-		X = fft(fftshift(xw))                          # compute FFT 
-		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines          
-		Xr = X-Yh                                      # subtract sines from original spectrum
-		mXr = 20*np.log10(abs(Xr[:hN]))                # magnitude spectrum of residual
-		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)  # decimate the mag spectrum                        
-		if l == 0: 
-			mYst = np.array([mXrenv])
-		else:
-			mYst = np.vstack((mYst, np.array([mXrenv])))
-		pin += H                                       # advance sound pointer
-	return mYst
-
 
 def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	# Subtract sinusoids from a sound
@@ -199,6 +138,34 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	xr = np.delete(xr, range(hN))                    # delete half of first window which was added in stftAnal
 	xr = np.delete(xr, range(xr.size-hN, xr.size))   # delete half of last window which was added in stftAnal
 	return xr
+
+def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
+	# Subtract sinusoids from a sound and approximate the residual with an envelope
+	# x: input sound, N: fft size, H: hop-size
+	# sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
+	# fs: sampling rate; stocf: stochastic factor, used in the approximation
+	# returns stocEnv: stochastic approximation of residual 
+
+	hN = N/2  
+	x = np.append(np.zeros(hN),x)                         # add zeros at beginning to center first window at sample 0
+	x = np.append(x,np.zeros(hN))                         # add zeros at the end to analyze last sample
+	bh = blackmanharris(N)                                # synthesis window
+	w = bh/ sum(bh)                                       # normalize synthesis window
+	L = sfreq[:,0].size                                   # number of frames   
+	pin = 0
+	for l in range(L):
+		xw = x[pin:pin+N]*w                                 # window the input sound                               
+		X = fft(fftshift(xw))                               # compute FFT 
+		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines          
+		Xr = X-Yh                                           # subtract sines from original spectrum
+		mXr = 20*np.log10(abs(Xr[:hN]))                     # magnitude spectrum of residual
+		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)  # decimate the mag spectrum                        
+		if l == 0:                                          # if first frame
+			stocEnv = np.array([mXrenv])
+		else:                                               # rest of frames
+			stocEnv = np.vstack((stocEnv, np.array([mXrenv]))) 
+		pin += H                                       # advance sound pointer
+	return stocEnv
 
 def cleaningSineTracks(tfreq, minTrackLength=3):
 	# Delete short fragments of a collection of sinusoidal tracks 

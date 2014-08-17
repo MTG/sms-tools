@@ -6,87 +6,42 @@ from scipy.signal import resample, blackmanharris, triang, hanning
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import harmonicModel as HM
+import sineModel as SM
 import dftModel as DFT
+import stochasticModel as STM
 import utilFunctions as UF
-
 
 def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf):
 	# Analysis of a sound using the harmonic plus stochastic model
-	# x: input sound, fs: sampling rate, w: analysis window, 
-	# N: FFT size, t: threshold in negative dB, 
+	# x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
 	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
-	# maxf0: maximim f0 frequency in Hz, 
-	# f0et: error threshold in the f0 detection (ex: 5),
-	# harmDevSlope: slope of harmonic deviation
-	# minSineDur: minimum length of harmonics
-	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; mYst: stochastic residual
-	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
-	mYst = UF.stochasticResidual(x, Ns, H, hfreq, hmag, hphase, fs, stocf)
-	return hfreq, hmag, hphase, mYst
+	# maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
+	# harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
+	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; stocEnv: stochastic residual
 
-def hpsModelSynth(hfreq, hmag, hphase, mYst, N, H, fs):
+	# perform harmonic analysis
+	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
+	# perform stochastic analysis of residual
+	stocEnv = UF.stochasticResidualAnal(x, Ns, H, hfreq, hmag, hphase, fs, stocf)
+	return hfreq, hmag, hphase, stocEnv
+
+def hpsModelSynth(hfreq, hmag, hphase, stocEnv, N, H, fs):
 	# Synthesis of a sound using the harmonic plus stochastic model
-	# hfreq: harmonic frequencies, hmag:harmonic amplitudes, mYst: stochastic envelope
-	# Ns: synthesis FFT size, H: hop size, fs: sampling rate 
+	# hfreq, hmag: harmonic frequencies and amplitudes; stocEnv: stochastic envelope
+	# Ns: synthesis FFT size; H: hop size, fs: sampling rate 
 	# returns y: output sound, yh: harmonic component, yst: stochastic component
-	hN = N/2                                                  # half of FFT size for synthesis
-	L = hfreq[:,0].size                                       # number of frames
-	nH = hfreq[0,:].size                                      # number of harmonics
-	pout = 0                                                  # initialize output sound pointer         
-	ysize = H*(L+4)                                           # output sound size
-	yhw = np.zeros(N)                                         # initialize output sound frame
-	ysw = np.zeros(N)                                         # initialize output sound frame
-	yh = np.zeros(ysize)                                      # initialize output array
-	yst = np.zeros(ysize)                                     # initialize output array
-	sw = np.zeros(N)     
-	ow = triang(2*H)                                          # overlapping window
-	sw[hN-H:hN+H] = ow      
-	bh = blackmanharris(N)                                    # synthesis window
-	bh = bh / sum(bh)                                         # normalize synthesis window
-	wr = bh                                                   # window for residual
-	sw[hN-H:hN+H] = sw[hN-H:hN+H] / bh[hN-H:hN+H]             # synthesis window for harmonic component
-	sws = H*hanning(N)/2                                      # synthesis window for stochastic component
-	lastyhfreq = hfreq[0,:]                                   # initialize synthesis harmonic frequencies
-	yhphase = 2*np.pi*np.random.rand(nH)                      # initialize synthesis harmonic phases     
-	for l in range(L):
-		yhfreq = hfreq[l,:]                                     # synthesis harmonics frequencies
-		yhmag = hmag[l,:]                                       # synthesis harmonic amplitudes
-		mYrenv = mYst[l,:]                                      # synthesis residual envelope
-		if (hphase.size > 0):
-			yhphase = hphase[l,:] 
-		else:
-			yhphase += (np.pi*(lastyhfreq+yhfreq)/fs)*H             # propagate phases
-		lastyhfreq = yhfreq
-		Yh = UF.genSpecSines(yhfreq, yhmag, yhphase, N, fs)     # generate spec sines 
-		mYs = resample(mYrenv, hN)                              # interpolate to original size
-		mYs = 10**(mYs/20)                                      # dB to linear magnitude  
-		pYs = 2*np.pi*np.random.rand(hN)                        # generate phase random values
-		Ys = np.zeros(N, dtype = complex)
-		Ys[:hN] = mYs * np.exp(1j*pYs)                         # generate positive freq.
-		Ys[hN+1:] = mYs[:0:-1] * np.exp(-1j*pYs[:0:-1])        # generate negative freq.
-		fftbuffer = np.zeros(N)
-		fftbuffer = np.real(ifft(Yh))                           # inverse FFT of harm spectrum
-		yhw[:hN-1] = fftbuffer[hN+1:]                         # undo zer-phase window
-		yhw[hN-1:] = fftbuffer[:hN+1] 
-		fftbuffer = np.zeros(N)
-		fftbuffer = np.real(ifft(Ys))                           # inverse FFT of stochastic approximation spectrum
-		ysw[:hN-1] = fftbuffer[hN+1:]                           # undo zero-phase window
-		ysw[hN-1:] = fftbuffer[:hN+1]
-		yh[pout:pout+N] += sw*yhw                               # overlap-add for sines
-		yst[pout:pout+N] += sws*ysw                             # overlap-add for stoch
-		pout += H                                               # advance sound pointer
-	y = yh+yst                                                # sum harmonic and stochastic components
+
+	yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)          # synthesize harmonics
+	yst = STM.stochasticModelSynth(stocEnv, H)                     # synthesize stochastic residual
+	y = yh[:min(yh.size, yst.size)]+yst[:min(yh.size, yst.size)]   # sum harmonic and stochastic components
 	return y, yh, yst
 
 
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
-	# Analysis/synthesis of a sound using the harmonic plus stochastic model, one frame at a time
-	# x: input sound, fs: sampling rate, w: analysis window, 
-	# N: FFT size (minimum 512), t: threshold in negative dB, 
-	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
-	# maxf0: maximim f0 frequency in Hz, 
-	# f0et: error threshold in the f0 detection (ex: 5),
-	# stocf: decimation factor of mag spectrum for stochastic analysis
+	# Analysis/synthesis of a sound using the harmonic plus stochastic model, one frame at a time, no harmonic tracking
+	# x: input sound; fs: sampling rate, w: analysis window; N: FFT size (minimum 512), t: threshold in negative dB, 
+	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz; maxf0: maximim f0 frequency in Hz, 
+	# f0et: error threshold in the f0 detection (ex: 5); stocf: decimation factor of mag spectrum for stochastic analysis
 	# returns y: output sound, yh: harmonic component, yst: stochastic component
 
 	hN = N/2                                               # size of positive spectrum
@@ -124,10 +79,10 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 		f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
 		if ((f0stable==0)&(f0t>0)) \
 			or ((f0stable>0)&(np.abs(f0stable-f0t)<f0stable/5.0)):
-			f0stable = f0t                                # consider a stable f0 if it is close to the previous one
+			f0stable = f0t                                     # consider a stable f0 if it is close to the previous one
 		else:
 			f0stable = 0
-		hfreq, hmag, hphase = UF.harmonicDetection(ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs) # find harmonics
+		hfreq, hmag, hphase = HM.harmonicDetection(ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs) # find harmonics
 		hfreqp = hfreq
 		ri = pin-hNs-1                                       # input sound pointer for residual analysis
 		xw2 = x[ri:ri+Ns]*wr                                 # window the input sound                                       
@@ -140,12 +95,12 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 		Xr = X2-Yh;                                          # get the residual complex spectrum
 		mXr = 20 * np.log10(abs(Xr[:hNs]))                   # magnitude spectrum of residual
 		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf) # decimate the magnitude spectrum and avoid -Inf                     
-		mYst = resample(mXrenv, hNs)                         # interpolate to original size
-		mYst = 10**(mYst/20)                                 # dB to linear magnitude  
+		stocEnv = resample(mXrenv, hNs)                      # interpolate to original size
+		stocEnv = 10**(stocEnv/20)                           # dB to linear magnitude  
 		pYst = 2*np.pi*np.random.rand(hNs)                   # generate phase random values
 		Yst = np.zeros(Ns, dtype = complex)
-		Yst[:hNs] = mYst * np.exp(1j*pYst)                   # generate positive freq.
-		Yst[hNs+1:] = mYst[:0:-1] * np.exp(-1j*pYst[:0:-1])  # generate negative freq.
+		Yst[:hNs] = stocEnv * np.exp(1j*pYst)                # generate positive freq.
+		Yst[hNs+1:] = stocEnv[:0:-1] * np.exp(-1j*pYst[:0:-1])  # generate negative freq.
 		
 		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Yh))                         # inverse FFT of harmonic spectrum

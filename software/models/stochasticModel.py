@@ -2,15 +2,16 @@
 # (for example usage check the examples models_interface)
 
 import numpy as np
-from scipy.signal import hanning, resample
+from scipy.signal import hanning, blackmanharris, resample
 from scipy.fftpack import fft, ifft, fftshift
 import utilFunctions as UF
-	
+
 def stochasticModelAnal(x, H, stocf):
-	# stochastic analysis of a sound
+	# Stochastic analysis of a sound
 	# x: input array sound, H: hop size, 
 	# stocf: decimation factor of mag spectrum for stochastic analysis
-	# returns mYst: stochastic envelope
+	# returns stocEnv: stochastic envelope
+
 	N = H*2                                                  # FFT size   
 	w = hanning(N)                                           # analysis window
 	x = np.append(np.zeros(H),x)                             # add zeros at beginning to center first window at sample 0
@@ -24,25 +25,26 @@ def stochasticModelAnal(x, H, stocf):
 		mX = 20 * np.log10(abs(X[:H]))                         # magnitude spectrum of positive frequencies
 		mY = resample(np.maximum(-200, mX), mX.size*stocf)     # decimate the mag spectrum 
 		if pin == 0:
-			mYst = np.array([mY])
+			stocEnv = np.array([mY])
 		else:
-			mYst = np.vstack((mYst, np.array([mY])))
+			stocEnv = np.vstack((stocEnv, np.array([mY])))
 		pin += H                                               # advance sound pointer
-	return mYst
+	return stocEnv
 
-def stochasticModelSynth(mYst, H):
-	# stochastic synthesis of a sound
-	# mYst: stochastic envelope, H: hop size, 
+def stochasticModelSynth(stocEnv, H):
+	# Stochastic synthesis of a sound
+	# stocEnv: stochastic envelope; H: hop size, 
 	# returns y: output sound
+
 	N = H*2                                                  # FFT size    
-	L = mYst[:,0].size                                       # number of frames
+	L = stocEnv[:,0].size                                    # number of frames
 	y = np.zeros(L*H+2*H)                                    # initialize output array
 	ws = hanning(N)                                          # synthesis window
 	pout = 0                                                 # output sound pointer
 	for l in range(L):                    
-		mY = resample(mYst[l,:], H)                            # interpolate to original size
+		mY = resample(stocEnv[l,:], H)                         # interpolate to original size
 		pY = 2*np.pi*np.random.rand(H)                         # generate phase random values
-		Y = np.zeros(N, dtype = complex)
+		Y = np.zeros(N, dtype = complex)                       # initialize synthesis spectrum
 		Y[:H] = 10**(mY/20) * np.exp(1j*pY)                    # generate positive freq.
 		Y[H+1:] = 10**(mY[:0:-1]/20) * np.exp(-1j*pY[:0:-1])   # generate negative freq.
 		fftbuffer = np.real(ifft(Y))                           #inverse FFT
@@ -53,10 +55,11 @@ def stochasticModelSynth(mYst, H):
 	return y
 
 def stochasticModel(x, H, stocf):
-	# stochastic analysis/synthesis of a sound, one frame at a time
+	# Stochastic analysis/synthesis of a sound, one frame at a time
 	# x: input array sound, H: hop size, 
 	# stocf: decimation factor of mag spectrum for stochastic analysis
 	# returns y: output sound
+
 	N = H*2                                                  # FFT size
 	w = hanning(N)                                           # analysis/synthesis window
 	x = np.append(np.zeros(H),x)                             # add zeros at beginning to center first window at sample 0
@@ -69,9 +72,9 @@ def stochasticModel(x, H, stocf):
 		xw = x[pin:pin+N]*w                                    # window the input sound
 		X = fft(xw)                                            # compute FFT
 		mX = 20 * np.log10(abs(X[:H]))                         # magnitude spectrum of positive frequencies
-		mYst = resample(np.maximum(-200, mX), mX.size*stocf)   # decimate the mag spectrum     
+		sotcEnv = resample(np.maximum(-200, mX), mX.size*stocf)# decimate the mag spectrum     
 	#-----synthesis-----
-		mY = resample(mYst, H)                                 # interpolate to original size
+		mY = resample(stocEnv, H)                              # interpolate to original size
 		pY = 2*np.pi*np.random.rand(H)                         # generate phase random values
 		Y = np.zeros(N, dtype = complex)
 		Y[:H] = 10**(mY/20) * np.exp(1j*pY)                    # generate positive freq.

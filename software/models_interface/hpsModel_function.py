@@ -10,17 +10,12 @@ import hpsModel as HPS
 
 def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
-	
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics
-	# minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound
-	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
 	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 	# stocf: decimation factor used for the stochastic approximation
 
@@ -30,8 +25,6 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# --------- computation -----------------
-
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
@@ -39,23 +32,20 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	w = get_window(window, M)
 
 	# compute the harmonic plus stochastic model of the whole sound
-	hfreq, hmag, hphase, mYst = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
+	hfreq, hmag, hphase, stocEnv = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
 		
 	# synthesize a sound from the harmonic plus stochastic representation
-	y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
+	y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, stocEnv, Ns, H, fs)
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFileSines = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel_sines.wav'
 	outputFileStochastic = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel_stochastic.wav'
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel.wav'
 
-
 	# write sounds files for harmonics, stochastic, and the sum
 	UF.wavwrite(yh, fs, outputFileSines)
 	UF.wavwrite(yst, fs, outputFileStochastic)
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
@@ -73,11 +63,11 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 
 	# plot spectrogram stochastic component
 	plt.subplot(3,1,2)
-	numFrames = int(mYst[:,0].size)
-	sizeEnv = int(mYst[0,:].size)
+	numFrames = int(stocEnv[:,0].size)
+	sizeEnv = int(stocEnv[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram
