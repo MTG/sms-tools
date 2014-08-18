@@ -87,7 +87,7 @@ def peakInterp(mX, pX, ploc):
 	ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks by linear interpolation
 	return iploc, ipmag, ipphase
 
-def D(x, N):
+def sinc(x, N):
 	# Generate the main lobe of a sinc function (Dirichlet kernel)
 	# x: array of indexes to compute; N: size of FFT to simulate
 	# returns y: samples of the main lobe of a sinc function
@@ -101,13 +101,13 @@ def genBhLobe(x):
 	# x: bin positions to compute (real values)
 	# returns y: transform values
 
-	N = 512                                                 # assume an fft of size N
+	N = 512                                                 
 	f = x*np.pi*2/N                                         # frequency sampling
 	df = 2*np.pi/N  
 	y = np.zeros(x.size)                                    # initialize window
 	consts = [0.35875, 0.48829, 0.14128, 0.01168]           # window constants
 	for m in range(0,4):                                    # iterate over the four sincs to sum
-		y += consts[m]/2 * (D(f-df*m, N) + D(f+df*m, N))    # sum Dirichlet kernels
+		y += consts[m]/2 * (sinc(f-df*m, N) + sinc(f+df*m, N))# sum of scaled sinc functions
 	y = y/N/consts[0]                                       # normalize
 	return y                                           
 
