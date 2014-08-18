@@ -3,12 +3,12 @@ from scipy.signal import resample, blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math, copy, sys, os
 from scipy.io.wavfile import write, read
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utilFunctions_C/'))
 try:
 	import utilFunctions_C as UF_C
 except ImportError:
 	print "C modules could not be imported because there were not compiled."
+
 
 def printError(errorID):
 	if errorID == 1:
@@ -62,6 +62,18 @@ def wavwrite(y, fs, filename):
 	x = np.int16(x)                              # converting to int16 type
 	write(filename, fs, x)
 
+def peakDetection(mX, t):
+	# Detect spectral peak locations
+	# mX: magnitude spectrum, t: threshold
+	# returns ploc: peak locations
+
+	thresh = np.where(mX[1:-1]>t, mX[1:-1], 0);             # locations above threshold
+	next_minor = np.where(mX[1:-1]>mX[2:], mX[1:-1], 0)     # locations higher than the next one
+	prev_minor = np.where(mX[1:-1]>mX[:-2], mX[1:-1], 0)    # locations higher than the previous one
+	ploc = thresh * next_minor * prev_minor                 # locations fulfilling the three criteria
+	ploc = ploc.nonzero()[0] + 1                            # add 1 to compensate for previous steps
+	return ploc
+
 def peakInterp(mX, pX, ploc):
 	# Interpolate peak values using parabolic interpolation
 	# mX, pX: magnitude and phase spectrum, ploc: locations of peaks
@@ -75,22 +87,12 @@ def peakInterp(mX, pX, ploc):
 	ipphase = np.interp(iploc, np.arange(0, pX.size), pX)   # phase of peaks by linear interpolation
 	return iploc, ipmag, ipphase
 
-def peakDetection(mX, t):
-	# Detect spectral peak locations
-	# mX: magnitude spectrum, t: threshold
-	# returns ploc: peak locations
-
-	thresh = np.where(mX[1:-1]>t, mX[1:-1], 0);             # locations above threshold
-	next_minor = np.where(mX[1:-1]>mX[2:], mX[1:-1], 0)     # locations higher than the next one
-	prev_minor = np.where(mX[1:-1]>mX[:-2], mX[1:-1], 0)    # locations higher than the previous one
-	ploc = thresh * next_minor * prev_minor                 # locations fulfilling the three criteria
-	ploc = ploc.nonzero()[0] + 1                            # add 1 to compensate for previous steps
-	return ploc
-
 def D(x, N):
-	# Generate a sinc function (Dirichlet kernel)
+	# Generate the main lobe of a sinc function (Dirichlet kernel)
+	# x: array of indexes to compute; N: size of FFT to simulate
+	# returns y: samples of the main lobe of a sinc function
 
-	y = np.sin(N * x/2) / np.sin(x/2)
+	y = np.sin(N * x/2) / np.sin(x/2)                  # compute the sinc function
 	y[np.isnan(y)] = N                                 # avoid NaN if x == 0
 	return y
 
@@ -99,15 +101,15 @@ def genBhLobe(x):
 	# x: bin positions to compute (real values)
 	# returns y: transform values
 
-	N = 512
-	f = x*np.pi*2/N                                    # frequency sampling
+	N = 512                                                 # assume an fft of size N
+	f = x*np.pi*2/N                                         # frequency sampling
 	df = 2*np.pi/N  
-	y = np.zeros(x.size)                               # initialize window
-	consts = [0.35875, 0.48829, 0.14128, 0.01168]      # window constants
-	for m in range(0,4):  
-		y += consts[m]/2 * (D(f-df*m, N) + D(f+df*m, N)) # sum Dirichlet kernels
-	y = y/N/consts[0] 
-	return y                                           # normalize
+	y = np.zeros(x.size)                                    # initialize window
+	consts = [0.35875, 0.48829, 0.14128, 0.01168]           # window constants
+	for m in range(0,4):                                    # iterate over the four sincs to sum
+		y += consts[m]/2 * (D(f-df*m, N) + D(f+df*m, N))    # sum Dirichlet kernels
+	y = y/N/consts[0]                                       # normalize
+	return y                                           
 
 
 
