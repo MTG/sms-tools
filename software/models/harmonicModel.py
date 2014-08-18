@@ -177,6 +177,6 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
       xhmag = np.vstack((xhmag, np.array([hmag])))
       xhphase = np.vstack((xhphase, np.array([hphase])))
     pin += H                                              # advance sound pointer
-  xhfreq = UF.cleaningSineTracks(xhfreq, round(fs*minSineDur/H))     # delete tracks shorter than minSineDur
+  xhfreq = SM.cleaningSineTracks(xhfreq, round(fs*minSineDur/H))     # delete tracks shorter than minSineDur
   return xhfreq, xhmag, xhphase
 
