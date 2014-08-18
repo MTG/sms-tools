@@ -8,30 +8,6 @@ import math
 import dftModel as DFT
 import utilFunctions as UF
 
-def cleaningSineTracks(tfreq, minTrackLength=3):
-	# Delete short fragments of a collection of sinusoidal tracks 
-	# tfreq: frequency of tracks
-	# minTrackLength: minimum duration of tracks in number of frames
-	# returns tfreqn: output frequency of tracks
-
-	nFrames = tfreq[:,0].size                               # number of frames
-	nTracks = tfreq[0,:].size                               # number of tracks in a frame
-	for t in range(nTracks):                                # iterate over all tracks
-		trackFreqs = tfreq[:,t]                               # frequencies of one track
-		trackBegs = np.nonzero((trackFreqs[:nFrames-1] <= 0)  # begining of track contours
-								& (trackFreqs[1:]>0))[0] + 1
-		if trackFreqs[0]>0:
-			trackBegs = np.insert(trackBegs, 0, 0)
-		trackEnds = np.nonzero((trackFreqs[:nFrames-1] > 0)   # end of track contours
-								& (trackFreqs[1:] <=0))[0] + 1
-		if trackFreqs[nFrames-1]>0:
-			trackEnds = np.append(trackEnds, nFrames-1)
-		trackLengths = 1 + trackEnds - trackBegs              # lengths of trach contours
-		for i,j in zip(trackBegs, trackLengths):              # delete short track contours
-			if j <= minTrackLength:
-				trackFreqs[i:i+j] = 0
-	return tfreq
-
 def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01):
 	# Tracking sinusoids from one frame to the next
 	# pfreq, pmag, pphase: frequencies and magnitude of current frame
@@ -85,8 +61,32 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
 			tfreqn = np.append(tfreqn, pfreqt[peaksleft[emptyt.size:]])
 			tmagn = np.append(tmagn, pmagt[peaksleft[emptyt.size:]])
 			tphasen = np.append(tphasen, pphaset[peaksleft[emptyt.size:]])
-	
 	return tfreqn, tmagn, tphasen
+
+def cleaningSineTracks(tfreq, minTrackLength=3):
+	# Delete short fragments of a collection of sinusoidal tracks 
+	# tfreq: frequency of tracks
+	# minTrackLength: minimum duration of tracks in number of frames
+	# returns tfreqn: output frequency of tracks
+
+	nFrames = tfreq[:,0].size                               # number of frames
+	nTracks = tfreq[0,:].size                               # number of tracks in a frame
+	for t in range(nTracks):                                # iterate over all tracks
+		trackFreqs = tfreq[:,t]                               # frequencies of one track
+		trackBegs = np.nonzero((trackFreqs[:nFrames-1] <= 0)  # begining of track contours
+								& (trackFreqs[1:]>0))[0] + 1
+		if trackFreqs[0]>0:
+			trackBegs = np.insert(trackBegs, 0, 0)
+		trackEnds = np.nonzero((trackFreqs[:nFrames-1] > 0)   # end of track contours
+								& (trackFreqs[1:] <=0))[0] + 1
+		if trackFreqs[nFrames-1]>0:
+			trackEnds = np.append(trackEnds, nFrames-1)
+		trackLengths = 1 + trackEnds - trackBegs              # lengths of trach contours
+		for i,j in zip(trackBegs, trackLengths):              # delete short track contours
+			if j <= minTrackLength:
+				trackFreqs[i:i+j] = 0
+	return tfreq
+	
 
 def sineModel(x, fs, w, N, t):
 	# Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
@@ -207,3 +207,4 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	y = np.delete(y, range(hN))                             # delete half of first window
 	y = np.delete(y, range(y.size-hN, y.size))              # delete half of the last window 
 	return y
+	
