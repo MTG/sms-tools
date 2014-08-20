@@ -6,14 +6,11 @@ import os, sys
 from scipy.signal import get_window
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
-import sineModel as SM
+import sprModel as SPR
 import stft as STFT
 
 def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, 
 	minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
-
-	# ------- analysis parameters -------------------
-
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size 
@@ -30,28 +27,20 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# --------- computation -----------------
-
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
 
-	# perform sinusoidal analysis
-	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
-		
-	# subtract sinusoids from original 
-	xr = UF.sineSubtraction(x, N, H, tfreq, tmag, tphase, fs)
+	# perform sinusoidal plus residual analysis
+	tfreq, tmag, tphase, xr = SPR.sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 		
 	# compute spectrogram of residual
 	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
-		
-	# synthesize sinusoids
-	ys = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 
 	# sum sinusoids and residual
-	y = xr[:min(xr.size, ys.size)]+ys[:min(xr.size, ys.size)]
+	y, ys = SPR.sprModelSynth(tfreq, tmag, tphase, xr, Ns, H, fs)
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFileSines = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sprModel_sines.wav'
@@ -62,8 +51,6 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	UF.wavwrite(ys, fs, outputFileSines)
 	UF.wavwrite(xr, fs, outputFileResidual)
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to show plots
 	plt.figure(figsize=(12, 9))

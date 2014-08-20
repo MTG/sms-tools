@@ -48,11 +48,11 @@ class StochasticModel_frame:
 		self.H.insert(0, "256")
 
 		#DECIMATION FACTOR
-		stocf_label = "Stochastic approximation factor:"
+		stocf_label = "Approximation factor (bigger than 0, max of 1):"
 		Label(self.parent, text=stocf_label).grid(row=3, column=0, sticky=W, padx=5, pady=(10,2))
 		self.stocf = Entry(self.parent, justify=CENTER)
 		self.stocf["width"] = 5
-		self.stocf.grid(row=3, column=0, sticky=W, padx=(210,5), pady=(10,2))
+		self.stocf.grid(row=3, column=0, sticky=W, padx=(300,5), pady=(10,2))
 		self.stocf.delete(0, END)
 		self.stocf.insert(0, "0.1")
 

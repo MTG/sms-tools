@@ -6,25 +6,17 @@ import os, sys
 from scipy.signal import get_window
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
-import sineModel as SM
+import hprModel as HPR
 import stft as STFT
-import harmonicModel as HM
 
 def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01):
-	
-	# ------- analysis parameters -------------------
-
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics
-	# minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound
-	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
 	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 
 	# size of fft used in synthesis
@@ -33,28 +25,20 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	# hop size (has to be 1/4 of Ns)
 	H = 128
 
-	# --------- computation -----------------
-
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
 
-	# find harmonics
-	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
-	  
-	# subtract harmonics from original sound
-	xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
+	# find harmonics and residual
+	hfreq, hmag, hphase, xr = HPR.hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 	  
 	# compute spectrogram of residual
 	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
 	  
-	# synthesize harmonic component
-	yh = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
-
-	# sum harmonics and residual
-	y = xr[:min(xr.size, yh.size)]+yh[:min(xr.size, yh.size)]
+	# synthesize hpr model
+	y, yh = HPR.hprModelSynth(hfreq, hmag, hphase, xr, Ns, H, fs)
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFileSines = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hprModel_sines.wav'
@@ -65,8 +49,6 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	UF.wavwrite(yh, fs, outputFileSines)
 	UF.wavwrite(xr, fs, outputFileResidual)
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))

@@ -9,7 +9,7 @@ import utilFunctions as UF
 def stochasticModelAnal(x, H, stocf):
 	# Stochastic analysis of a sound
 	# x: input array sound, H: hop size, 
-	# stocf: decimation factor of mag spectrum for stochastic analysis
+	# stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
 	# returns stocEnv: stochastic envelope
 
 	N = H*2                                                  # FFT size   
@@ -24,9 +24,9 @@ def stochasticModelAnal(x, H, stocf):
 		X = fft(xw)                                            # compute FFT
 		mX = 20 * np.log10(abs(X[:H]))                         # magnitude spectrum of positive frequencies
 		mY = resample(np.maximum(-200, mX), mX.size*stocf)     # decimate the mag spectrum 
-		if pin == 0:
+		if pin == 0:                                           # first frame
 			stocEnv = np.array([mY])
-		else:
+		else:                                                  # rest of frames
 			stocEnv = np.vstack((stocEnv, np.array([mY])))
 		pin += H                                               # advance sound pointer
 	return stocEnv
@@ -39,7 +39,7 @@ def stochasticModelSynth(stocEnv, H):
 	N = H*2                                                  # FFT size    
 	L = stocEnv[:,0].size                                    # number of frames
 	y = np.zeros(L*H+2*H)                                    # initialize output array
-	ws = hanning(N)                                          # synthesis window
+	ws = 2*hanning(N)                                        # synthesis window
 	pout = 0                                                 # output sound pointer
 	for l in range(L):                    
 		mY = resample(stocEnv[l,:], H)                         # interpolate to original size
@@ -57,7 +57,7 @@ def stochasticModelSynth(stocEnv, H):
 def stochasticModel(x, H, stocf):
 	# Stochastic analysis/synthesis of a sound, one frame at a time
 	# x: input array sound, H: hop size, 
-	# stocf: decimation factor of mag spectrum for stochastic analysis
+	# stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
 	# returns y: output sound
 
 	N = H*2                                                  # FFT size
@@ -85,3 +85,4 @@ def stochasticModel(x, H, stocf):
 	y = np.delete(y, range(H))                               # delete half of first window which was added 
 	y = np.delete(y, range(y.size-H, y.size))                # delete half of last window which was added                                            # advance sound pointer
 	return y
+	

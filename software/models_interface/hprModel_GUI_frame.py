@@ -154,7 +154,7 @@ class HprModel_frame:
 		self.file_opt = options = {}
 		options['defaultextension'] = '.wav'
 		options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
-		options['initialdir'] = '../sounds/'
+		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
 	def preview_sound(self):

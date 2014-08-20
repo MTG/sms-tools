@@ -7,7 +7,32 @@ import harmonicModel as HM
 import dftModel as DFT
 import utilFunctions as UF
 import sineModel as SM
-  
+
+def hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope):
+	# Analysis of a sound using the harmonic plus residual model
+	# x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
+	# minSineDur: minimum duration of sinusoidal tracks
+	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; xr: residual signal
+
+	# perform harmonic analysis
+	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
+	Ns = 512
+	xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)    	# subtract sinusoids from original sound
+	return hfreq, hmag, hphase, xr
+	
+def hprModelSynth(hfreq, hmag, hphase, xr, N, H, fs):
+	# Synthesis of a sound using the sinusoidal plus residual model
+	# tfreq, tmag, tphase: sinusoidal frequencies, amplitudes and phases; stocEnv: stochastic envelope
+	# N: synthesis FFT size; H: hop size, fs: sampling rate 
+	# returns y: output sound, yh: harmonic component
+
+	yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)          # synthesize sinusoids
+	y = yh[:min(yh.size, xr.size)]+xr[:min(yh.size, xr.size)]      # sum sinusoids and residual components
+	return y, yh
+	
 def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
   # Analysis/synthesis of a sound using the harmonic plus residual model
   # x: input sound, fs: sampling rate, w: analysis window, 

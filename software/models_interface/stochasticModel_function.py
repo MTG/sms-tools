@@ -9,30 +9,23 @@ import utilFunctions as UF
 import stochasticModel as STM
 
 def main(inputFile='../../sounds/ocean.wav', H=256, stocf=.1):
-
-	# ------- analysis parameters -------------------
-
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# H: hop size
-	# stocf: decimation factor used for the stochastic approximation
-
-	# --------- computation -----------------  
+	# stocf: decimation factor used for the stochastic approximation (bigger than 0, maximum 1)
 
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute stochastic model                                          
-	mYst = STM.stochasticModelAnal(x, H, stocf)             
+	stocEnv = STM.stochasticModelAnal(x, H, stocf)             
 
 	# synthesize sound from stochastic model
-	y = STM.stochasticModelSynth(mYst, H)    
+	y = STM.stochasticModelSynth(stocEnv, H)    
 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModel.wav'
 
 	# write output sound
 	UF.wavwrite(y, fs, outputFile)               
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
@@ -47,10 +40,10 @@ def main(inputFile='../../sounds/ocean.wav', H=256, stocf=.1):
 
 	# plot stochastic representation
 	plt.subplot(3,1,2)
-	numFrames = int(mYst[:,0].size)
+	numFrames = int(stocEnv[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)                             
 	binFreq = np.arange(stocf*H)*float(fs)/(stocf*2*H)                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv))
 	plt.autoscale(tight=True)
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
