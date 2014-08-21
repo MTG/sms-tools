@@ -21,8 +21,10 @@ def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSin
 
 	# perform harmonic analysis
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
-	# perform stochastic analysis of residual
-	stocEnv = UF.stochasticResidualAnal(x, Ns, H, hfreq, hmag, hphase, fs, stocf)
+	# subtract sinusoids from original sound
+	xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
+	# perform stochastic analysis of residual    	
+	stocEnv = STM.stochasticModelAnal(xr, H, H*2, stocf)
 	return hfreq, hmag, hphase, stocEnv
 
 def hpsModelSynth(hfreq, hmag, hphase, stocEnv, N, H, fs):
@@ -32,7 +34,7 @@ def hpsModelSynth(hfreq, hmag, hphase, stocEnv, N, H, fs):
 	# returns y: output sound, yh: harmonic component, yst: stochastic component
 
 	yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)          # synthesize harmonics
-	yst = STM.stochasticModelSynth(stocEnv, H)                     # synthesize stochastic residual
+	yst = STM.stochasticModelSynth(stocEnv, H, H*2)                # synthesize stochastic residual
 	y = yh[:min(yh.size, yst.size)]+yst[:min(yh.size, yst.size)]   # sum harmonic and stochastic components
 	return y, yh, yst
 

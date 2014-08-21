@@ -290,15 +290,15 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	# sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
 	# returns xr: residual sound 
 
-	hN = N/2  
-	x = np.append(np.zeros(hN),x)                    # add zeros at beginning to center first window at sample 0
-	x = np.append(x,np.zeros(hN))                    # add zeros at the end to analyze last sample
-	bh = blackmanharris(N)                           # synthesis window
-	w = bh/ sum(bh)                                  # normalize synthesis window
-	sw = np.zeros(N)    
-	sw[hN-H:hN+H] = triang(2*H) / w[hN-H:hN+H]
-	L = sfreq[:,0].size                              # number of frames   
-	xr = np.zeros(x.size)                            # initialize output array
+	hN = N/2                                           # half of fft size
+	x = np.append(np.zeros(hN),x)                      # add zeros at beginning to center first window at sample 0
+	x = np.append(x,np.zeros(hN))                      # add zeros at the end to analyze last sample
+	bh = blackmanharris(N)                             # blackman harris window
+	w = bh/ sum(bh)                                    # normalize window
+	sw = np.zeros(N)                                   # initialize synthesis window
+	sw[hN-H:hN+H] = triang(2*H) / w[hN-H:hN+H]         # synthesis window
+	L = sfreq.shape[0]                                 # number of frames, this works if no sines 
+	xr = np.zeros(x.size)                              # initialize output array
 	pin = 0
 	for l in range(L):
 		xw = x[pin:pin+N]*w                            # window the input sound                               
@@ -308,8 +308,8 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 		xrw = np.real(fftshift(ifft(Xr)))              # inverse FFT
 		xr[pin:pin+N] += xrw*sw                        # overlap-add
 		pin += H                                       # advance sound pointer
-	xr = np.delete(xr, range(hN))                    # delete half of first window which was added in stftAnal
-	xr = np.delete(xr, range(xr.size-hN, xr.size))   # delete half of last window which was added in stftAnal
+	xr = np.delete(xr, range(hN))                      # delete half of first window which was added in stftAnal
+	xr = np.delete(xr, range(xr.size-hN, xr.size))     # delete half of last window which was added in stftAnal
 	return xr
 
 def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
@@ -319,15 +319,15 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
 	# fs: sampling rate; stocf: stochastic factor, used in the approximation
 	# returns stocEnv: stochastic approximation of residual 
 
-	hN = N/2  
+	hN = N/2                                              # half of fft size
 	x = np.append(np.zeros(hN),x)                         # add zeros at beginning to center first window at sample 0
 	x = np.append(x,np.zeros(hN))                         # add zeros at the end to analyze last sample
 	bh = blackmanharris(N)                                # synthesis window
 	w = bh/ sum(bh)                                       # normalize synthesis window
-	L = sfreq[:,0].size                                   # number of frames   
+	L = sfreq.shape[0]                                    # number of frames, this works if no sines
 	pin = 0
 	for l in range(L):
-		xw = x[pin:pin+N]*w                                 # window the input sound                               
+		xw = x[pin:pin+N] * w                               # window the input sound                               
 		X = fft(fftshift(xw))                               # compute FFT 
 		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines          
 		Xr = X-Yh                                           # subtract sines from original spectrum
@@ -337,7 +337,7 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
 			stocEnv = np.array([mXrenv])
 		else:                                               # rest of frames
 			stocEnv = np.vstack((stocEnv, np.array([mXrenv]))) 
-		pin += H                                       # advance sound pointer
+		pin += H                                            # advance sound pointer
 	return stocEnv
 
 

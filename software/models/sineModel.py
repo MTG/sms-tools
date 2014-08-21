@@ -69,6 +69,8 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
 	# minTrackLength: minimum duration of tracks in number of frames
 	# returns tfreqn: output frequency of tracks
 
+	if tfreq.shape[1] == 0:                                 # if no tracks return input
+		return tfreq
 	nFrames = tfreq[:,0].size                               # number of frames
 	nTracks = tfreq[0,:].size                               # number of tracks in a frame
 	for t in range(nTracks):                                # iterate over all tracks
@@ -182,7 +184,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	# returns y: output array sound
 	
 	hN = N/2                                                # half of FFT size for synthesis
-	L = tfreq[:,0].size                                     # number of frames
+	L = tfreq.shape[0]                                      # number of frames
 	pout = 0                                                # initialize output sound pointer         
 	ysize = H*(L+3)                                         # output sound size
 	y = np.zeros(ysize)                                     # initialize output array

@@ -8,19 +8,19 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 import utilFunctions as UF
 import stochasticModel as STM
 
-def main(inputFile='../../sounds/ocean.wav', H=256, stocf=.1):
+def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# H: hop size
+	# H: hop size, N: fft size
 	# stocf: decimation factor used for the stochastic approximation (bigger than 0, maximum 1)
 
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute stochastic model                                          
-	stocEnv = STM.stochasticModelAnal(x, H, stocf)             
+	stocEnv = STM.stochasticModelAnal(x, H, N, stocf)             
 
 	# synthesize sound from stochastic model
-	y = STM.stochasticModelSynth(stocEnv, H)    
+	y = STM.stochasticModelSynth(stocEnv, H, N)    
 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModel.wav'
 
@@ -42,7 +42,7 @@ def main(inputFile='../../sounds/ocean.wav', H=256, stocf=.1):
 	plt.subplot(3,1,2)
 	numFrames = int(stocEnv[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = np.arange(stocf*H)*float(fs)/(stocf*2*H)                      
+	binFreq = np.arange(stocf*N/2)*float(fs)/(stocf*N)                      
 	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv))
 	plt.autoscale(tight=True)
 	plt.xlabel('time (sec)')
