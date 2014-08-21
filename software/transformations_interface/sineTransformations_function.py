@@ -47,8 +47,6 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)
 
-	# --------- plotting --------------------
-
 	# create figure to show plots
 	plt.figure(figsize=(12, 9))
 
@@ -113,8 +111,6 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 	# write output sound 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_sineModelTransformation.wav'
 	UF.wavwrite(y,fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 6))

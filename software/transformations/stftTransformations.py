@@ -11,6 +11,7 @@ def stftFiltering(x, fs, w, N, H, filter):
 # x: input sound, w: analysis window, N: FFT size, H: hop size
 # filter: magnitude response of filter with frequency-magnitude pairs (in dB)
 # returns y: output sound
+
 	M = w.size                                     # size of analysis window
 	hM1 = int(math.floor((M+1)/2))                 # half analysis window size by rounding
 	hM2 = int(math.floor(M/2))                     # half analysis window size by floor
@@ -34,6 +35,7 @@ def stftFiltering(x, fs, w, N, H, filter):
 	y = np.delete(y, range(y.size-hM1, y.size))   # add zeros at the end to analyze last sample
 	return y
 
+
 def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 # Morph of two sounds using the STFT
 # x1, x2: input sounds, fs: sampling rate
@@ -41,6 +43,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 # smoothf: smooth factor of sound 2, bigger than 0 to max of 1, where 1 is no smothing,
 # balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
 # returns y: output sound
+
 	M1 = w1.size                                     # size of analysis window
 	hM1_1 = int(math.floor((M1+1)/2))                # half analysis window size by rounding
 	hM1_2 = int(math.floor(M1/2))                    # half analysis window size by floor
@@ -63,7 +66,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 		mX2, pX2 = DFT.dftAnal(x2[pin2-hM2_1:pin2+hM2_2], w2, N2)           # compute dft
 	#-----transformation-----
 		mX2smooth = resample(np.maximum(-200, mX2), mX2.size*smoothf)       # smooth spectrum of second sound
-		mX2 = resample(mX2smooth, N2/2) 
+		mX2 = resample(mX2smooth, N2/2)                                     # generate back the same size spectrum
 		mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 	#-----synthesis-----
 		y[pin1-hM1_1:pin1+hM1_2] += H1*DFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound

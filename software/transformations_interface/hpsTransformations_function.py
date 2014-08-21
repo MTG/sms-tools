@@ -13,7 +13,7 @@ import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
-	# analyze a sound with the harmonic plus stochastic model
+	# Analyze a sound with the harmonic plus stochastic model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size 
@@ -50,8 +50,6 @@ def analysis(inputFile='../../sounds/sax-phrase.wav', window='blackman', M=601, 
 	# write output sound 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModel.wav'
 	UF.wavwrite(y,fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
@@ -133,8 +131,6 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_hpsModelTransformation.wav'
 	UF.wavwrite(y,fs, outputFile)
 
-	# --------- plotting --------------------
-
 	# create figure to plot
 	plt.figure(figsize=(12, 6))
 
@@ -178,6 +174,6 @@ if __name__ == "__main__":
 	inputFile, fs, hfreq, hmag, mYst = analysis()
 
 	# transformation and synthesis
-	transformation_synthesis (inputFile, fs, hfreq, hmag, mYst)
+	transformation_synthesis(inputFile, fs, hfreq, hmag, mYst)
 
 	plt.show()

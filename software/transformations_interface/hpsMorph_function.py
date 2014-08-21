@@ -15,7 +15,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	minSineDur1=0.05, nH=60, minf01=200, maxf01=300, f0et1=10, harmDevSlope1=0.01, stocf=0.1,
 	inputFile2='../../sounds/soprano-E4.wav', window2='blackman', M2=901, N2=1024, t2=-100, 
 	minSineDur2=0.05, minf02=250, maxf02=500, f0et2=10, harmDevSlope2=0.01):
-	# analyze two sounds with the harmonic plus stochastic model
+	# Analyze two sounds with the harmonic plus stochastic model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size 
@@ -44,8 +44,6 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	# compute the harmonic plus stochastic models
 	hfreq1, hmag1, hphase1, stocEnv1 = HPS.hpsModelAnal(x1, fs1, w1, N1, H, t1, nH, minf01, maxf01, f0et1, harmDevSlope1, minSineDur1, Ns, stocf)
 	hfreq2, hmag2, hphase2, stocEnv2 = HPS.hpsModelAnal(x2, fs2, w2, N2, H, t2, nH, minf02, maxf02, f0et2, harmDevSlope2, minSineDur2, Ns, stocf)
-	
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
@@ -100,7 +98,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 
 def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2,
 	hfreqIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1]), hmagIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1]), stocIntp = np.array([0, 0, .1, 0, .9, 1, 1, 1])):
-	# transform the analysis values returned by the analysis function and synthesize the sound
+	# Transform the analysis values returned by the analysis function and synthesize the sound
 	# inputFile1: name of input file 1
 	# fs: sampling rate of input file	1
 	# hfreq1, hmag1, stocEnv1: hps representation of sound 1
@@ -124,8 +122,6 @@ def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2
 	# write output sound 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile1)[:-4] + '_hpsMorph.wav'
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))

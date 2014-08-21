@@ -35,8 +35,6 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModelTransformation.wav'
 	UF.wavwrite(y, fs, outputFile)
 
-	# --------- plotting --------------------
-
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
 

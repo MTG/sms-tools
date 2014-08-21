@@ -12,7 +12,7 @@ import stftTransformations as STFTT
 
 def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-male.wav', window1='hamming',  window2='hamming', 
 	M1=1024, M2=1024, N1=1024, N2=1024, H1=256, smoothf = .5, balancef = 0.2):
-	# function to perform a morph between two sounds
+	# Function to perform a morph between two sounds
 	# inputFile1: name of input sound file to be used as source
 	# inputFile2: name of input sound file to be used as filter
 	# window1 and window2: windows for both files
@@ -42,8 +42,6 @@ def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-ma
 	# write output sound
 	outputFile = 'output_sounds/' + os.path.basename(inputFile1)[:-4] + '_stftMorph.wav'
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
