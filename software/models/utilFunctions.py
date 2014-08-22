@@ -301,13 +301,13 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	xr = np.zeros(x.size)                              # initialize output array
 	pin = 0
 	for l in range(L):
-		xw = x[pin:pin+N]*w                            # window the input sound                               
-		X = fft(fftshift(xw))                          # compute FFT 
+		xw = x[pin:pin+N]*w                              # window the input sound                               
+		X = fft(fftshift(xw))                            # compute FFT 
 		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines          
-		Xr = X-Yh                                      # subtract sines from original spectrum
-		xrw = np.real(fftshift(ifft(Xr)))              # inverse FFT
-		xr[pin:pin+N] += xrw*sw                        # overlap-add
-		pin += H                                       # advance sound pointer
+		Xr = X-Yh                                        # subtract sines from original spectrum
+		xrw = np.real(fftshift(ifft(Xr)))                # inverse FFT
+		xr[pin:pin+N] += xrw*sw                          # overlap-add
+		pin += H                                         # advance sound pointer
 	xr = np.delete(xr, range(hN))                      # delete half of first window which was added in stftAnal
 	xr = np.delete(xr, range(xr.size-hN, xr.size))     # delete half of last window which was added in stftAnal
 	return xr

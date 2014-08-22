@@ -94,16 +94,15 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 		X2 = fft(fftbuffer)                                  # compute FFT for residual analysis
 	#-----synthesis-----
 		Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs)    # generate spec sines of harmonic component          
-		Xr = X2-Yh;                                          # get the residual complex spectrum
+		Xr = X2-Yh                                           # get the residual complex spectrum
 		mXr = 20 * np.log10(abs(Xr[:hNs]))                   # magnitude spectrum of residual
 		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf) # decimate the magnitude spectrum and avoid -Inf                     
 		stocEnv = resample(mXrenv, hNs)                      # interpolate to original size
-		stocEnv = 10**(stocEnv/20)                           # dB to linear magnitude  
 		pYst = 2*np.pi*np.random.rand(hNs)                   # generate phase random values
 		Yst = np.zeros(Ns, dtype = complex)
-		Yst[:hNs] = stocEnv * np.exp(1j*pYst)                # generate positive freq.
-		Yst[hNs+1:] = stocEnv[:0:-1] * np.exp(-1j*pYst[:0:-1])  # generate negative freq.
-		
+		Yst[:hNs] = 10**(stocEnv/20) * np.exp(1j*pYst)       # generate positive freq.
+		Yst[hNs+1:] = 10**(stocEnv[:0:-1]/20) * np.exp(-1j*pYst[:0:-1])  # generate negative freq.
+
 		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Yh))                         # inverse FFT of harmonic spectrum
 		yhw[:hNs-1] = fftbuffer[hNs+1:]                       # undo zero-phase window

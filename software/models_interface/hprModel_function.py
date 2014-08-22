@@ -1,4 +1,4 @@
-# function to call the main analysis/synthesis functions in software/models/hpsModel.py
+# function to call the main analysis/synthesis functions in software/models/hprModel.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +11,7 @@ import stft as STFT
 
 def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01):
+	# Perform analysis/synthesis using the harmonic plus residual model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
 	# M: analysis window size; N: fft size (power of two, bigger or equal than M)

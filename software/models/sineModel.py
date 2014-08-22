@@ -3,7 +3,7 @@
 
 import numpy as np
 from scipy.signal import blackmanharris, triang
-from scipy.fftpack import fft, ifft, fftshift
+from scipy.fftpack import ifft, fftshift
 import math
 import dftModel as DFT
 import utilFunctions as UF
@@ -120,9 +120,9 @@ def sineModel(x, fs, w, N, t):
 		ploc = UF.peakDetection(mX, t)                        # detect locations of peaks
 		pmag = mX[ploc]                                       # get the magnitude of the peaks
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
+		ipfreq = fs*iploc/float(N)                            # convert peak locations to Hertz
 	#-----synthesis-----
-		plocs = iploc*Ns/N                                    # adapt peak locations to size of synthesis FFT
-		Y = UF.genSpecSines(fs*plocs/N, ipmag, ipphase, Ns, fs)    # generate sines in the spectrum         
+		Y = UF.genSpecSines(ipfreq, ipmag, ipphase, Ns, fs)   # generate sines in the spectrum         
 		fftbuffer = np.real(ifft(Y))                          # compute inverse FFT
 		yw[:hNs-1] = fftbuffer[hNs+1:]                        # undo zero-phase window
 		yw[hNs-1:] = fftbuffer[:hNs+1] 
