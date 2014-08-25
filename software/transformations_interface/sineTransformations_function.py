@@ -120,7 +120,8 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 
 	plt.subplot(2,1,1)
 	# plot the transformed sinusoidal frequencies
-	tracks = ytfreq*np.less(ytfreq, maxplotfreq)
+	tracks = np.copy(ytfreq)
+	tracks = tracks*np.less(tracks, maxplotfreq)
 	tracks[tracks<=0] = np.nan
 	numFrames = int(tracks[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
