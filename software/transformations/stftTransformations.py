@@ -23,16 +23,16 @@ def stftFiltering(x, fs, w, N, H, filter):
 	y = np.zeros(x.size)                           # initialize output array
 	while pin<=pend:                               # while sound pointer is smaller than last sample      
 	#-----analysis-----  
-		x1 = x[pin-hM1:pin+hM2]                      # select one frame of input sound
-		mX, pX = DFT.dftAnal(x1, w, N)               # compute dft
+		x1 = x[pin-hM1:pin+hM2]                    # select one frame of input sound
+		mX, pX = DFT.dftAnal(x1, w, N)             # compute dft
 	#------transformation-----
-		mY = mX + filter                             # filter input magnitude spectrum
+		mY = mX + filter                           # filter input magnitude spectrum
 	#-----synthesis-----
 		y1 = DFT.dftSynth(mY, pX, M)                # compute idft
 		y[pin-hM1:pin+hM2] += H*y1                  # overlap-add to generate output sound
 		pin += H                                    # advance sound pointer
-	y = np.delete(y, range(hM2))                  # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1, y.size))   # add zeros at the end to analyze last sample
+	y = np.delete(y, range(hM2))                    # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1, y.size))     # add zeros at the end to analyze last sample
 	return y
 
 
@@ -47,7 +47,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 	M1 = w1.size                                     # size of analysis window
 	hM1_1 = int(math.floor((M1+1)/2))                # half analysis window size by rounding
 	hM1_2 = int(math.floor(M1/2))                    # half analysis window size by floor
-	L = int(x1.size/H1)															 # number of frames for x1
+	L = int(x1.size/H1)	                             # number of frames for x1
 	x1 = np.append(np.zeros(hM1_2),x1)               # add zeros at beginning to center first window at sample 0
 	x1 = np.append(x1,np.zeros(hM1_1))               # add zeros at the end to analyze last sample
 	pin1 = hM1_1                                     # initialize sound pointer in middle of analysis window       
@@ -72,6 +72,6 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 		y[pin1-hM1_1:pin1+hM1_2] += H1*DFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound
 		pin1 += H1                                     # advance sound pointer
 		pin2 += H2                                     # advance sound pointer
-	y = np.delete(y, range(hM1_2))                   # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1_1, y.size))    # add zeros at the end to analyze last sample
+	y = np.delete(y, range(hM1_2))                     # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1_1, y.size))      # add zeros at the end to analyze last sample
 	return y
