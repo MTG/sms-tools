@@ -9,7 +9,7 @@ def sineTimeScaling(sfreq, smag, timeScaling):
 	# timeScaling: scaling factors, in time-value pairs
 	# returns ysfreq, ysmag: frequencies and magnitudes of output sinusoidal tracks
 
-	L = sfreq[:,0].size                                    # number of input frames
+	L = sfreq.shape[0]                                     # number of input frames
 	maxInTime = max(timeScaling[::2])                      # maximum value used as input times
 	maxOutTime = max(timeScaling[1::2])                    # maximum value used in output times
 	outL = int(L*maxOutTime/maxInTime)                     # number of output frames
@@ -20,8 +20,8 @@ def sineTimeScaling(sfreq, smag, timeScaling):
 	ysfreq = sfreq[round(indexes[0]),:]                    # first output frame
 	ysmag = smag[round(indexes[0]),:]                      # first output frame
 	for l in indexes[1:]:                                  # generate frames for output sine tracks
-		ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))  
-		ysmag = np.vstack((ysmag, smag[round(l),:])) 
+		ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))    # get closest frame to scaling value
+		ysmag = np.vstack((ysmag, smag[round(l),:]))       # get closest frame to scaling value
 	return ysfreq, ysmag
 
 def sineFreqScaling(sfreq, freqScaling):
@@ -30,13 +30,13 @@ def sineFreqScaling(sfreq, freqScaling):
 	# freqScaling: scaling factors, in time-value pairs (value of 1 is no scaling)
 	# returns ysfreq: frequencies of output sinusoidal tracks
 
-	L = sfreq[:,0].size                                    # number of frames
+	L = sfreq.shape[0]                                     # number of input frames
 	# create interpolation object from the scaling values
 	freqScalingEnv = np.interp(np.arange(L), L*freqScaling[::2]/freqScaling[-2], freqScaling[1::2]) 
 	ysfreq = np.empty_like(sfreq)                          # create empty output matrix
 	for l in range(L):                                     # go through all frames
-		ind_valid = np.where(sfreq[l,:]!=0)[0]               # check if there are frequency values
-		if ind_valid.size == 0:                              # if no values go to next frame
+		ind_valid = np.where(sfreq[l,:]!=0)[0]             # check if there are frequency values
+		if ind_valid.size == 0:                            # if no values go to next frame
 			continue
 		ysfreq[l,ind_valid] = sfreq[l,ind_valid] * freqScalingEnv[l] # scale of frequencies 
 	return ysfreq

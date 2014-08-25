@@ -13,27 +13,27 @@ def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreserva
 	# fs: sampling rate of input sound
 	# returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
 
-	L = hfreq[:,0].size                                     # number of frames
-	nHarms = hfreq[0,:].size                                # number of harmonics
+	L = hfreq.shape[0]                                                   # number of frames
+	nHarms = hhfreq.shape[1]                                             # number of harmonics
 	# create interpolation object with the scaling values 
 	freqScalingEnv = np.interp(np.arange(L), L*freqScaling[::2]/freqScaling[-2], freqScaling[1::2]) 
 	# create interpolation object with the stretching values
 	freqStretchingEnv = np.interp(np.arange(L), L*freqStretching[::2]/freqStretching[-2], freqStretching[1::2]) 
-	yhfreq = np.zeros_like(hfreq)                           # create empty output matrix
-	yhmag = np.zeros_like(hmag)                             # create empty output matrix
-	for l in range(L):                                      # go through all frames
-		ind_valid = np.where(hfreq[l,:]!=0)[0]                # check if there are frequency values
-		if ind_valid.size == 0:                               # if no values go to next frame
+	yhfreq = np.zeros_like(hfreq)                                        # create empty output matrix
+	yhmag = np.zeros_like(hmag)                                          # create empty output matrix
+	for l in range(L):                                                   # go through all frames
+		ind_valid = np.where(hfreq[l,:]!=0)[0]                           # check if there are frequency values
+		if ind_valid.size == 0:                                          # if no values go to next frame
 			continue
-		if (timbrePreservation == 1) & (ind_valid.size > 1): # create spectral envelope
+		if (timbrePreservation == 1) & (ind_valid.size > 1):             # create spectral envelope
 			# values of harmonic locations to be considered for interpolation
 			x_vals = np.append(np.append(0, hfreq[l,ind_valid]),fs/2)     
 			# values of harmonic magnitudes to be considered for interpolation 
 			y_vals = np.append(np.append(hmag[l,0], hmag[l,ind_valid]),hmag[l,-1])     
 			specEnvelope = interp1d(x_vals, y_vals, kind = 'linear',bounds_error=False, fill_value=-100)
-		yhfreq[l,ind_valid] = hfreq[l,ind_valid] * freqScalingEnv[l]   # scale frequencies
+		yhfreq[l,ind_valid] = hfreq[l,ind_valid] * freqScalingEnv[l]     # scale frequencies
 		yhfreq[l,ind_valid] = yhfreq[l,ind_valid] * (freqStretchingEnv[l]**ind_valid) # stretch frequencies
-		if (timbrePreservation == 1) & (ind_valid.size > 1):           # if timbre preservation
+		if (timbrePreservation == 1) & (ind_valid.size > 1):             # if timbre preservation
 			yhmag[l,ind_valid] = specEnvelope(yhfreq[l,ind_valid])       # change amplitudes to maintain timbre
 		else:
 			yhmag[l,ind_valid] = hmag[l,ind_valid]                       # use same amplitudes as input

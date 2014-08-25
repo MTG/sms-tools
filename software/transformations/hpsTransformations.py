@@ -36,21 +36,21 @@ def hpsMorph(hfreq1, hmag1, stocEnv1, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIn
 	# stocIntp: interpolation factor between the stochastic representation of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
 	# returns yhfreq, yhmag, ystocEnv: hps output representation
 
-	L1 = hfreq1[:,0].size                                  # number of frames of sound 1
-	L2 =  hfreq2[:,0].size                                 # number of frames of sound 2
-	hfreqIntp[::2] = (L1-1)*hfreqIntp[::2]/hfreqIntp[-2]   # normalize input values
-	hmagIntp[::2] = (L1-1)*hmagIntp[::2]/hmagIntp[-2]      # normalize input values
-	stocIntp[::2] = (L1-1)*stocIntp[::2]/stocIntp[-2]      # normalize input values
+	L1 = hfreq1[:,0].size                                    # number of frames of sound 1
+	L2 =  hfreq2[:,0].size                                   # number of frames of sound 2
+	hfreqIntp[::2] = (L1-1)*hfreqIntp[::2]/hfreqIntp[-2]     # normalize input values
+	hmagIntp[::2] = (L1-1)*hmagIntp[::2]/hmagIntp[-2]        # normalize input values
+	stocIntp[::2] = (L1-1)*stocIntp[::2]/stocIntp[-2]        # normalize input values
 	hfreqIntpEnv = interp1d(hfreqIntp[0::2], hfreqIntp[1::2], fill_value=0)    # interpolation function
-	hfreqIndexes = hfreqIntpEnv(np.arange(L1))             # generate frame indexes for the output
+	hfreqIndexes = hfreqIntpEnv(np.arange(L1))               # generate frame indexes for the output
 	hmagIntpEnv = interp1d(hmagIntp[0::2], hmagIntp[1::2], fill_value=0)    # interpolation function
-	hmagIndexes = hmagIntpEnv(np.arange(L1))               # generate frame indexes for the output
+	hmagIndexes = hmagIntpEnv(np.arange(L1))                 # generate frame indexes for the output
 	stocIntpEnv = interp1d(stocIntp[0::2], stocIntp[1::2], fill_value=0)    # interpolation function
-	stocIndexes = stocIntpEnv(np.arange(L1))               # generate frame indexes for the output
-	yhfreq = np.zeros_like(hfreq1)                         # create empty output matrix
-	yhmag = np.zeros_like(hmag1)                           # create empty output matrix
-	ystocEnv = np.zeros_like(stocEnv1)                     # create empty output matrix
-	for l in range(L1):                                    # generate morphed frames
+	stocIndexes = stocIntpEnv(np.arange(L1))                 # generate frame indexes for the output
+	yhfreq = np.zeros_like(hfreq1)                           # create empty output matrix
+	yhmag = np.zeros_like(hmag1)                             # create empty output matrix
+	ystocEnv = np.zeros_like(stocEnv1)                       # create empty output matrix
+	for l in range(L1):                                      # generate morphed frames
 		if (hfreqIndexes[l] == 0):                           # if factor is 0 use values of sound 1
 			yhfreq[l,:] = hfreq1[l,:]
 			yhmag[l,:] = hmag1[l,:]

@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 import sineModel as SM 
 import stft as STFT
 import utilFunctions as UF
-import sineModelFreqScale as SMF
+import sineTransformations as SMT
 
 (fs, x) = UF.wavread('../../../sounds/orchestra.wav')
 w = np.hamming(801)
@@ -25,10 +25,10 @@ H = Ns/4
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 freqScaling = np.array([0, .8, 1, 1.2])           
-ytfreq = SMF.sineModelFreqScale(tfreq, freqScaling)
+ytfreq = SMT.sineFreqScaling(tfreq, freqScaling)
 y = SM.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
 mY, pY = STFT.stftAnal(y, fs, w, N, H)
-UF.play(y, fs)
+UF.wavwrite(y,fs, 'sineModelFreqScale-orchestra.wav')
 
 maxplotfreq = 4000.0
 
