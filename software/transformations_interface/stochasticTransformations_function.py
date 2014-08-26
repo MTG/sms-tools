@@ -23,13 +23,13 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	(fs, x) = UF.wavread(inputFile)
 
 	# perform stochastic analysis
-	mYst = STC.stochasticModelAnal(x, H, stocf)
+	mYst = STC.stochasticModelAnal(x, H, H*2, stocf)
 	        
 	# perform time scaling of stochastic representation
 	ystocEnv = STCT.stochasticTimeScale(mYst, timeScaling)
 	
 	# synthesize output sound
-	y = STC.stochasticModelSynth(ystocEnv, H)
+	y = STC.stochasticModelSynth(ystocEnv, H, H*2)
 	
 	# write output sound
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModelTransformation.wav'

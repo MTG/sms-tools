@@ -14,7 +14,7 @@ def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreserva
 	# returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
 
 	L = hfreq.shape[0]                                                   # number of frames
-	nHarms = hhfreq.shape[1]                                             # number of harmonics
+	nHarms = hfreq.shape[1]                                              # number of harmonics
 	# create interpolation object with the scaling values 
 	freqScalingEnv = np.interp(np.arange(L), L*freqScaling[::2]/freqScaling[-2], freqScaling[1::2]) 
 	# create interpolation object with the stretching values
