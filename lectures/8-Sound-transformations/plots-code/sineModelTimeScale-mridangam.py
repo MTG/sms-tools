@@ -32,10 +32,8 @@ timeScale = np.array([.01, .0, .03, .03, .335, .4, .355, .42, .671, .8, .691, .8
 ytfreq, ytmag = SMT.sineTimeScaling(tfreq, tmag, timeScale)
 y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
 mY, pY = STFT.stftAnal(y, fs, w, N, H)
-UF.play(y, fs)
 
-
-plt.figure(1, figsize=(9, 7))
+plt.figure(1, figsize=(12, 9))
 maxplotfreq = 4000.0
 plt.subplot(4,1,1)
 plt.plot(np.arange(x.size)/float(fs), x, 'b')

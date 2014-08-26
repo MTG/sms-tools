@@ -25,12 +25,12 @@ balancef = 0.5
 y = STFTT.stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
 L = int(x1.size/H1)
 H2 = int(x2.size/L)
-mX2 = STOC.stochasticModelAnal(x2,H2,smoothf)
+mX2 = STOC.stochasticModelAnal(x2,H2,H2*2, smoothf)
 mX,pX = STFT.stftAnal(x1, fs, w1, N1, H1)
 mY,pY = STFT.stftAnal(y, fs, w1, N1, H1)
 maxplotfreq = 10000.0
 
-plt.figure(1, figsize=(9, 7))
+plt.figure(1, figsize=(12, 9))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
 frmTime = H1*np.arange(numFrames)/float(fs)                             

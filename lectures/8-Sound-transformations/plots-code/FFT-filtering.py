@@ -14,7 +14,7 @@ N = 2048
 start = 1.0*fs
 x1 = x[start:start+N]
 
-plt.figure(1, figsize=(9, 7))
+plt.figure(1, figsize=(12, 9))
 plt.subplot(321)
 plt.plot(np.arange(N)/float(fs), x1*np.hamming(N), 'b', lw=1.5)
 plt.axis([0, N/float(fs), min(x1*np.hamming(N)), max(x1*np.hamming(N))])

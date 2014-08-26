@@ -21,7 +21,7 @@ y = STFTT.stftFiltering(x, fs, w, N, H, filt)
 mX,pX = STFT.stftAnal(x, fs, w, N, H)
 mY,pY = STFT.stftAnal(y, fs, w, N, H)
 
-plt.figure(1, figsize=(9.5, 7))
+plt.figure(1, figsize=(12, 9))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
