@@ -23,16 +23,16 @@ def stftFiltering(x, fs, w, N, H, filter):
 	y = np.zeros(x.size)                           # initialize output array
 	while pin<=pend:                               # while sound pointer is smaller than last sample      
 	#-----analysis-----  
-		x1 = x[pin-hM1:pin+hM2]                    # select one frame of input sound
-		mX, pX = DFT.dftAnal(x1, w, N)             # compute dft
+		x1 = x[pin-hM1:pin+hM2]                      # select one frame of input sound
+		mX, pX = DFT.dftAnal(x1, w, N)               # compute dft
 	#------transformation-----
-		mY = mX + filter                           # filter input magnitude spectrum
+		mY = mX + filter                             # filter input magnitude spectrum
 	#-----synthesis-----
-		y1 = DFT.dftSynth(mY, pX, M)                # compute idft
-		y[pin-hM1:pin+hM2] += H*y1                  # overlap-add to generate output sound
-		pin += H                                    # advance sound pointer
-	y = np.delete(y, range(hM2))                    # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1, y.size))     # add zeros at the end to analyze last sample
+		y1 = DFT.dftSynth(mY, pX, M)                 # compute idft
+		y[pin-hM1:pin+hM2] += H*y1                   # overlap-add to generate output sound
+		pin += H                                     # advance sound pointer
+	y = np.delete(y, range(hM2))                   # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1, y.size))    # add zeros at the end to analyze last sample
 	return y
 
 
@@ -72,6 +72,6 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 		y[pin1-hM1_1:pin1+hM1_2] += H1*DFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound
 		pin1 += H1                                     # advance sound pointer
 		pin2 += H2                                     # advance sound pointer
-	y = np.delete(y, range(hM1_2))                     # delete half of first window which was added in stftAnal
-	y = np.delete(y, range(y.size-hM1_1, y.size))      # add zeros at the end to analyze last sample
+	y = np.delete(y, range(hM1_2))                   # delete half of first window which was added in stftAnal
+	y = np.delete(y, range(y.size-hM1_1, y.size))    # add zeros at the end to analyze last sample
 	return y

@@ -197,10 +197,10 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	lastytfreq = tfreq[0,:]                                 # initialize synthesis frequencies
 	ytphase = 2*np.pi*np.random.rand(tfreq[0,:].size)       # initialize synthesis phases 
 	for l in range(L):                                      # iterate over all frames
-		if (tphase.size > 0):                               # if no phases generate them
+		if (tphase.size > 0):                                 # if no phases generate them
 			ytphase = tphase[l,:] 
 		else:
-			ytphase += (np.pi*(lastytfreq+tfreq[l,:])/fs)*H   # propagate phases
+			ytphase += (np.pi*(lastytfreq+tfreq[l,:])/fs)*H     # propagate phases
 		Y = UF.genSpecSines(tfreq[l,:], tmag[l,:], ytphase, N, fs)  # generate sines in the spectrum         
 		lastytfreq = tfreq[l,:]                               # save frequency for phase propagation
 		ytphase = ytphase % (2*np.pi)                         # make phase inside 2*pi

@@ -1,4 +1,4 @@
-# function call to the transformation functions of relevance for the hpsModel
+# function call to the transformation functions of relevance for the sineModel
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ import sineTransformations as ST
 import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=2048, t=-90, 
-	minSineDur=0.1, maxnSines=150, freqDevOffset=20, freqDevSlope=0.02):
+	minSineDur=0.01, maxnSines=150, freqDevOffset=20, freqDevSlope=0.02):
 	# Analyze a sound with the sine model
 	# inputFile: input sound file (monophonic with sampling rate of 44100)
 	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	

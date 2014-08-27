@@ -12,7 +12,7 @@ from hprModel_GUI_frame import *
 from hpsModel_GUI_frame import *
 
 root = Tk( ) 
-root.title('sms-tools GUI')
+root.title('sms-tools models GUI')
 nb = notebook(root, TOP) # make a few diverse frames (panels), each using the NB as 'master': 
 
 # uses the notebook's frame

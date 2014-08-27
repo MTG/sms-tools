@@ -9,7 +9,7 @@ from hpsTransformations_GUI_frame import *
 from hpsMorph_GUI_frame import *
 
 root = Tk( ) 
-root.title('sms-tools GUI')
+root.title('sms-tools transformations GUI')
 nb = notebook(root, TOP) # make a few diverse frames (panels), each using the NB as 'master': 
 
 # uses the notebook's frame

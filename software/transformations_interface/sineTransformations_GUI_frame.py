@@ -81,7 +81,7 @@ class SineTransformations_frame:
 		self.minSineDur["width"] = 5
 		self.minSineDur.grid(row=2, column=0, sticky=W, padx=(87,5), pady=(10,2))
 		self.minSineDur.delete(0, END)
-		self.minSineDur.insert(0, "0.1")
+		self.minSineDur.insert(0, "0.01")
 
 		#MAX NUMBER OF SINES
 		maxnSines_label = "maxnSines:"
