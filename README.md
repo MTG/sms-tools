@@ -4,6 +4,9 @@ sms-tools
 <p>Spectral modeling analysis and synthesis tools for sound and music applications written in python
 and C, plus complementary teaching material.</p>
 
+How to use
+----------
+
 <p>In order to use these software tools you have to install version 2.7 of python and the following modules: ipython, numpy, matplotlib, scipy, pygame, and cython. 
 </p>
 <p>
@@ -37,3 +40,14 @@ $ python transformations_GUI.py </code>
 
 <p>All this code is used in several classes that I teach. The slides
 and demo code used in class are in the lectures directory.</p>
+
+
+Content
+-------
+
+This repository include all the software tools in the <code> software </code> directory, the lecture material in the <code>lecture</code> directory and the sounds use for the examples and comming from <code>http://freesound.org</code> in the <code>sounds</code> directory.
+
+License
+-------
+All the software is distributed with the Affero GP licence, the slides of the lectures and sounds with the Creative Commons Attribution-Noncommercial-Share Alike license.
+
