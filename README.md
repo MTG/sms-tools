@@ -8,7 +8,7 @@ How to use
 
 In order to use these tools you have to install version 2.7.* of python and the following modules: ipython, numpy, matplotlib, scipy, pygame, and cython. 
 
-In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing on the Terminal:
+In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
 
 <code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy python-pygame cython</code>
 
