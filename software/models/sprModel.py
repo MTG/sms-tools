@@ -10,13 +10,15 @@ import sineModel as SM
 import utilFunctions as UF
   
 def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope):
-	# Analysis of a sound using the sinusoidal plus residual model
-	# x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# maxnSines: maximum number of parallel sinusoids
-	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
-	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
-	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; xr: residual signal
+	"""
+	Analysis of a sound using the sinusoidal plus residual model
+	x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
+	minSineDur: minimum duration of sinusoidal tracks
+	maxnSines: maximum number of parallel sinusoids
+	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+	freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
+	returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; xr: residual signal
+	"""
 
 	# perform sinusoidal analysis
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
@@ -25,20 +27,24 @@ def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDe
 	return tfreq, tmag, tphase, xr
 	
 def sprModelSynth(tfreq, tmag, tphase, xr, N, H, fs):
-	# Synthesis of a sound using the sinusoidal plus residual model
-	# tfreq, tmag, tphase: sinusoidal frequencies, amplitudes and phases; stocEnv: stochastic envelope
-	# N: synthesis FFT size; H: hop size, fs: sampling rate 
-	# returns y: output sound, y: sinusoidal component
+	"""
+	Synthesis of a sound using the sinusoidal plus residual model
+	tfreq, tmag, tphase: sinusoidal frequencies, amplitudes and phases; stocEnv: stochastic envelope
+	N: synthesis FFT size; H: hop size, fs: sampling rate 
+	returns y: output sound, y: sinusoidal component
+	"""
 
 	ys = SM.sineModelSynth(tfreq, tmag, tphase, N, H, fs)          # synthesize sinusoids
 	y = ys[:min(ys.size, xr.size)]+xr[:min(ys.size, xr.size)]   # sum sinusoids and residual components
 	return y, ys
 	
 def sprModel(x, fs, w, N, t):
-  # Analysis/synthesis of a sound using the sinusoidal plus residual model, one frame at a time
-  # x: input sound, fs: sampling rate, w: analysis window, 
-  # N: FFT size (minimum 512), t: threshold in negative dB, 
-  # returns y: output sound, ys: sinusoidal component, xr: residual component
+	"""
+	Analysis/synthesis of a sound using the sinusoidal plus residual model, one frame at a time
+	x: input sound, fs: sampling rate, w: analysis window, 
+	N: FFT size (minimum 512), t: threshold in negative dB, 
+	returns y: output sound, ys: sinusoidal component, xr: residual component
+	"""
 
 	hN = N/2                                                      # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding

@@ -14,20 +14,22 @@ import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
 	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
-	# Analyze a sound with the harmonic model
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics
-	# minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound
-	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
-	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
-	# returns inputFile: input file name; fs: sampling rate of input file,
-	#         tfreq, tmag: sinusoidal frequencies and magnitudes
+	"""
+	Analyze a sound with the harmonic model
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size 
+	N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks 
+	minSineDur: minimum duration of sinusoidal tracks
+	nH: maximum number of harmonics
+	minf0: minimum fundamental frequency in sound
+	maxf0: maximum fundamental frequency in sound
+	f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	returns inputFile: input file name; fs: sampling rate of input file, tfreq, 
+						tmag: sinusoidal frequencies and magnitudes
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -94,14 +96,16 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array([0, 2.0, 1, .3]), 
 	freqStretching = np.array([0, 1, 1, 1.5]), timbrePreservation = 1, 
 	timeScaling = np.array([0, .0, .671, .671, 1.978, 1.978+1.0])):
-	# Transform the analysis values returned by the analysis function and synthesize the sound
-	# inputFile: name of input file
-	# fs: sampling rate of input file	
-	# tfreq, tmag: sinusoidal frequencies and magnitudes
-	# freqScaling: frequency scaling factors, in time-value pairs
-	# freqStretchig: frequency stretching factors, in time-value pairs
-	# timbrePreservation: 1 preserves original timbre, 0 it does not
-	# timeScaling: time scaling factors, in time-value pairs
+	"""
+	Transform the analysis values returned by the analysis function and synthesize the sound
+	inputFile: name of input file
+	fs: sampling rate of input file	
+	tfreq, tmag: sinusoidal frequencies and magnitudes
+	freqScaling: frequency scaling factors, in time-value pairs
+	freqStretchig: frequency stretching factors, in time-value pairs
+	timbrePreservation: 1 preserves original timbre, 0 it does not
+	timeScaling: time scaling factors, in time-value pairs
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512

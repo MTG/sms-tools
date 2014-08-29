@@ -12,12 +12,14 @@ import stochasticModel as STM
 import utilFunctions as UF
 
 def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf):
-	# Analysis of a sound using the harmonic plus stochastic model
-	# x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
-	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
-	# maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
-	# harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
-	# returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; stocEnv: stochastic residual
+	"""
+	Analysis of a sound using the harmonic plus stochastic model
+	x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB, 
+	nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
+	maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
+	harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
+	returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; stocEnv: stochastic residual
+	"""
 
 	# perform harmonic analysis
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
@@ -28,10 +30,12 @@ def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSin
 	return hfreq, hmag, hphase, stocEnv
 
 def hpsModelSynth(hfreq, hmag, hphase, stocEnv, N, H, fs):
-	# Synthesis of a sound using the harmonic plus stochastic model
-	# hfreq, hmag: harmonic frequencies and amplitudes; stocEnv: stochastic envelope
-	# Ns: synthesis FFT size; H: hop size, fs: sampling rate 
-	# returns y: output sound, yh: harmonic component, yst: stochastic component
+	"""
+	Synthesis of a sound using the harmonic plus stochastic model
+	hfreq, hmag: harmonic frequencies and amplitudes; stocEnv: stochastic envelope
+	Ns: synthesis FFT size; H: hop size, fs: sampling rate 
+	returns y: output sound, yh: harmonic component, yst: stochastic component
+	"""
 
 	yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)          # synthesize harmonics
 	yst = STM.stochasticModelSynth(stocEnv, H, H*2)                # synthesize stochastic residual
@@ -40,11 +44,13 @@ def hpsModelSynth(hfreq, hmag, hphase, stocEnv, N, H, fs):
 
 
 def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
-	# Analysis/synthesis of a sound using the harmonic plus stochastic model, one frame at a time, no harmonic tracking
-	# x: input sound; fs: sampling rate, w: analysis window; N: FFT size (minimum 512), t: threshold in negative dB, 
-	# nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz; maxf0: maximim f0 frequency in Hz, 
-	# f0et: error threshold in the f0 detection (ex: 5); stocf: decimation factor of mag spectrum for stochastic analysis
-	# returns y: output sound, yh: harmonic component, yst: stochastic component
+	"""
+	Analysis/synthesis of a sound using the harmonic plus stochastic model, one frame at a time, no harmonic tracking
+	x: input sound; fs: sampling rate, w: analysis window; N: FFT size (minimum 512), t: threshold in negative dB, 
+	nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz; maxf0: maximim f0 frequency in Hz, 
+	f0et: error threshold in the f0 detection (ex: 5); stocf: decimation factor of mag spectrum for stochastic analysis
+	returns y: output sound, yh: harmonic component, yst: stochastic component
+	"""
 
 	hN = N/2                                               # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                    # half analysis window size by rounding

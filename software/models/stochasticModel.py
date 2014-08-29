@@ -7,11 +7,13 @@ from scipy.fftpack import fft, ifft
 import utilFunctions as UF
 
 def stochasticModelAnal(x, H, N, stocf):
-	# Stochastic analysis of a sound
-	# x: input array sound, H: hop size, N: fftsize
-	# stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
-	# returns stocEnv: stochastic envelope
-  
+	"""
+	Stochastic analysis of a sound
+	x: input array sound, H: hop size, N: fftsize
+	stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
+	returns stocEnv: stochastic envelope
+	"""
+	
 	hN = N/2                                                # half of fft size
 	w = hanning(N)                                          # analysis window
 	x = np.append(np.zeros(hN),x)                           # add zeros at beginning to center first window at sample 0
@@ -31,9 +33,11 @@ def stochasticModelAnal(x, H, N, stocf):
 	return stocEnv
 
 def stochasticModelSynth(stocEnv, H, N):
-	# Stochastic synthesis of a sound
-	# stocEnv: stochastic envelope; H: hop size; N: fft size
-	# returns y: output sound
+	"""
+	Stochastic synthesis of a sound
+	stocEnv: stochastic envelope; H: hop size; N: fft size
+	returns y: output sound
+	"""
  
 	hN = N/2                                                 # half of FFT size for synthesis
 	L = stocEnv[:,0].size                                    # number of frames
@@ -55,10 +59,12 @@ def stochasticModelSynth(stocEnv, H, N):
 	return y
 
 def stochasticModel(x, H, N, stocf):
-	# Stochastic analysis/synthesis of a sound, one frame at a time
-	# x: input array sound, H: hop size, N: fft size 
-	# stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
-	# returns y: output sound
+	"""
+	Stochastic analysis/synthesis of a sound, one frame at a time
+	x: input array sound, H: hop size, N: fft size 
+	stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
+	returns y: output sound
+	"""
 
 	hN = N/2                                                 # half of FFT size for synthesis
 	w = hanning(N)                                           # analysis/synthesis window

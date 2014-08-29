@@ -4,10 +4,12 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
-	# Time scaling of the harmonic plus stochastic representation
-	# hfreq, hmag: harmonic frequencies and magnitudes, stocEnv: residual envelope
-	# timeScaling: scaling factors, in time-value pairs
-	# returns yhfreq, yhmag, ystocEnv: hps output representation
+	"""
+	Time scaling of the harmonic plus stochastic representation
+	hfreq, hmag: harmonic frequencies and magnitudes, stocEnv: residual envelope
+	timeScaling: scaling factors, in time-value pairs
+	returns yhfreq, yhmag, ystocEnv: hps output representation
+	"""
 
 	L = hfreq[:,0].size                                    # number of input frames
 	maxInTime = max(timeScaling[::2])                      # maximum value used as input times
@@ -28,13 +30,15 @@ def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	
 	
 def hpsMorph(hfreq1, hmag1, stocEnv1, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp):
-	# Morph between two sounds using the harmonic plus stochastic model
-	# hfreq1, hmag1, stocEnv1: hps representation of sound 1
-	# hfreq2, hmag2, stocEnv2: hps representation of sound 2
-	# hfreqIntp: interpolation factor between the harmonic frequencies of the two sounds, 0 is sound 1 and 1 is sound 2 (time,value pairs)
-	# hmagIntp: interpolation factor between the harmonic magnitudes of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
-	# stocIntp: interpolation factor between the stochastic representation of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
-	# returns yhfreq, yhmag, ystocEnv: hps output representation
+	"""
+	Morph between two sounds using the harmonic plus stochastic model
+	hfreq1, hmag1, stocEnv1: hps representation of sound 1
+	hfreq2, hmag2, stocEnv2: hps representation of sound 2
+	hfreqIntp: interpolation factor between the harmonic frequencies of the two sounds, 0 is sound 1 and 1 is sound 2 (time,value pairs)
+	hmagIntp: interpolation factor between the harmonic magnitudes of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
+	stocIntp: interpolation factor between the stochastic representation of the two sounds, 0 is sound 1 and 1 is sound 2  (time,value pairs)
+	returns yhfreq, yhmag, ystocEnv: hps output representation
+	"""
 
 	L1 = hfreq1[:,0].size                                    # number of frames of sound 1
 	L2 =  hfreq2[:,0].size                                   # number of frames of sound 2

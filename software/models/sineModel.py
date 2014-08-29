@@ -9,12 +9,14 @@ import dftModel as DFT
 import utilFunctions as UF
 
 def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01):
-	# Tracking sinusoids from one frame to the next
-	# pfreq, pmag, pphase: frequencies and magnitude of current frame
-	# tfreq: frequencies of incoming tracks from previous frame
-	# freqDevOffset: minimum frequency deviation at 0Hz 
-	# freqDevSlope: slope increase of minimum frequency deviation
-	# returns tfreqn, tmagn, tphasen: frequency, magnitude and phase of tracks
+	"""
+	Tracking sinusoids from one frame to the next
+	pfreq, pmag, pphase: frequencies and magnitude of current frame
+	tfreq: frequencies of incoming tracks from previous frame
+	freqDevOffset: minimum frequency deviation at 0Hz 
+	freqDevSlope: slope increase of minimum frequency deviation
+	returns tfreqn, tmagn, tphasen: frequency, magnitude and phase of tracks
+	"""
 
 	tfreqn = np.zeros(tfreq.size)                              # initialize array for output frequencies
 	tmagn = np.zeros(tfreq.size)                               # initialize array for output magnitudes
@@ -64,10 +66,12 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
 	return tfreqn, tmagn, tphasen
 
 def cleaningSineTracks(tfreq, minTrackLength=3):
-	# Delete short fragments of a collection of sinusoidal tracks 
-	# tfreq: frequency of tracks
-	# minTrackLength: minimum duration of tracks in number of frames
-	# returns tfreqn: output frequency of tracks
+	"""
+	Delete short fragments of a collection of sinusoidal tracks 
+	tfreq: frequency of tracks
+	minTrackLength: minimum duration of tracks in number of frames
+	returns tfreqn: output frequency of tracks
+	"""
 
 	if tfreq.shape[1] == 0:                                 # if no tracks return input
 		return tfreq
@@ -91,9 +95,11 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
 	
 
 def sineModel(x, fs, w, N, t):
-	# Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
-	# x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB 
-	# returns y: output array sound
+	"""
+	Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
+	x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB 
+	returns y: output array sound
+	"""
 
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
@@ -131,11 +137,13 @@ def sineModel(x, fs, w, N, t):
 	return y
 
 def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOffset=20, freqDevSlope=0.01):
-	# Analysis of a sound using the sinusoidal model with sine tracking
-	# x: input array sound, w: analysis window, N: size of complex spectrum, H: hop-size, t: threshold in negative dB
-	# maxnSines: maximum number of sines per frame, minSineDur: minimum duration of sines in seconds
-	# freqDevOffset: minimum frequency deviation at 0Hz, freqDevSlope: slope increase of minimum frequency deviation
-	# returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoidal tracks
+	"""
+	Analysis of a sound using the sinusoidal model with sine tracking
+	x: input array sound, w: analysis window, N: size of complex spectrum, H: hop-size, t: threshold in negative dB
+	maxnSines: maximum number of sines per frame, minSineDur: minimum duration of sines in seconds
+	freqDevOffset: minimum frequency deviation at 0Hz, freqDevSlope: slope increase of minimum frequency deviation
+	returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoidal tracks
+	"""
 
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
@@ -178,10 +186,12 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
 	return xtfreq, xtmag, xtphase
 
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
-	# Synthesis of a sound using the sinusoidal model
-	# tfreq,tmag,tphase: frequencies, magnitudes and phases of sinusoids
-	# N: synthesis FFT size, H: hop size, fs: sampling rate
-	# returns y: output array sound
+	"""
+	Synthesis of a sound using the sinusoidal model
+	tfreq,tmag,tphase: frequencies, magnitudes and phases of sinusoids
+	N: synthesis FFT size, H: hop size, fs: sampling rate
+	returns y: output array sound
+	"""
 	
 	hN = N/2                                                # half of FFT size for synthesis
 	L = tfreq.shape[0]                                      # number of frames

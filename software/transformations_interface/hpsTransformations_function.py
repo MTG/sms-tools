@@ -13,21 +13,23 @@ import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
-	# Analyze a sound with the harmonic plus stochastic model
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics
-	# minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound
-	# f0et: maximum error accepted in f0 detection algorithm                                                                                            
-	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
-	# stocf: decimation factor used for the stochastic approximation
-	# returns inputFile: input file name; fs: sampling rate of input file,
-	#         hfreq, hmag: harmonic frequencies, magnitude; mYst: stochastic residual
+	"""
+	Analyze a sound with the harmonic plus stochastic model
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size 
+	N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks 
+	minSineDur: minimum duration of sinusoidal tracks
+	nH: maximum number of harmonics
+	minf0: minimum fundamental frequency in sound
+	maxf0: maximum fundamental frequency in sound
+	f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	stocf: decimation factor used for the stochastic approximation
+	returns inputFile: input file name; fs: sampling rate of input file,
+	        hfreq, hmag: harmonic frequencies, magnitude; mYst: stochastic residual
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -102,15 +104,17 @@ def analysis(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M
 def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.array([0, 1.2, 2.01, 1.2, 2.679, .7, 3.146, .7]), 
 	freqStretching = np.array([0, 1, 2.01, 1, 2.679, 1.5, 3.146, 1.5]), timbrePreservation = 1, 
 	timeScaling = np.array([0, 0, 2.138, 2.138-1.0, 3.146, 3.146])):
-	# transform the analysis values returned by the analysis function and synthesize the sound
-	# inputFile: name of input file
-	# fs: sampling rate of input file	
-	# hfreq, hmag: harmonic frequencies and magnitudes
-	# mYst: stochastic residual
-	# freqScaling: frequency scaling factors, in time-value pairs (value of 1 no scaling)
-	# freqStretchig: frequency stretching factors, in time-value pairs (value of 1 no stretching)
-	# timbrePreservation: 1 preserves original timbre, 0 it does not
-	# timeScaling: time scaling factors, in time-value pairs
+	"""
+	transform the analysis values returned by the analysis function and synthesize the sound
+	inputFile: name of input file
+	fs: sampling rate of input file	
+	hfreq, hmag: harmonic frequencies and magnitudes
+	mYst: stochastic residual
+	freqScaling: frequency scaling factors, in time-value pairs (value of 1 no scaling)
+	freqStretchig: frequency stretching factors, in time-value pairs (value of 1 no stretching)
+	timbrePreservation: 1 preserves original timbre, 0 it does not
+	timeScaling: time scaling factors, in time-value pairs
+	"""
 	
 	# size of fft used in synthesis
 	Ns = 512

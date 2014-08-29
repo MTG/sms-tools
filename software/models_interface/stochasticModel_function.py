@@ -9,9 +9,11 @@ import utilFunctions as UF
 import stochasticModel as STM
 
 def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# H: hop size, N: fft size
-	# stocf: decimation factor used for the stochastic approximation (bigger than 0, maximum 1)
+	"""
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	H: hop size, N: fft size
+	stocf: decimation factor used for the stochastic approximation (bigger than 0, maximum 1)
+	"""
 
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)

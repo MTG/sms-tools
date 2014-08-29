@@ -5,13 +5,15 @@ from scipy.signal import resample
 from scipy.interpolate import interp1d
 
 def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreservation, fs):
-	# Frequency scaling of the harmonics of a sound
-	# hfreq, hmag: frequencies and magnitudes of input harmonics
-	# freqScaling: scaling factors, in time-value pairs (value of 1 no scaling)
-	# freqStretching: stretching factors, in time-value pairs (value of 1 no stretching)
-	# timbrePreservation: 0  no timbre preservation, 1 timbre preservation 
-	# fs: sampling rate of input sound
-	# returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
+	"""
+	Frequency scaling of the harmonics of a sound
+	hfreq, hmag: frequencies and magnitudes of input harmonics
+	freqScaling: scaling factors, in time-value pairs (value of 1 no scaling)
+	freqStretching: stretching factors, in time-value pairs (value of 1 no stretching)
+	timbrePreservation: 0  no timbre preservation, 1 timbre preservation 
+	fs: sampling rate of input sound
+	returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
+	"""
 
 	L = hfreq.shape[0]                                                   # number of frames
 	nHarms = hfreq.shape[1]                                              # number of harmonics

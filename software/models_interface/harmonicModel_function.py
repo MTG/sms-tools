@@ -11,14 +11,16 @@ import harmonicModel as HM
 
 def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
 	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
-	# Analysis and synthesis using the harmonic model
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
-	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics could have higher allowed deviation
+	"""
+	Analysis and synthesis using the harmonic model
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics could have higher allowed deviation
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512

@@ -9,12 +9,14 @@ import utilFunctions as UF
 import stft as STFT
 
 def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N = 1024, H = 512):
-	# analysis/synthesis using the STFT
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)  
-	# H: hop size (at least 1/2 of analysis window size to have good overlap-add)               
+	"""
+	analysis/synthesis using the STFT
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size 
+	N: fft size (power of two, bigger or equal than M)  
+	H: hop size (at least 1/2 of analysis window size to have good overlap-add)               
+	"""
 
 	# --------- computation -----------------
 

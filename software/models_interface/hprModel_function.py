@@ -11,14 +11,16 @@ import stft as STFT
 
 def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01):
-	# Perform analysis/synthesis using the harmonic plus residual model
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
-	# nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
-	# maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
-	# harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	"""
+	Perform analysis/synthesis using the harmonic plus residual model
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
+	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512

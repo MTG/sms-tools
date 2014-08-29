@@ -7,10 +7,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 import dftModel as DFT
 
 def stftFiltering(x, fs, w, N, H, filter):
-# Apply a filter to a sound by using the STFT
-# x: input sound, w: analysis window, N: FFT size, H: hop size
-# filter: magnitude response of filter with frequency-magnitude pairs (in dB)
-# returns y: output sound
+	"""
+	Apply a filter to a sound by using the STFT
+	x: input sound, w: analysis window, N: FFT size, H: hop size
+	filter: magnitude response of filter with frequency-magnitude pairs (in dB)
+	returns y: output sound
+	"""
 
 	M = w.size                                     # size of analysis window
 	hM1 = int(math.floor((M+1)/2))                 # half analysis window size by rounding
@@ -37,12 +39,14 @@ def stftFiltering(x, fs, w, N, H, filter):
 
 
 def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
-# Morph of two sounds using the STFT
-# x1, x2: input sounds, fs: sampling rate
-# w1, w2: analysis windows, N1, N2: FFT sizes, H1: hop size
-# smoothf: smooth factor of sound 2, bigger than 0 to max of 1, where 1 is no smothing,
-# balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
-# returns y: output sound
+	"""
+	Morph of two sounds using the STFT
+	x1, x2: input sounds, fs: sampling rate
+	w1, w2: analysis windows, N1, N2: FFT sizes, H1: hop size
+	smoothf: smooth factor of sound 2, bigger than 0 to max of 1, where 1 is no smothing,
+	balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
+	returns y: output sound
+	"""
 
 	M1 = w1.size                                     # size of analysis window
 	hM1_1 = int(math.floor((M1+1)/2))                # half analysis window size by rounding

@@ -11,15 +11,17 @@ import stft as STFT
 
 def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, 
 	minSineDur=0.02, maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size 
-	# N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks 
-	# minSineDur: minimum duration of sinusoidal tracks
-	# maxnSines: maximum number of parallel sinusoids
-	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
-	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
+	"""
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size 
+	N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks 
+	minSineDur: minimum duration of sinusoidal tracks
+	maxnSines: maximum number of parallel sinusoids
+	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+	freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512

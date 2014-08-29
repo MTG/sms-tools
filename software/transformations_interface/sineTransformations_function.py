@@ -12,16 +12,18 @@ import utilFunctions as UF
 
 def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=2048, t=-90, 
 	minSineDur=0.01, maxnSines=150, freqDevOffset=20, freqDevSlope=0.02):
-	# Analyze a sound with the sine model
-	# inputFile: input sound file (monophonic with sampling rate of 44100)
-	# window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
-	# M: analysis window size; N: fft size (power of two, bigger or equal than M)
-	# t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
-	# maxnSines: maximum number of parallel sinusoids
-	# freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
-	# freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
-	# returns inputFile: input file name; fs: sampling rate of input file,
-	#         tfreq, tmag: sinusoidal frequencies and magnitudes
+	"""
+	Analyze a sound with the sine model
+	inputFile: input sound file (monophonic with sampling rate of 44100)
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	M: analysis window size; N: fft size (power of two, bigger or equal than M)
+	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
+	maxnSines: maximum number of parallel sinusoids
+	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+	freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
+	returns inputFile: input file name; fs: sampling rate of input file,
+	        tfreq, tmag: sinusoidal frequencies and magnitudes
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512
@@ -87,11 +89,13 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 
 def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array([0, 2.0, 1, .3]), 
 	timeScaling = np.array([0, .0, .671, .671, 1.978, 1.978+1.0])):
-	# Transform the analysis values returned by the analysis function and synthesize the sound
-	# inputFile: name of input file; fs: sampling rate of input file	
-	# tfreq, tmag: sinusoidal frequencies and magnitudes
-	# freqScaling: frequency scaling factors, in time-value pairs
-	# timeScaling: time scaling factors, in time-value pairs
+	"""
+	Transform the analysis values returned by the analysis function and synthesize the sound
+	inputFile: name of input file; fs: sampling rate of input file	
+	tfreq, tmag: sinusoidal frequencies and magnitudes
+	freqScaling: frequency scaling factors, in time-value pairs
+	timeScaling: time scaling factors, in time-value pairs
+	"""
 
 	# size of fft used in synthesis
 	Ns = 512

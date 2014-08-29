@@ -7,9 +7,11 @@ from scipy.fftpack import fft, ifft
 import utilFunctions as UF
 
 def dftModel(x, w, N):
-# Analysis/synthesis of a signal using the discrete Fourier transform
-# x: input signal, w: analysis window, N: FFT size
-# returns y: output signal
+	"""
+	Analysis/synthesis of a signal using the discrete Fourier transform
+	x: input signal, w: analysis window, N: FFT size
+	returns y: output signal
+	"""
 
 	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
 		raise ValueError("FFT size is not a power of 2")
@@ -43,9 +45,11 @@ def dftModel(x, w, N):
 	return y
 
 def dftAnal(x, w, N):
-# Analysis of a signal using the discrete Fourier transform
-# x: input signal, w: analysis window, N: FFT size 
-# returns mX, pX: magnitude and phase spectrum
+	"""
+	Analysis of a signal using the discrete Fourier transform
+	x: input signal, w: analysis window, N: FFT size 
+	returns mX, pX: magnitude and phase spectrum
+	"""
 
 	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
 		raise ValueError("FFT size is not a power of 2")
@@ -69,9 +73,11 @@ def dftAnal(x, w, N):
 	return mX, pX
 
 def dftSynth(mX, pX, M):
-# Synthesis of a signal using the discrete Fourier transform
-# mX: magnitude spectrum, pX: phase spectrum, M: window size
-# returns y: output signal
+	"""
+	Synthesis of a signal using the discrete Fourier transform
+	mX: magnitude spectrum, pX: phase spectrum, M: window size
+	returns y: output signal
+	"""
 
 	N = mX.size*2
 	hN = N/2                                                # size of positive spectrum

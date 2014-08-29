@@ -4,10 +4,12 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 def sineTimeScaling(sfreq, smag, timeScaling):
-	# Time scaling of sinusoidal tracks
-	# sfreq, smag: frequencies and magnitudes of input sinusoidal tracks
-	# timeScaling: scaling factors, in time-value pairs
-	# returns ysfreq, ysmag: frequencies and magnitudes of output sinusoidal tracks
+	"""
+	Time scaling of sinusoidal tracks
+	sfreq, smag: frequencies and magnitudes of input sinusoidal tracks
+	timeScaling: scaling factors, in time-value pairs
+	returns ysfreq, ysmag: frequencies and magnitudes of output sinusoidal tracks
+	"""
 
 	L = sfreq.shape[0]                                     # number of input frames
 	maxInTime = max(timeScaling[::2])                      # maximum value used as input times
@@ -25,10 +27,12 @@ def sineTimeScaling(sfreq, smag, timeScaling):
 	return ysfreq, ysmag
 
 def sineFreqScaling(sfreq, freqScaling):
-	# Frequency scaling of sinusoidal tracks
-	# sfreq: frequencies of input sinusoidal tracks
-	# freqScaling: scaling factors, in time-value pairs (value of 1 is no scaling)
-	# returns ysfreq: frequencies of output sinusoidal tracks
+	"""
+	Frequency scaling of sinusoidal tracks
+	sfreq: frequencies of input sinusoidal tracks
+	freqScaling: scaling factors, in time-value pairs (value of 1 is no scaling)
+	returns ysfreq: frequencies of output sinusoidal tracks
+	"""
 
 	L = sfreq.shape[0]                                     # number of input frames
 	# create interpolation object from the scaling values
