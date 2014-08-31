@@ -77,15 +77,16 @@ def analysis(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram
-	harms = hfreq*np.less(hfreq,maxplotfreq)
-	harms[harms==0] = np.nan
-	numFrames = int(harms[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs) 
-	plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-	plt.xlabel('time (sec)')
-	plt.ylabel('frequency (Hz)')
-	plt.autoscale(tight=True)
-	plt.title('harmonics + stochastic spectrogram')
+	if (hfreq.shape[1] > 0):
+		harms = hfreq*np.less(hfreq,maxplotfreq)
+		harms[harms==0] = np.nan
+		numFrames = int(harms[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs) 
+		plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
+		plt.xlabel('time (sec)')
+		plt.ylabel('frequency (Hz)')
+		plt.autoscale(tight=True)
+		plt.title('harmonics + stochastic spectrogram')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -151,15 +152,16 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	plt.autoscale(tight=True)
 
 	# plot transformed harmonic on top of stochastic spectrogram
-	harms = yhfreq*np.less(yhfreq,maxplotfreq)
-	harms[harms==0] = np.nan
-	numFrames = int(harms[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs) 
-	plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-	plt.xlabel('time (sec)')
-	plt.ylabel('frequency (Hz)')
-	plt.autoscale(tight=True)
-	plt.title('harmonics + stochastic spectrogram')
+	if (yhfreq.shape[1] > 0):
+		harms = yhfreq*np.less(yhfreq,maxplotfreq)
+		harms[harms==0] = np.nan
+		numFrames = int(harms[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs) 
+		plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
+		plt.xlabel('time (sec)')
+		plt.ylabel('frequency (Hz)')
+		plt.autoscale(tight=True)
+		plt.title('harmonics + stochastic spectrogram')
 
 	# plot the output sound
 	plt.subplot(2,1,2)

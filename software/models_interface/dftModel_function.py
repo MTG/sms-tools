@@ -18,13 +18,16 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 	"""
 
 	# read input sound (monophonic with sampling rate of 44100)
-	(fs, x) = UF.wavread(inputFile)
+	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
 		
 	# get a fragment of the input sound of size M
-	x1 = x[int(time*fs):int(time*fs)+M]
+	sample = int(time*fs)
+	if (sample+M >= x.size or sample < 0):                          # raise error if time outside of sound
+		raise ValueError("Time outside sound boundaries")
+	x1 = x[sample:sample+M]
 	 
 	# compute the dft of the sound fragment
 	mX, pX = DFT.dftAnal(x1, w, N)

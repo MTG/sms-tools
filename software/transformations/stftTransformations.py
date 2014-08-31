@@ -47,7 +47,18 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 	balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
 	returns y: output sound
 	"""
-
+	if (N2/2*smoothf < 3):                           # raise exception if decimation factor too small
+		raise ValueError("Smooth factor too small")
+		
+	if (smoothf > 1):                                # raise exception if decimation factor too big
+		raise ValueError("Smooth factor above 1")
+	
+	if (balancef > 1 or balancef < 0):               # raise exception if balancef outside 0-1
+		raise ValueError("Balance factor outside range")
+	
+	if (H1 <= 0):                                    # raise error if hop size 0 or negative
+		raise ValueError("Hop size (H1) smaller or equal to 0")
+			
 	M1 = w1.size                                     # size of analysis window
 	hM1_1 = int(math.floor((M1+1)/2))                # half analysis window size by rounding
 	hM1_2 = int(math.floor(M1/2))                    # half analysis window size by floor

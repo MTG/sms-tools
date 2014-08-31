@@ -13,11 +13,11 @@ def dftModel(x, w, N):
 	returns y: output signal
 	"""
 
-	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
-		raise ValueError("FFT size is not a power of 2")
+	if not(UF.isPower2(N)):                                 # raise error if N not a power of twou
+		raise ValueError("FFT size (N) is not a power of 2")
 
 	if (w.size > N):                                        # raise error if window size bigger than fft size
-		raise ValueError("window size bigger than FFT size")
+		raise ValueError("Window size (M) is bigger than FFT size")
 
 	if all(x==0):                                           # if input array is zeros return empty output
 		return np.zeros(x.size)
@@ -51,11 +51,11 @@ def dftAnal(x, w, N):
 	returns mX, pX: magnitude and phase spectrum
 	"""
 
-	if not(UF.isPower2(N)):                                # raise error if N not a power of twou
-		raise ValueError("FFT size is not a power of 2")
+	if not(UF.isPower2(N)):                                # raise error if N not a power of two
+		raise ValueError("FFT size (N) is not a power of 2")
 
 	if (w.size > N):                                        # raise error if window size bigger than fft size
-		raise ValueError("window size bigger than FFT size")
+		raise ValueError("Window size (M) is bigger than FFT size")
 
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
@@ -79,8 +79,8 @@ def dftSynth(mX, pX, M):
 	returns y: output signal
 	"""
 
-	N = mX.size*2
-	hN = N/2                                                # size of positive spectrum
+	hN = mX.size                                            # size of positive spectrum
+	N = hN*2                                                # FFT size
 	hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
 	hM2 = int(math.floor(M/2))                              # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT

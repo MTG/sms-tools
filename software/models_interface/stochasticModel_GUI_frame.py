@@ -57,11 +57,11 @@ class StochasticModel_frame:
 		self.N.insert(0, "512")
 
 		#DECIMATION FACTOR
-		stocf_label = "Approximation factor (bigger than 0, max of 1):"
+		stocf_label = "Decimation factor (bigger than 0, max of 1):"
 		Label(self.parent, text=stocf_label).grid(row=4, column=0, sticky=W, padx=5, pady=(10,2))
 		self.stocf = Entry(self.parent, justify=CENTER)
 		self.stocf["width"] = 5
-		self.stocf.grid(row=4, column=0, sticky=W, padx=(300,5), pady=(10,2))
+		self.stocf.grid(row=4, column=0, sticky=W, padx=(285,5), pady=(10,2))
 		self.stocf.delete(0, END)
 		self.stocf.insert(0, "0.1")
 
@@ -118,8 +118,8 @@ class StochasticModel_frame:
 				
 			stochasticModel_function.main(inputFile, H, N, stocf)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self):
 

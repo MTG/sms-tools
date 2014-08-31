@@ -72,15 +72,16 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.autoscale(tight=True)
 
 	# plot sinusoidal frequencies on top of stochastic component
-	sines = tfreq*np.less(tfreq,maxplotfreq)
-	sines[sines==0] = np.nan
-	numFrames = int(sines[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs) 
-	plt.plot(frmTime, sines, color='k', ms=3, alpha=1)
-	plt.xlabel('time(s)')
-	plt.ylabel('Frequency(Hz)')
-	plt.autoscale(tight=True)
-	plt.title('sinusoidal + stochastic spectrogram')
+	if (tfreq.shape[1] > 0):
+		sines = tfreq*np.less(tfreq,maxplotfreq)
+		sines[sines==0] = np.nan
+		numFrames = int(sines[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs) 
+		plt.plot(frmTime, sines, color='k', ms=3, alpha=1)
+		plt.xlabel('time(s)')
+		plt.ylabel('Frequency(Hz)')
+		plt.autoscale(tight=True)
+		plt.title('sinusoidal + stochastic spectrogram')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

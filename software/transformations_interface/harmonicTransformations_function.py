@@ -38,7 +38,7 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	H = 128
 
 	# read input sound
-	(fs, x) = UF.wavread(inputFile)
+	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
@@ -68,16 +68,16 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	plt.ylabel('amplitude')
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
-		
-	# plot the harmonic frequencies
-	plt.subplot(3,1,2)
-	numFrames = int(hfreq[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	yhfreq = np.copy(hfreq)
-	yhfreq[yhfreq<=0] = np.nan
-	plt.plot(frmTime, yhfreq)
-	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
-	plt.title('frequencies of harmonic tracks')
+	
+	if (hfreq.shape[1] > 0):
+		plt.subplot(3,1,2)
+		tracks = np.copy(hfreq)
+		numFrames = tracks.shape[0]
+		frmTime = H*np.arange(numFrames)/float(fs)
+		tracks[tracks<=0] = np.nan
+		plt.plot(frmTime, tracks)
+		plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+		plt.title('frequencies of harmonic tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -121,26 +121,28 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array(
 
 	# synthesis 
 	y = SM.sineModelSynth(yhfreq, yhmag, np.array([]), Ns, H, fs)
-
+	
 	# write output sound 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_harmonicModelTransformation.wav'
-	UF.wavwrite(y,fs, outputFile)
+	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to plot
 	plt.figure(figsize=(12, 6))
 
 	# frequency range to plot
 	maxplotfreq = 15000.0
-
-	plt.subplot(2,1,1)
+		
 	# plot the transformed sinusoidal frequencies
-	tracks = yhfreq*np.less(yhfreq, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	numFrames = int(tracks[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	plt.plot(frmTime, tracks)
-	plt.title('transformed harmonic tracks')
-	plt.autoscale(tight=True)
+	plt.subplot(2,1,1)
+	if (yhfreq.shape[1] > 0):
+		tracks = np.copy(yhfreq)
+		tracks = tracks*np.less(tracks, maxplotfreq)
+		tracks[tracks<=0] = np.nan
+		numFrames = int(tracks[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs)
+		plt.plot(frmTime, tracks)
+		plt.title('transformed harmonic tracks')
+		plt.autoscale(tight=True)
 
 	# plot the output sound
 	plt.subplot(2,1,2)

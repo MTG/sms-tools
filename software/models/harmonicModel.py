@@ -18,7 +18,15 @@ def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):
 	f0et: error threshold in the f0 detection (ex: 5),
 	returns f0: fundamental frequency
 	"""
-
+	if (minf0 < 0):                                            # raise exception if minf0 is smaller than 0
+		raise ValueError("Minumum fundamental frequency (minf0) smaller than 0")
+	
+	if (maxf0 >= 10000):                                       # raise exception if maxf0 is bigger than fs/2
+		raise ValueError("Maximum fundamental frequency (maxf0) bigger than 10000Hz")
+	
+	if (H <= 0):                                               # raise error if hop size 0 or negative
+		raise ValueError("Hop size (H) smaller or equal to 0")
+		
 	hN = N/2                                                   # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                        # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                            # half analysis window size by floor
@@ -151,6 +159,9 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
 	returns xhfreq, xhmag, xhphase: harmonic frequencies, magnitudes and phases
 	"""
 
+	if (minSineDur <0):                                     # raise exception if minSineDur is smaller than 0
+		raise ValueError("Minimum duration of sine tracks smaller than 0")
+		
 	hN = N/2                                                # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor

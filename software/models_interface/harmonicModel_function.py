@@ -9,7 +9,7 @@ import utilFunctions as UF
 import sineModel as SM
 import harmonicModel as HM
 
-def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
+def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
 	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
 	"""
 	Analysis and synthesis using the harmonic model
@@ -62,12 +62,13 @@ def main(inputFile='../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t
 
 	# plot the harmonic frequencies
 	plt.subplot(3,1,2)
-	numFrames = int(hfreq[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	hfreq[hfreq<=0] = np.nan
-	plt.plot(frmTime, hfreq)
-	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
-	plt.title('frequencies of harmonic tracks')
+	if (hfreq.shape[1] > 0):
+		numFrames = hfreq.shape[0]
+		frmTime = H*np.arange(numFrames)/float(fs)
+		hfreq[hfreq<=0] = np.nan
+		plt.plot(frmTime, hfreq)
+		plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+		plt.title('frequencies of harmonic tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

@@ -187,8 +187,8 @@ class HarmonicModel_frame:
 			
 			harmonicModel_function.main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self):
 

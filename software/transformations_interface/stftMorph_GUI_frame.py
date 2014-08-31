@@ -232,8 +232,8 @@ class StftMorph_frame:
 
 			sT.main(inputFile1, inputFile2, window1, window2, M1, M2, N1, N2, H1, smoothf, balancef)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self, extension):
 

@@ -381,8 +381,8 @@ class HpsMorph_frame:
 				self.inputFile2, self.hfreq2, self.hmag2, self.stocEnv2 = hM.analysis(inputFile1, window1, M1, N1, t1, \
 				minSineDur1, nH, minf01, maxf01, f0et1, harmDevSlope1, stocf, inputFile2, window2, M2, N2, t2, minSineDur2, minf02, maxf02, f0et2, harmDevSlope2)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def transformation_synthesis(self):
 
@@ -402,8 +402,8 @@ class HpsMorph_frame:
 
 			hM.transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
 			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")

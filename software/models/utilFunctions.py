@@ -43,15 +43,19 @@ def wavread(filename):
 	filename: name of file to read
 	returns x: floating point array, fs: samplint rate of file
 	"""
+	
+	if (os.path.isfile(filename) == False):                  # raise error if wrong input file
+		raise ValueError("Input file is wrong")
+		
+	fs, x = read(filename)
+	
+	if (len(x.shape) !=1):                                   # raise error if more than one channel
+		raise ValueError("Audio file should be mono")
+		
+	if (fs !=44100):                                         # raise error if more than one channel
+		raise ValueError("Sampling rate of input sound should be 44100")
 
-	(fs, x) = read(filename)
-	if len(x.shape) ==2:
-		print "ERROR: Input audio file is stereo. This software only works for mono audio files."
-		sys.exit()
-	if fs !=44100:
-		print "WARNING: sampling rate of file is not 44100. This software works best using sounds with sampling rate of 44100."
-		sys.exit()
-		#scaling down and converting audio into floating point number in range of -1 to 1
+	#scale down and convert audio into floating point number in range of -1 to 1
 	x = np.float32(x)/norm_fact[x.dtype.name]
 	return fs, x
 
@@ -234,7 +238,12 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	f0t: f0 of previous frame if stable
 	returns f0: fundamental frequency in Hz
 	"""
-
+	if (minf0 < 0):                                  # raise exception if minf0 is smaller than 0
+		raise ValueError("Minumum fundamental frequency (minf0) smaller than 0")
+	
+	if (maxf0 >= 10000):                             # raise exception if maxf0 is bigger than 10000Hz
+		raise ValueError("Maximum fundamental frequency (maxf0) bigger than 10000Hz")
+		
 	if (pfreq.size < 3) & (f0t == 0):                # return 0 if less than 3 peaks and not previous f0
 		return 0
 	

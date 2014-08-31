@@ -20,7 +20,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
 	freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
 	"""
-
+		
 	# size of fft used in synthesis
 	Ns = 512
 
@@ -28,7 +28,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	H = 128
 
 	# read input sound
-	(fs, x) = UF.wavread(inputFile)
+	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
@@ -61,12 +61,13 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 				
 	# plot the sinusoidal frequencies
 	plt.subplot(3,1,2)
-	numFrames = int(tfreq[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	tfreq[tfreq<=0] = np.nan
-	plt.plot(frmTime, tfreq)
-	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
-	plt.title('frequencies of sinusoidal tracks')
+	if (tfreq.shape[1] > 0):
+		numFrames = tfreq.shape[0]
+		frmTime = H*np.arange(numFrames)/float(fs)
+		tfreq[tfreq<=0] = np.nan
+		plt.plot(frmTime, tfreq)
+		plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+		plt.title('frequencies of sinusoidal tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

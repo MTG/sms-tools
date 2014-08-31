@@ -73,15 +73,16 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram
-	harms = hfreq*np.less(hfreq,maxplotfreq)
-	harms[harms==0] = np.nan
-	numFrames = harms.shape[0]
-	frmTime = H*np.arange(numFrames)/float(fs) 
-	plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
-	plt.xlabel('time (sec)')
-	plt.ylabel('frequency (Hz)')
-	plt.autoscale(tight=True)
-	plt.title('harmonics + stochastic spectrogram')
+	if (hfreq.shape[1] > 0):
+		harms = hfreq*np.less(hfreq,maxplotfreq)
+		harms[harms==0] = np.nan
+		numFrames = harms.shape[0]
+		frmTime = H*np.arange(numFrames)/float(fs) 
+		plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
+		plt.xlabel('time (sec)')
+		plt.ylabel('frequency (Hz)')
+		plt.autoscale(tight=True)
+		plt.title('harmonics + stochastic spectrogram')
 
 	# plot the output sound
 	plt.subplot(3,1,3)

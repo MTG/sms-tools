@@ -106,8 +106,8 @@ class StochasticTransformations_frame:
 
 			sT.main(inputFile, stocf, timeScaling)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self, extension):
 

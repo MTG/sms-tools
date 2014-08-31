@@ -11,6 +11,10 @@ def stft(x, fs, w, N, H):
 	x: input sound, w: analysis window, N: FFT size, H: hop size
 	returns y: output sound
 	"""
+	
+	if (H <= 0):                                   # raise error if hop size 0 or negative
+		raise ValueError("Hop size (H) smaller or equal to 0")
+		
 	M = w.size                                     # size of analysis window
 	hM1 = int(math.floor((M+1)/2))                 # half analysis window size by rounding
 	hM2 = int(math.floor(M/2))                     # half analysis window size by floor
@@ -38,6 +42,9 @@ def stftAnal(x, fs, w, N, H) :
 	x: input array sound, w: analysis window, N: FFT size, H: hop size
 	returns xmX, xpX: magnitude and phase spectra
 	"""
+	if (H <= 0):                                   # raise error if hop size 0 or negative
+		raise ValueError("Hop size (H) smaller or equal to 0")
+		
 	M = w.size                                      # size of analysis window
 	hM1 = int(math.floor((M+1)/2))                  # half analysis window size by rounding
 	hM2 = int(math.floor(M/2))                      # half analysis window size by floor

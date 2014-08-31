@@ -63,11 +63,11 @@ class Stft_frame:
 		self.N.insert(0, "1024")
 
 		#HOP SIZE
-		H_label = "Hop size (H) (at least 1/2 of M):"
+		H_label = "Hop size (H):"
 		Label(self.parent, text=H_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
 		self.H = Entry(self.parent, justify=CENTER)
 		self.H["width"] = 5
-		self.H.grid(row=5,column=0, sticky=W, padx=(200,5), pady=(10,2))
+		self.H.grid(row=5,column=0, sticky=W, padx=(95,5), pady=(10,2))
 		self.H.delete(0, END)
 		self.H.insert(0, "512")
 
@@ -126,8 +126,8 @@ class Stft_frame:
 		
 			stft_function.main(inputFile, window, M, N, H)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self):
 

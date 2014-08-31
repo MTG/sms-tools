@@ -262,8 +262,8 @@ class HpsTransformations_frame:
 
 			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling, freqStretching, timbrePreservation, timeScaling)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
 			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")

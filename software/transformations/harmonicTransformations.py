@@ -14,7 +14,12 @@ def harmonicFreqScaling(hfreq, hmag, freqScaling, freqStretching, timbrePreserva
 	fs: sampling rate of input sound
 	returns yhfreq, yhmag: frequencies and magnitudes of output harmonics
 	"""
-
+	if (freqScaling.size % 2 != 0):                        # raise exception if array not even length
+		raise ValueError("Frequency scaling array does not have an even size")
+	
+	if (freqStretching.size % 2 != 0):                     # raise exception if array not even length
+		raise ValueError("Frequency stretching array does not have an even size")
+		
 	L = hfreq.shape[0]                                                   # number of frames
 	nHarms = hfreq.shape[1]                                              # number of harmonics
 	# create interpolation object with the scaling values 

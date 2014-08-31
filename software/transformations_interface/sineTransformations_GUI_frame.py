@@ -211,8 +211,8 @@ class SineTransformations_frame:
 
 			sT.transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling, timeScaling)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
 			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")

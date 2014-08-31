@@ -64,14 +64,16 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	plt.title('input sound: x')
 		
 	# plot the sinusoidal frequencies
-	plt.subplot(3,1,2)
-	numFrames = int(tfreq[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	ytfreq = np.copy(tfreq)
-	ytfreq[ytfreq<=0] = np.nan
-	plt.plot(frmTime, ytfreq)
-	plt.axis([0, x.size/float(fs), 0, maxplotfreq])
-	plt.title('frequencies of sinusoidal tracks')
+	if (tfreq.shape[1] > 0):
+		plt.subplot(3,1,2)
+		tracks = np.copy(tfreq)
+		tracks = tracks*np.less(tracks, maxplotfreq)
+		tracks[tracks<=0] = np.nan
+		numFrames = int(tracks[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs)
+		plt.plot(frmTime, tracks)
+		plt.axis([0, x.size/float(fs), 0, maxplotfreq])
+		plt.title('frequencies of sinusoidal tracks')
 
 	# plot the output sound
 	plt.subplot(3,1,3)
@@ -122,16 +124,17 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 	# frequency range to plot
 	maxplotfreq = 15000.0
 
-	plt.subplot(2,1,1)
 	# plot the transformed sinusoidal frequencies
-	tracks = np.copy(ytfreq)
-	tracks = tracks*np.less(tracks, maxplotfreq)
-	tracks[tracks<=0] = np.nan
-	numFrames = int(tracks[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)
-	plt.plot(frmTime, tracks)
-	plt.title('transformed sinusoidal tracks')
-	plt.autoscale(tight=True)
+	if (ytfreq.shape[1] > 0):
+		plt.subplot(2,1,1)
+		tracks = np.copy(ytfreq)
+		tracks = tracks*np.less(tracks, maxplotfreq)
+		tracks[tracks<=0] = np.nan
+		numFrames = int(tracks[:,0].size)
+		frmTime = H*np.arange(numFrames)/float(fs)
+		plt.plot(frmTime, tracks)
+		plt.title('transformed sinusoidal tracks')
+		plt.autoscale(tight=True)
 
 	# plot the output sound
 	plt.subplot(2,1,2)

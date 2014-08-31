@@ -18,10 +18,8 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	H: hop size (at least 1/2 of analysis window size to have good overlap-add)               
 	"""
 
-	# --------- computation -----------------
-
 	# read input sound (monophonic with sampling rate of 44100)
-	(fs, x) = UF.wavread(inputFile)
+	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
 	w = get_window(window, M)
@@ -37,8 +35,6 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)
-
-	# --------- plotting --------------------
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))

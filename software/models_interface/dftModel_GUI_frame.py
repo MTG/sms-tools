@@ -89,7 +89,7 @@ class DftModel_frame:
 		filename = self.filelocation.get()
 
 		if filename[-4:] == '.wav':
-			(fs, x) = read(filename)
+			fs, x = read(filename)
 		else:
 			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
 			return
@@ -121,5 +121,6 @@ class DftModel_frame:
 			
 			dftModel_function.main(inputFile, window, M, N, time)
 
-		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+		except ValueError as errorMessage:
+			tkMessageBox.showerror("Input values error",errorMessage)
+			
