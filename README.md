@@ -12,7 +12,7 @@ In Ubuntu (which we strongly recommend) in order to install all these modules it
 
 <code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy python-pygame cython</code>
 
-then for using the tools, after downloading the whole package you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
+then for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
 <code>$ python compileModule.py build_ext --inplace </code>
 
