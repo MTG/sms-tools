@@ -14,9 +14,9 @@ In Ubuntu (which we strongly recommend) in order to install all these modules it
 $ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy python-pygame cython
 ```
 
-Windows users should install [python(x,y)](code.google.com/p/pythonxy/) to setup a python environment. Remember to check `Cython` and `MinGW` in pythonxy installer.
+Windows users can install [python(x,y)](code.google.com/p/pythonxy/) to setup a python environment. Remember to check `Cython` and `MinGW` in pythonxy installer.
 
-Minimized versions of these packages are attached in *Downloads* section so you don't have to install them by hand. Just follow the procedure:
+Minimized versions of these packages are attached in *Downloads* section so you don't have to install them by hand. Please follow the procedure:
 
 1. Unpack the `.7z` archives into `C:\MSYS` and `C:\Python27`.
 2. Goto *Advanced System Settings -> Environment Variables*, add `;C:\MSYS\bin;C:\MSYS\local\bin;C:\Python27;C:\Python27\DLLs;C:\Python27\Scripts;` to `PATH` variable. 
@@ -46,14 +46,14 @@ To modify the existing code, or to create your own using some of the functions, 
 Content
 -------
 
-All the code is in the `software` directory, with subdirectories for the models, the transformations, and the interfaces. The lecture material is in the `lecture` directory and the sounds used for the examples and coming from `http://freesound.org` are in the `sounds` directory.
+All the code is in the `software` directory, with subdirectories for the models, the transformations, and the interfaces. The lecture material is in the `lecture` directory and the sounds used for the examples and coming from [`http://freesound.org`](http://freesound.org) are in the `sounds` directory.
 
-Downloads
+Downloads (for Windows users)
 -------
 
 Minimized package of Pythonxy(including numpy, scipy, matplotlib, pygame, cython and pyqt4 core).
 
-[Download from Mega](https://mega.co.nz/#!zRQSSIZZ!XNeLUpcJs6ZLM3eX-lr4v8Mj1xsgFBpexwYJwcWSb1E), 56MiB
+[Download from Mega](https://mega.co.nz/#!qA5ARYzA!ZKRx-vJ7qWtHaUuUv20WReSJw3GJIg8TuTk5tMKwyLQ), 56MiB
 
 Minimized package of MSYS(including core-utils, GNU Make, gcc, and g++).
 
@@ -61,7 +61,7 @@ Minimized package of MSYS(including core-utils, GNU Make, gcc, and g++).
 
 For Chinese users,
 
-[Download from BaiduYun](http://pan.baidu.com/s/1eQpbsWi), can be faster accessed.
+[Download from BaiduYun](http://pan.baidu.com/s/1qW6XQ36), which can be faster accessed.
 
 License
 -------
