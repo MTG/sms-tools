@@ -67,3 +67,7 @@ License
 -------
 All the software is distributed with the Affero GPL licence, and the lecture slides and sounds are distributed with the Creative Commons Attribution-Noncommercial-Share Alike license.
 
+Most of the packages in [MSYS](http://www.mingw.org/wiki/msys) are licensed by the GNU General Public License(GPL).
+
+For license information of Python(x,y) software collection, please visit its [website](code.google.com/p/pythonxy/).
+
