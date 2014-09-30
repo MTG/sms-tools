@@ -32,7 +32,7 @@ def wavread(filename):
 	"""
 	Read a sound file and convert it to a normalized floating point array
 	filename: name of file to read
-	returns x: floating point array, fs: samplint rate of file
+	returns fs: samplint rate of file, x: floating point array
 	"""
 	
 	if (os.path.isfile(filename) == False):                  # raise error if wrong input file
