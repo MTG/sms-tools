@@ -47,6 +47,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 	balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
 	returns y: output sound
 	"""
+	
 	if (N2/2*smoothf < 3):                           # raise exception if decimation factor too small
 		raise ValueError("Smooth factor too small")
 		
@@ -81,7 +82,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
 		mX2, pX2 = DFT.dftAnal(x2[pin2-hM2_1:pin2+hM2_2], w2, N2)           # compute dft
 	#-----transformation-----
 		mX2smooth = resample(np.maximum(-200, mX2), mX2.size*smoothf)       # smooth spectrum of second sound
-		mX2 = resample(mX2smooth, N2/2)                                     # generate back the same size spectrum
+		mX2 = resample(mX2smooth, mX1.size)                                 # generate back the same size spectrum
 		mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 	#-----synthesis-----
 		y[pin1-hM1_1:pin1+hM1_2] += H1*DFT.dftSynth(mY, pX1, M1)  # overlap-add to generate output sound

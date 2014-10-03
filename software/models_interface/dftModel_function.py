@@ -48,7 +48,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 
 	# plot the magnitude spectrum
 	plt.subplot(4,1,2)
-	plt.plot((fs/2.0)*np.arange(N/2)/float(N/2), mX, 'r')
+	plt.plot(float(fs)*np.arange(mX.size)/float(N), mX, 'r')
 	plt.axis([0, fs/2.0, min(mX), max(mX)])
 	plt.title ('magnitude spectrum: mX')
 	plt.ylabel('amplitude (dB)')
@@ -56,7 +56,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 
 	# plot the phase spectrum
 	plt.subplot(4,1,3)
-	plt.plot((fs/2.0)*np.arange(N/2)/float(N/2), pX, 'c')
+	plt.plot(float(fs)*np.arange(pX.size)/float(N), pX, 'c')
 	plt.axis([0, fs/2.0, min(pX), max(pX)])
 	plt.title ('phase spectrum: pX')
 	plt.ylabel('phase (radians)')
