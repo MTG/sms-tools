@@ -51,7 +51,7 @@ def dftAnal(x, w, N):
 	returns mX, pX: magnitude and phase spectrum
 	"""
 
-	if not(UF.isPower2(N)):                                # raise error if N not a power of two
+	if not(UF.isPower2(N)):                                 # raise error if N not a power of two
 		raise ValueError("FFT size (N) is not a power of 2")
 
 	if (w.size > N):                                        # raise error if window size bigger than fft size
@@ -79,10 +79,9 @@ def dftSynth(mX, pX, M):
 	returns y: output signal
 	"""
 
-	hN = mX.size                                            # size of positive spectrum
-	N = (mX.size-1)*2                                       # FFT size
-	
-	if not(UF.isPower2(N)):                                 # raise error if N not a power of twou
+	hN = mX.size                                            # size of positive spectrum, it includes sample 0
+	N = (hN-1)*2                                            # FFT size
+	if not(UF.isPower2(N)):                                 # raise error if N not a power of two, thus mX is wrong
 		raise ValueError("size of mX is not (N/2)+1")
 
 	hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
