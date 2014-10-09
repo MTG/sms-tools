@@ -1,42 +1,30 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hamming
-import sys, os
 import essentia.standard as ess
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import utilFunctions as UF
-import stft as STFT
-
-N = 512
+M = 1024
+N = 1024
+H = 512
+fs = 44100
 spectrum = ess.Spectrum(size=N)
-window = ess.Windowing(size=N, type='hann')
-mfcc = MFCC ()
-(fs, x) = UF.wavread('../../../sounds/vignesh.wav')
-
+window = ess.Windowing(size=M, type='hann')
+mfcc = ess.MFCC(numberCoefficients = 12)
+x = ess.MonoLoader(filename = '../../../sounds/speech-male.wav', sampleRate = fs)()
 mfccs = []
-pin = 0
-pend = x.size-N
-H = 256
 
-while pin<pend:             
-  mX = spectrum(window(x[pin:pin+N]))
+for frame in ess.FrameGenerator(x, frameSize=M, hopSize=H, startFromZero=True):          
+  mX = spectrum(window(frame))
   mfcc_bands, mfcc_coeffs = mfcc(mX)
-  mfccs.append(mfcc_coeffs)
-  pin += H                     
+  mfccs.append(mfcc_coeffs)            
+mfccs = np.array(mfccs)
 
 plt.figure(1, figsize=(9, 7))
 
-numFrames = int(mfccs[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)
-binFreq = fs*np.arange(N)/float(N)                              
-plt.pcolormesh(frmTime, binFreq, np.transpose(mfccs[:,:N*maxplotfreq/fs+1]))
+frmTime = H*np.arange(mfccs[:,0].size)/float(fs)                             
+plt.pcolormesh(np.transpose(mfccs[:,1:]))
 plt.xlabel('time (sec)')
-plt.ylabel('frequency (Hz)')
-
-
-plt.tight_layout()
+plt.ylabel('mel coefficients')
+plt.autoscale(tight=True)
 plt.savefig('mfcc.png')
 plt.show()
 
