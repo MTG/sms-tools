@@ -21,7 +21,7 @@ def dftModel(x, w, N):
 
 	if all(x==0):                                           # if input array is zeros return empty output
 		return np.zeros(x.size)
-	hN = N/2                                                # size of positive spectrum
+	hN = (N/2)+1                                            # size of positive spectrum, it includes sample 0
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
@@ -38,7 +38,7 @@ def dftModel(x, w, N):
 	#-----synthesis-----
 	Y = np.zeros(N, dtype = complex)                        # clean output spectrum
 	Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                    # generate positive frequencies
-	Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1])   # generate negative frequencies
+	Y[hN:] = 10**(mX[-2:0:-1]/20) * np.exp(-1j*pX[-2:0:-1]) # generate negative frequencies
 	fftbuffer = np.real(ifft(Y))                            # compute inverse FFT
 	y[:hM2] = fftbuffer[-hM2:]                              # undo zero-phase window
 	y[hM2:] = fftbuffer[:hM1]
@@ -51,13 +51,13 @@ def dftAnal(x, w, N):
 	returns mX, pX: magnitude and phase spectrum
 	"""
 
-	if not(UF.isPower2(N)):                                # raise error if N not a power of two
+	if not(UF.isPower2(N)):                                 # raise error if N not a power of two
 		raise ValueError("FFT size (N) is not a power of 2")
 
 	if (w.size > N):                                        # raise error if window size bigger than fft size
 		raise ValueError("Window size (M) is bigger than FFT size")
 
-	hN = N/2                                                # size of positive spectrum
+	hN = (N/2)+1                                            # size of positive spectrum, it includes sample 0
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
@@ -79,15 +79,18 @@ def dftSynth(mX, pX, M):
 	returns y: output signal
 	"""
 
-	hN = mX.size                                            # size of positive spectrum
-	N = hN*2                                                # FFT size
+	hN = mX.size                                            # size of positive spectrum, it includes sample 0
+	N = (hN-1)*2                                            # FFT size
+	if not(UF.isPower2(N)):                                 # raise error if N not a power of two, thus mX is wrong
+		raise ValueError("size of mX is not (N/2)+1")
+
 	hM1 = int(math.floor((M+1)/2))                          # half analysis window size by rounding
 	hM2 = int(math.floor(M/2))                              # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
 	y = np.zeros(M)                                         # initialize output array
 	Y = np.zeros(N, dtype = complex)                        # clean output spectrum
 	Y[:hN] = 10**(mX/20) * np.exp(1j*pX)                    # generate positive frequencies
-	Y[hN+1:] = 10**(mX[:0:-1]/20) * np.exp(-1j*pX[:0:-1])   # generate negative frequencies
+	Y[hN:] = 10**(mX[-2:0:-1]/20) * np.exp(-1j*pX[-2:0:-1]) # generate negative frequencies
 	fftbuffer = np.real(ifft(Y))                            # compute inverse FFT
 	y[:hM2] = fftbuffer[-hM2:]                              # undo zero-phase window
 	y[hM2:] = fftbuffer[:hM1]
