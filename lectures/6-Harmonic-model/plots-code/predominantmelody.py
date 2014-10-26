@@ -35,7 +35,6 @@ for frame in FrameGenerator(audio, frameSize=frameSize, hopSize=hopSize):
     frame = run_windowing(frame)
     spectrum = run_spectrum(frame)
     peak_frequencies, peak_magnitudes = run_spectral_peaks(spectrum)
-    
     salience = run_pitch_salience_function(peak_frequencies, peak_magnitudes)
     salience_peaks_bins, salience_peaks_saliences = run_pitch_salience_function_peaks(salience)
     
