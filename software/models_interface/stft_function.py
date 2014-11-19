@@ -12,10 +12,10 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	"""
 	analysis/synthesis using the STFT
 	inputFile: input sound file (monophonic with sampling rate of 44100)
-	window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
-	M: analysis window size 
-	N: fft size (power of two, bigger or equal than M)  
-	H: hop size (at least 1/2 of analysis window size to have good overlap-add)               
+	window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)
+	M: analysis window size
+	N: fft size (power of two, bigger or equal than M)
+	H: hop size (at least 1/2 of analysis window size to have good overlap-add)
 	"""
 
 	# read input sound (monophonic with sampling rate of 44100)
@@ -26,12 +26,12 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 
 	# compute the magnitude and phase spectrogram
 	mX, pX = STFT.stftAnal(x, fs, w, N, H)
-	 
+
 	# perform the inverse stft
 	y = STFT.stftSynth(mX, pX, M, H)
 
 	# output sound file (monophonic with sampling rate of 44100)
-	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stft.wav'   
+	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stft.wav'
 
 	# write the sound resulting from the inverse stft
 	UF.wavwrite(y, fs, outputFile)
@@ -53,8 +53,8 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	# plot magnitude spectrogram
 	plt.subplot(4,1,2)
 	numFrames = int(mX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = fs*np.arange(N*maxplotfreq/fs)/N  
+	frmTime = H*np.arange(numFrames)/float(fs)
+	binFreq = fs*np.arange(N*maxplotfreq/fs)/N
 	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
@@ -64,8 +64,8 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	# plot the phase spectrogram
 	plt.subplot(4,1,3)
 	numFrames = int(pX[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
+	frmTime = H*np.arange(numFrames)/float(fs)
+	binFreq = fs*np.arange(N*maxplotfreq/fs)/N
 	plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:N*maxplotfreq/fs+1],axis=1)))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
@@ -81,8 +81,9 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	plt.title('output sound: y')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
-	
+
 
 if __name__ == "__main__":
 	main()
