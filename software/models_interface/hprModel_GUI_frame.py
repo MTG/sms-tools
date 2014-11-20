@@ -200,7 +200,7 @@ class HprModel_frame:
 
 			hprModel_function.main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
-		except ValueError as errorMesage:
+		except ValueError as errorMessage:
 			tkMessageBox.showerror("Input values error", errorMessage)
 
 	def play_out_sound(self, extension):
