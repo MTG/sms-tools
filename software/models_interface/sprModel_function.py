@@ -95,7 +95,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	main()

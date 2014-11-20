@@ -59,7 +59,7 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	plt.xlabel('time (sec)')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
   
 if __name__ == "__main__":
 	main()
