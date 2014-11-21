@@ -71,7 +71,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	main()

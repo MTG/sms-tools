@@ -153,7 +153,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array(
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	
@@ -163,7 +163,7 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, hfreq, hmag)
 	
-	plt.show()
+	plt.show(block=False)
 
 
 
