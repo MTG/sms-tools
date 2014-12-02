@@ -97,7 +97,7 @@ def analysis(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 	return inputFile, fs, hfreq, hmag, mYst
 
@@ -172,7 +172,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 if __name__ == "__main__":
 	
@@ -182,4 +182,4 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis(inputFile, fs, hfreq, hmag, mYst)
 
-	plt.show(block=False)
+	plt.show()

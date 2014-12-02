@@ -88,7 +88,7 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 	return inputFile, fs, hfreq, hmag
 
@@ -153,7 +153,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array(
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 if __name__ == "__main__":
 	
@@ -163,7 +163,7 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, hfreq, hmag)
 	
-	plt.show(block=False)
+	plt.show()
 
 
 

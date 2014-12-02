@@ -84,7 +84,7 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 	return inputFile, fs, tfreq, tmag
 
@@ -145,7 +145,7 @@ def transformation_synthesis(inputFile, fs, tfreq, tmag, freqScaling = np.array(
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 if __name__ == "__main__":
 	
@@ -155,5 +155,5 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile, fs, tfreq, tmag)
 
-	plt.show(block=False)
+	plt.show()
 

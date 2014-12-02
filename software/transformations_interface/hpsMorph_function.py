@@ -98,7 +98,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 		plt.title('harmonics + stochastic spectrogram of sound 2')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 	
 	return inputFile1, fs1, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2
 
@@ -168,7 +168,7 @@ def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 	
 
 if __name__ == "__main__":
@@ -178,4 +178,4 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis (inputFile1, fs1, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2)
 
-	plt.show(block=False)
+	plt.show()
