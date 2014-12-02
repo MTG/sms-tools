@@ -88,7 +88,7 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 	return inputFile, fs, hfreq, hmag
 

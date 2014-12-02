@@ -84,7 +84,7 @@ def analysis(inputFile='../../sounds/mridangam.wav', window='hamming', M=801, N=
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 	return inputFile, fs, tfreq, tmag
 

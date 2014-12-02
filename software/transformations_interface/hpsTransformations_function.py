@@ -97,7 +97,7 @@ def analysis(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 	return inputFile, fs, hfreq, hmag, mYst
 

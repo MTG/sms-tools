@@ -98,7 +98,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 		plt.title('harmonics + stochastic spectrogram of sound 2')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 	
 	return inputFile1, fs1, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2
 
