@@ -16,8 +16,4 @@ plt.plot(np.arange(-N/2, N/2), np.imag(s), lw=2)
 plt.axvline(0, color='g', lw=2)
 plt.axis([-N/2,N/2,-1,1])
 plt.title ('sine (odd)')
-
-
-plt.tight_layout()
-plt.savefig('even-odd.png')
 plt.show()

@@ -3,7 +3,7 @@ import numpy as np
 
 N = 500
 k = 3
-plt.figure(1, figsize=(9.5, 6))
+plt.figure(1)
 
 s = np.exp(1j*2*np.pi*k/N*np.arange(-N/2, N/2))
 plt.plot(np.arange(-N/2, N/2), np.real(s), 'b', lw=2, label="real")

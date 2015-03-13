@@ -1,0 +1,9 @@
+import soundDownload as SD
+
+Key = "01bf2453a038dc5a38aaca77966a3bbb32b5864a"
+
+SD.downloadSoundsFreesound(queryText='cello', API_Key=Key, outputDir='tmp',topNResults=20, duration=(0,5),tag= 'single-note')
+
+SD.downloadSoundsFreesound(queryText='flute', API_Key=Key, outputDir='tmp',topNResults=20, duration=(0,5),tag='single-note')
+
+SD.downloadSoundsFreesound(queryText='violin', API_Key=Key, outputDir='tmp',topNResults=20, duration=(0,5),tag='multisample')

@@ -9,7 +9,7 @@ rectangle[1:32] = np.ones (31)
 output = np.zeros (70)
 output = np.convolve(triangle, rectangle)
 
-plt.figure(1, figsize=(9.5, 5.5))
+plt.figure(1, figsize=(9.5, 5))
 plt.subplot(3, 1, 1)
 plt.plot(triangle, lw=2)
 plt.axis([0,69,-.1,1.1])

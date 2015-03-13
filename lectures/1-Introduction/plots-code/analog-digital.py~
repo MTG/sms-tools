@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.figure(1, figsize=(9.5, 6))
-
+plt.figure(1)
 ax1=plt.subplot(2, 1, 1)
 A = .8
 f0 = 2
@@ -22,7 +21,4 @@ plt.grid(True)
 plt.title('digital')
 plt.xlabel('time (sec)')
 plt.ylabel('amplitude')
-
-plt.tight_layout()
-plt.savefig('analog-digital.png')
 plt.show()
