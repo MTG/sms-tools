@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+tol = 1e-5
 
 plt.figure(1, figsize=(9.5, 7))
 N = 64
@@ -15,6 +16,9 @@ plt.axis([0,N-1,-1,1])
 for k in range(N):
 	s = np.exp(1j*2*np.pi*k/N*np.arange(N))
 	X = np.append(X, sum(x*np.conjugate(s)))
+
+X.real[np.abs(X.real) < tol] = 0.0
+X.imag[np.abs(X.imag) < tol] = 0.0
 
 plt.subplot(312)
 plt.title('magnitude spectrum: abs(X)')

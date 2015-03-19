@@ -14,4 +14,5 @@ for k in range(N):
 	plt.axis([0,N-1,-1.5,1.5])
 
 plt.tight_layout()
+plt.savefig('complex-sinewaves.png')
 plt.show()

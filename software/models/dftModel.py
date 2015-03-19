@@ -5,6 +5,7 @@ import numpy as np
 import math
 from scipy.fftpack import fft, ifft
 import utilFunctions as UF
+tol = 1e-5
 
 def dftModel(x, w, N):
 	"""
@@ -68,7 +69,9 @@ def dftAnal(x, w, N):
 	X = fft(fftbuffer)                                      # compute FFT
 	absX = abs(X[:hN])                                      # compute ansolute value of positive side
 	absX[absX<np.finfo(float).eps] = np.finfo(float).eps    # if zeros add epsilon to handle log
-	mX = 20 * np.log10(absX)                                # magnitude spectrum of positive frequencies in dB         
+	mX = 20 * np.log10(absX)                                # magnitude spectrum of positive frequencies in dB
+	X[:hN].real[np.abs(X[:hN].real) < tol] = 0.0            # for phase calculation set to 0 small values
+	X[:hN].imag[np.abs(X[:hN].imag) < tol] = 0.0            # for phase calculation set to 0 small values         
 	pX = np.unwrap(np.angle(X[:hN]))                        # unwrapped phase spectrum of positive frequencies
 	return mX, pX
 
