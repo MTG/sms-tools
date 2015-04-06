@@ -22,12 +22,12 @@ plt.axis([pin/float(fs), (pin+w.size)/float(fs), min(x1), max(x1)])
 plt.title('x (oboe-A4.wav)')
 
 plt.subplot(3,1,2)
-plt.plot(fs*np.arange(0,N/2)/float(N), mX, 'r', lw=1.5)
+plt.plot(fs*np.arange(mX.size)/float(N), mX, 'r', lw=1.5)
 plt.axis([0,3900,-80,max(mX)])
 plt.title ('mX')
 
 plt.subplot(3,1,3)
-plt.plot(fs*np.arange(0,N/2)/float(N), pX, 'c', lw=1.5)
+plt.plot(fs*np.arange(pX.size)/float(N), pX, 'c', lw=1.5)
 plt.axis([0,3900,-18,14])
 plt.title ('pX')
 

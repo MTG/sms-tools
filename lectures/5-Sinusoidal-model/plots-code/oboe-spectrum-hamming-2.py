@@ -19,13 +19,13 @@ plt.axis([pin/float(fs), (pin+w.size)/float(fs), min(x1), max(x1)])
 plt.title('x (oboe-A4.wav), M=801')
 
 plt.subplot(3,1,2)
-plt.plot(fs*np.arange(0,N/2)/float(N), mX, 'r', lw=1.5)
+plt.plot(fs*np.arange(mX.size)/float(N), mX, 'r', lw=1.5)
 plt.axis([0,8000,-80,max(mX)])
 plt.title ('mX; Hamming window, N=2048')
 
 plt.subplot(3,1,3)
-plt.plot(fs*np.arange(0,N/2)/float(N), pX, 'c', lw=1.5)
-plt.axis([0,8000,-13,20])
+plt.plot(fs*np.arange(pX.size)/float(N), pX, 'c', lw=1.5)
+plt.axis([0,8000,-13,15])
 plt.title ('pX; Hamming window, N=2048')
 
 plt.tight_layout()
