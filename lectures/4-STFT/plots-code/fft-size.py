@@ -23,7 +23,7 @@ plt.title('x (oboe-A4.wav), M = 512')
 mX, pX = DF.dftAnal(x1, np.hamming(N), N)
 
 plt.subplot(312)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,fs/4.0,-85,max(mX)])
 plt.title('mX, N = 512')
 
@@ -35,7 +35,7 @@ xw = x1 * np.hamming(M)
 mX, pX = DF.dftAnal(x1, np.hamming(M), N)
          
 plt.subplot(313)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,fs/4.0,-85,max(mX)])
 plt.title('mX, N = 2048')
 

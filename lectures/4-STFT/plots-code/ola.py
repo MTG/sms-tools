@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io.wavfile import read
 
-(fs, x) = read('oboe.wav')
+(fs, x) = read('../../../sounds/oboe-A4.wav')
 M = 256
 H = 128
 start = .8*fs
@@ -37,4 +37,6 @@ x2 = np.zeros(3*M)+offset
 x2[H*4:M+H*4] += (x0[4*H:M+H*4] * np.hamming(M))
 plt.plot(x2,'b')
 
+plt.tight_layout()
+plt.savefig('ola.png')
 plt.show()

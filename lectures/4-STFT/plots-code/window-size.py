@@ -21,12 +21,12 @@ plt.title('x1, M = 128')
 
 mX, pX = DF.dftAnal(x1, np.hamming(N), N)
 plt.subplot(323)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,fs/2.0,-90,max(mX)])
 plt.title('mX1')
 
 plt.subplot(325)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX, 'c', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), pX, 'c', lw=1.5)
 plt.axis([0,fs/2.0,min(pX),max(pX)])
 plt.title('pX1')
 
@@ -41,12 +41,12 @@ plt.axis([start/fs, (start+N)/fs, min(x2), max(x2)])
 plt.title('x2, M = 1024')
 
 plt.subplot(324)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), mX, 'r', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,fs/2.0,-90,max(mX)])
 plt.title('mX2')
 
 plt.subplot(326)
-plt.plot(np.arange(0, fs/2.0, float(fs)/N), pX, 'c', lw=1.5)
+plt.plot((fs/2.0)*np.arange(mX.size)/float(mX.size), pX, 'c', lw=1.5)
 plt.axis([0,fs/2.0,min(pX),max(pX)])
 plt.title('pX2')
 

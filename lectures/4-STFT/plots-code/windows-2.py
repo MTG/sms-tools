@@ -27,7 +27,7 @@ mX, pX = DF.dftAnal(x1, w, N)
 mX = mX - max(mX)
 
 plt.subplot(3,1,2)
-plt.plot(np.arange(N/2), mX, 'r', lw=1.5)
+plt.plot(np.arange(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,N/4,-70,0])
 plt.title ('mX (rectangular window)')
 
@@ -37,7 +37,7 @@ mX, pX = DF.dftAnal(x1, w, N)
 mX = mX - max(mX)
 
 plt.subplot(3,1,3)
-plt.plot(np.arange(N/2), mX, 'r', lw=1.5)
+plt.plot(np.arange(mX.size), mX, 'r', lw=1.5)
 plt.axis([0,N/4,-70,0])
 plt.title ('mX (blackman window)')
 
