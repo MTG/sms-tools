@@ -25,7 +25,7 @@ plt.subplot(311)
 plt.plot(fs*np.arange(mX1.size)/float(N), mX1-max(mX1), 'r', lw=1.5)
 plt.plot(fs * iploc/N, ipmag-max(mX1), marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5) 
 plt.axis([200, 1000, -80, 4])
-plt.title('mX + peaks (sine-440-490.wav)')
+plt.title('mX + peaks (sine-440+490.wav)')
 
 (fs, x) = UF.wavread('../../../sounds/vibraphone-C6.wav')
 w = np.blackman(401)

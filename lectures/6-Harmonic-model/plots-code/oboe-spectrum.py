@@ -24,13 +24,13 @@ plt.axis([-hM1/float(fs), hM2/float(fs), min(x1), max(x1)])
 plt.title('x (oboe-A4.wav)')
 
 plt.subplot(3,1,2)
-plt.plot(fs*np.arange(N/2)/float(N), mX, 'r', lw=1.5)
+plt.plot(fs*np.arange(mX.size)/float(N), mX, 'r', lw=1.5)
 plt.axis([0,fs/3,-90,max(mX)])
 plt.title ('mX')
 
 plt.subplot(3,1,3)
-plt.plot(fs*np.arange(N/2)/float(N), pX, 'c', lw=1.5)
-plt.axis([0,fs/3,min(pX),20])
+plt.plot(fs*np.arange(pX.size)/float(N), pX, 'c', lw=1.5)
+plt.axis([0,fs/3,min(pX),18])
 plt.title ('pX')
 
 plt.tight_layout()

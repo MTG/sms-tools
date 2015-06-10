@@ -63,13 +63,13 @@ maxf0 = 1500
 w = blackman (M)
 x1 = x[start:start+M]
 mX, pX = DFT.dftAnal(x1, w, N)          
-ploc = UF.peakDetection(mX, t)    
+ploc = UF.peakDetection(mX, hN, t)    
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
 ipfreq = fs * iploc/N
 f0cand = np.arange(minf0, maxf0, 1.0)
 maxnpeaks = 10
 f0, ErrorPM, ErrorMP, Error = TWM (ipfreq, ipmag, maxnpeaks, f0cand)
-freqaxis = fs*np.arange(mX.size)/float(N)
+freqaxis = fs*np.arange(N/2)/float(N)
 
 plt.figure(1, figsize=(9, 7))
 plt.subplot (2,1,1)

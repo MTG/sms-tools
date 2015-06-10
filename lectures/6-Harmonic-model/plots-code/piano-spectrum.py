@@ -25,13 +25,13 @@ plt.axis([-hM1/float(fs), hM2/float(fs), min(x1), max(x1)])
 plt.title('x (piano.wav)')
 
 plt.subplot(3,1,2)
-plt.plot(fs*np.arange(N/2)/float(N), mX, 'r', lw=1.5)
+plt.plot(fs*np.arange(mX.size)/float(N), mX, 'r', lw=1.5)
 plt.axis([0,fs/4,-90,max(mX)])
 plt.title ('mX')
 
 plt.subplot(3,1,3)
-plt.plot(fs*np.arange(N/2)/float(N), pX, 'c', lw=1.5)
-plt.axis([0,fs/4,-15,max(pX)])
+plt.plot(fs*np.arange(pX.size)/float(N), pX, 'c', lw=1.5)
+plt.axis([0,fs/4,-5,max(pX)])
 plt.title ('pX')
 
 plt.tight_layout()

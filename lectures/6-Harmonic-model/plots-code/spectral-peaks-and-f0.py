@@ -19,10 +19,10 @@ hM = (M+1)/2
 
 x1 = x[start:start+M]
 mX, pX = DFT.dftAnal(x1, w, N)
-ploc = UF.peakDetection(mX, hN, t)
+ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
 pmag = mX[ploc]
-freqaxis = fs*np.arange(N/2)/float(N)
+freqaxis = fs*np.arange(mX.size)/float(N)
 
 plt.figure(1, figsize=(9, 5))
 plt.plot(freqaxis,mX,'r', lw=1.5)

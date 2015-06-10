@@ -33,7 +33,7 @@ plt.title('mX + peaks (oboe-A4.wav)')
 
 plt.subplot (2,1,2)
 plt.plot(freqaxis, pX,'c', lw=1.5)
-plt.axis([0,7000, min(pX),10])
+plt.axis([0,7000,vmin(pX),10])
 plt.plot(fs * iploc/N, ipphase, marker='x', color='b', linestyle='', markeredgewidth=1.5)   
 plt.title('pX + peaks') 
 
