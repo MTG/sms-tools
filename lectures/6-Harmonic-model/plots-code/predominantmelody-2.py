@@ -5,7 +5,6 @@ from pylab import *
 from numpy import *
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 import stft as STFT
-import sineModel as SM
 import utilFunctions as UF
 
 filename = '../../../sounds/carnatic.wav'
@@ -52,7 +51,7 @@ pitch, confidence = run_pitch_contours_melody(contours_bins,
                                               contours_start_times,
                                               duration)
 
-yf0 = SM.sinewaveSynth(pitch, .6, hopSize, sampleRate)
+yf0 = UF.sinewaveSynth(pitch, .6, hopSize, sampleRate)
 
 figure(1, figsize=(9, 6))
 
