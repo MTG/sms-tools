@@ -31,12 +31,12 @@ x1 = x[pos-hM1:pos+hM2]
 x2 = x[pos-Ns/2-1:pos+Ns/2-1]
 
 mX, pX = DFT.dftAnal(x1, w, N)
-ploc = UF.peakDetection(mX, N/2, t)
+ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
 ipfreq = fs*iploc/N
-f0 = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0)
+f0 = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0)
 hfreqp = []
-hfreq, hmag, hphase = UF.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
+hfreq, hmag, hphase = HM.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
 Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs) 
 mYh = 20 * np.log10(abs(Yh[:Ns/2]))     
 pYh = np.unwrap(np.angle(Yh[:Ns/2])) 

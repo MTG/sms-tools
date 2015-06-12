@@ -16,10 +16,9 @@ w = np.hamming(512)
 N = 512
 H = 256
 stocf = .1
-mYst = STM.stochasticModelAnal(x, H, stocf)
-y = STM.stochasticModelSynth(mYst, H)
+mYst = STM.stochasticModelAnal(x, H, N, stocf)
+y = STM.stochasticModelSynth(mYst, H, N)
 mX, pX = STFT.stftAnal(x, fs, w, N, H)
-
 
 plt.figure(1, figsize=(9, 7))
 plt.subplot(411)
@@ -30,7 +29,7 @@ plt.axis([0,x.size/float(fs),min(x),max(x)])
 plt.subplot(412)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(N/2)*float(fs)/N                         
+binFreq = np.arange(mX[0,:].size)*float(fs)/N                         
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
 plt.title('mX; M=512, N=512, H=256')
 plt.autoscale(tight=True)
@@ -38,7 +37,7 @@ plt.autoscale(tight=True)
 plt.subplot(413)
 numFrames = int(mYst[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(stocf*N/2)*float(fs)/(stocf*N)                       
+binFreq = np.arange(stocf*mX[0,:].size)*float(fs)/(stocf*N)                       
 plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
 plt.title('mY (stochastic approximation); stocf=.1')
 plt.autoscale(tight=True)

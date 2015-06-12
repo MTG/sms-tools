@@ -11,7 +11,7 @@ import utilFunctions as UF
 def stochasticModelFrame(x, w, N, stocf) :
 	# x: input array sound, w: analysis window, N: FFT size,  
 	# stocf: decimation factor of mag spectrum for stochastic analysis
-	hN = N/2                                                 # size of positive spectrum
+	hN = N/2+1                                               # size of positive spectrum
 	hM = (w.size)/2                                          # half analysis window size
 	pin = hM                                                 # initialize sound pointer in middle of analysis window       
 	fftbuffer = np.zeros(N)                                  # initialize buffer for FFT
@@ -28,7 +28,7 @@ def stochasticModelFrame(x, w, N, stocf) :
 	pY = 2*np.pi*np.random.rand(hN)                        # generate phase random values
 	Y = np.zeros(N, dtype = complex)
 	Y[:hN] = 10**(mY/20) * np.exp(1j*pY)                   # generate positive freq.
-	Y[hN+1:] = 10**(mY[:0:-1]/20) * np.exp(-1j*pY[:0:-1])  # generate negative freq.
+	Y[hN:] = 10**(mY[-2:0:-1]/20) * np.exp(-1j*pY[-2:0:-1]) # generate negative freq.
 	fftbuffer = np.real( ifft(Y) )                         # inverse FFT
 	y = fftbuffer*N/2                                  
 	return mX, pX, mY, pY, y
@@ -52,14 +52,14 @@ if __name__ == '__main__':
 	plt.axis([first/float(fs), last/float(fs), min(x[first:last]), max(x[first:last])])
 	plt.title('x (ocean.wav)')
 	plt.subplot(4,1,2)
-	plt.plot(np.arange(0, fs/2.0, fs/float(N)), mX, 'r', lw=1.5, label="mX")
-	plt.plot(np.arange(0, fs/2.0, fs/float(N)), mY, 'k', lw=1.5, label="mY")
+	plt.plot(float(fs)*np.arange(mX.size)/N, mX, 'r', lw=1.5, label="mX")
+	plt.plot(float(fs)*np.arange(mY.size)/N, mY, 'k', lw=1.5, label="mY")
 	plt.legend()
 	plt.axis([0, maxFreq, -80, max(mX)+3])
 	plt.title('mX + mY (stochastic approximation)')
 	plt.subplot(4,1,3)
-	plt.plot(np.arange(0, fs/2.0, fs/float(N)), pX, 'c', lw=1.5, label="pX")
-	plt.plot(np.arange(0, fs/2.0, fs/float(N)), pY-np.pi, 'k', lw=1.5, label="pY")
+	plt.plot(float(fs)*np.arange(pX.size)/N, pX, 'c', lw=1.5, label="pX")
+	plt.plot(float(fs)*np.arange(pY.size)/N, pY-np.pi, 'k', lw=1.5, label="pY")
 	plt.axis([0, maxFreq, -np.pi, np.pi]) 
 	plt.legend()
 	plt.title('pX + pY (random phases)')

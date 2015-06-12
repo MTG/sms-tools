@@ -8,6 +8,7 @@ import sys, os, functools, time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 import dftModel as DFT
 import utilFunctions as UF
+import harmonicModel as HM
 
 (fs, x) = UF.wavread('../../../sounds/flute-A4.wav')
 pos = .8*fs
@@ -30,12 +31,12 @@ x1 = x[pos-hM1:pos+hM2]
 x2 = x[pos-Ns/2-1:pos+Ns/2-1]
 
 mX, pX = DFT.dftAnal(x1, w, N)
-ploc = UF.peakDetection(mX, N/2, t)
+ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
 ipfreq = fs*iploc/N
-f0 = UF.f0DetectionTwm(ipfreq, ipmag, f0et, minf0, maxf0)
+f0 = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0)
 hfreqp = []
-hfreq, hmag, hphase = UF.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
+hfreq, hmag, hphase = HM.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
 Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs) 
 mYh = 20 * np.log10(abs(Yh[:Ns/2]))     
 bh=blackmanharris(Ns)
