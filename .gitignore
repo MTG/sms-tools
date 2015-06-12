@@ -2,8 +2,10 @@
 *.so
 *.pyc
 *.o
+*.py~
 workspace/*.pyc
 workspace/*.py
+workspace/*.py~
 workspace/*.wav
 software/models_interface/output_sounds/*.wav
 software/transformations_interface/output_sounds/*.wav
