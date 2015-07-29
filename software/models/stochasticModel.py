@@ -15,7 +15,7 @@ def stochasticModelAnal(x, H, N, stocf):
 	"""
 
 	hN = N/2+1                                             # positive size of fft
-	No2 = N/2					       # half of N
+	No2 = N/2                                              # half of N
 	if (hN*stocf < 3):                                     # raise exception if decimation factor too small
 		raise ValueError("Stochastic decimation factor too small")
 		
@@ -55,8 +55,8 @@ def stochasticModelSynth(stocEnv, H, N):
 	if not(UF.isPower2(N)):                                 	# raise error if N not a power of two
 		raise ValueError("N is not a power of two")
  
-	hN = N/2+1                                            		# positive size of fft
-	No2 = N/2							# half of N
+	hN = N/2+1                                                  # positive size of fft
+	No2 = N/2                                                   # half of N
 	L = stocEnv[:,0].size                                    	# number of frames
 	ysize = H*(L+3)                                         	# output sound size
 	y = np.zeros(ysize)                                     	# initialize output array

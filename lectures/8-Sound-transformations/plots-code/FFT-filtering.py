@@ -24,19 +24,19 @@ mX, pX = DFT.dftAnal(x1, np.hamming(N), N)
 startBin = int(N*500.0/fs)
 nBins = int(N*4000.0/fs)
 bandpass = (np.hanning(nBins) * 60.0) - 60
-filt = np.zeros(N/2)-60
+filt = np.zeros(mX.size)-60
 filt[startBin:startBin+nBins] = bandpass
 mY = mX + filt
 
 plt.subplot(323)
-plt.plot(fs*np.arange(N/2)/float(N/2), mX, 'r', lw=1.5, label = 'mX')
-plt.plot(fs*np.arange(N/2)/float(N/2), filt+max(mX), 'k', lw=1.5, label='filter')
+plt.plot(fs*np.arange(mX.size)/float(mX.size), mX, 'r', lw=1.5, label = 'mX')
+plt.plot(fs*np.arange(mX.size)/float(mX.size), filt+max(mX), 'k', lw=1.5, label='filter')
 plt.legend(prop={'size':10})
 plt.axis([0,fs/4.0,-90,max(mX)+2])
 plt.title('mX + filter')
 
 plt.subplot(325)
-plt.plot(fs*np.arange(N/2)/float(N/2), pX, 'c', lw=1.5)
+plt.plot(fs*np.arange(pX.size)/float(pX.size), pX, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pX),8])
 plt.title('pX')
 
@@ -48,12 +48,12 @@ plt.axis([0, float(N)/fs, min(y), max(y)])
 plt.title('y')
 
 plt.subplot(324)
-plt.plot(fs*np.arange(N/2)/float(N/2), mY1, 'r', lw=1.5)
+plt.plot(fs*np.arange(mY1.size)/float(mY1.size), mY1, 'r', lw=1.5)
 plt.axis([0,fs/4.0,-90,max(mY1)+2])
 plt.title('mY')
 
 plt.subplot(326)
-plt.plot(fs*np.arange(N/2)/float(N/2), pY, 'c', lw=1.5)
+plt.plot(fs*np.arange(pY.size)/float(pY.size), pY, 'c', lw=1.5)
 plt.axis([0,fs/4.0,min(pY),8])
 plt.title('pY')
 

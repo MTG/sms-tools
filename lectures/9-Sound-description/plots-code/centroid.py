@@ -9,7 +9,7 @@ fs = 44100
 spectrum = ess.Spectrum(size=N)
 window = ess.Windowing(size=M, type='hann')
 centroid = ess.Centroid(range=fs/2.0)
-x = ess.MonoLoader(filename = ‘../../../sounds/speech-male.wav', sampleRate = fs)()
+x = ess.MonoLoader(filename = '../../../sounds/speech-male.wav', sampleRate = fs)()
 centroids = []
 
 for frame in ess.FrameGenerator(x, frameSize=M, hopSize=H, startFromZero=True):  

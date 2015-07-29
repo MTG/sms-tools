@@ -2,7 +2,8 @@ import os, sys
 import freesound as fs
 import json
 
-Key = "ea477b993286454559976c7e6f22bf535cd07be6"
+# obtain the API key from freesound.org and add it here
+Key = "????????????"
 
 descriptors = [ 'lowlevel.spectral_centroid.mean',
                 'lowlevel.spectral_centroid.var',
@@ -122,7 +123,7 @@ def downloadSoundsFreesound(queryText = "", API_Key = "", outputDir = "", topNRe
 
 ######
   
-#downloadSoundsFreesound(queryText = 'trumpet', API_Key = Key, tag = 'single-note',  duration=(0.5, 4), topNResults = 20, outputDir = 'freesound-sounds')
-#downloadSoundsFreesound(queryText = 'violin', API_Key = Key, tag = 'single-note',  duration=(0.5, 4), topNResults = 20, outputDir = 'freesound-sounds') 
+downloadSoundsFreesound(queryText = 'trumpet', API_Key = Key, tag = 'single-note',  duration=(0.5, 4), topNResults = 20, outputDir = 'freesound-sounds')
+downloadSoundsFreesound(queryText = 'violin', API_Key = Key, tag = 'single-note',  duration=(0.5, 4), topNResults = 20, outputDir = 'freesound-sounds') 
 downloadSoundsFreesound(queryText = 'flute', API_Key = Key, tag = 'single-note',  duration=(0.5, 4), topNResults = 20, outputDir = 'freesound-sounds') 
   
