@@ -3,6 +3,7 @@
 *.pyc
 *.o
 *.py~
-workspace/*
+workspace_dev/*
+workspace/*.py*
 software/models_interface/output_sounds/*.wav
 software/transformations_interface/output_sounds/*.wav
