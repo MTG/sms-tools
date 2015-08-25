@@ -11,7 +11,7 @@ kv = np.arange(-N/2, N/2)
 x = np.cos(2*np.pi*k0/N*nv)
 
 plt.subplot(311)
-plt.title('x; k = 7.5, N = 64')
+plt.title('x; k_0 = 7.5, N = 64')
 plt.plot(nv, np.real(x),'b', lw=1.5)
 plt.axis([-N/2,N/2-1,-1,1])
 for k in kv:
