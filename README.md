@@ -10,7 +10,10 @@ In order to use these tools you have to install version 2.7.* of python and the 
 
 In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
 
-<code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy python-pygame cython</code>
+<code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy cython</code>
+
+In OSX you install these modules by typing in the Terminal:
+<code>$ pip install ipython numpy matplotlib scipy<\code>
 
 then for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
