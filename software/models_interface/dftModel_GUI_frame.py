@@ -3,17 +3,17 @@
 from Tkinter import *
 import tkFileDialog, tkMessageBox
 import sys, os
-import pygame
 from scipy.io.wavfile import read
 import dftModel_function
- 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
+import utilFunctions as UF
+
 class DftModel_frame:
   
 	def __init__(self, parent):  
 		 
 		self.parent = parent        
 		self.initUI()
-		pygame.init()
 
 	def initUI(self):
 
@@ -33,7 +33,7 @@ class DftModel_frame:
 		self.open_file.grid(row=1, column=0, sticky=W, padx=(220, 6)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		self.preview = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation.get()), bg="gray30", fg="white")
 		self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
 		## DFT MODEL
@@ -83,24 +83,6 @@ class DftModel_frame:
 		options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
-
-	def preview_sound(self):
-		
-		filename = self.filelocation.get()
-
-		if filename[-4:] == '.wav':
-			fs, x = read(filename)
-		else:
-			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-			return
-
-		if len(x.shape) > 1 :
-			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")
-		elif fs != 44100:
-			tkMessageBox.showerror("Sample Frequency", "Sample frequency must be 44100 Hz")
-		else:
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
  
 	def browse_file(self):
 		

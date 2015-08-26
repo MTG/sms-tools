@@ -3,6 +3,8 @@ from scipy.signal import resample, blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import math, copy, sys, os
 from scipy.io.wavfile import write, read
+from sys import platform
+import subprocess
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utilFunctions_C/'))
 try:
 	import utilFunctions_C as UF_C
@@ -50,6 +52,23 @@ def wavread(filename):
 	x = np.float32(x)/norm_fact[x.dtype.name]
 	return fs, x
 
+def wavplay(filename):
+	"""
+	Play a wav audio file from system using OS calls
+	filename: name of file to read
+	"""
+	if (os.path.isfile(filename) == False):                  # raise error if wrong input file
+		print("Input file does not exist. Make sure you clicked \'compute\'")
+	else:
+		if sys.platform == "linux" or sys.platform == "linux2":
+		    # linux
+		    subprocess.call(["aplay", filename])
+
+		elif sys.platform == "darwin":
+			# OS X
+			subprocess.call(["afplay", filename])
+		else:
+			print("Platform not recognized")
 
 def wavwrite(y, fs, filename):
 	"""

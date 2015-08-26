@@ -3,9 +3,10 @@
 from Tkinter import *
 import tkFileDialog, tkMessageBox
 import sys, os
-import pygame
 from scipy.io.wavfile import read
 import hprModel_function
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
+import utilFunctions as UF
  
 class HprModel_frame:
   
@@ -13,7 +14,6 @@ class HprModel_frame:
 		 
 		self.parent = parent        
 		self.initUI()
-		pygame.init()
 
 	def initUI(self):
 
@@ -33,7 +33,7 @@ class HprModel_frame:
 		self.open_file.grid(row=1, column=0, sticky=W, padx=(220, 6)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		self.preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		self.preview = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation.get()), bg="gray30", fg="white")
 		self.preview.grid(row=1, column=0, sticky=W, padx=(306,6))
 
 		## HARMONIC MODEL
@@ -134,19 +134,19 @@ class HprModel_frame:
 		#BUTTON TO PLAY SINE OUTPUT
 		output_label = "Sinusoidal:"
 		Label(self.parent, text=output_label).grid(row=13, column=0, sticky=W, padx=5, pady=(10,0))
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_sines'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_hprModel_sines.wav'), bg="gray30", fg="white")
 		self.output.grid(row=13, column=0, padx=(80,5), pady=(10,0), sticky=W)
 
 		#BUTTON TO PLAY RESIDUAL OUTPUT
 		output_label = "Residual:"
 		Label(self.parent, text=output_label).grid(row=14, column=0, sticky=W, padx=5, pady=(5,0))
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel_residual'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_hprModel_residual.wav'), bg="gray30", fg="white")
 		self.output.grid(row=14, column=0, padx=(80,5), pady=(5,0), sticky=W)
 
 		#BUTTON TO PLAY OUTPUT
 		output_label = "Output:"
 		Label(self.parent, text=output_label).grid(row=15, column=0, sticky=W, padx=5, pady=(5,15))
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hprModel'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_hprModel.wav'), bg="gray30", fg="white")
 		self.output.grid(row=15, column=0, padx=(80,5), pady=(5,15), sticky=W)
 
 
@@ -156,24 +156,6 @@ class HprModel_frame:
 		options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
-
-	def preview_sound(self):
-		
-		filename = self.filelocation.get()
-
-		if filename[-4:] == '.wav':
-			(fs, x) = read(filename)
-		else:
-			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-			return
-
-		if len(x.shape) > 1 :
-			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")
-		elif fs != 44100:
-			tkMessageBox.showerror("Sample Frequency", "Sample frequency must be 44100 Hz")
-		else:
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
  
 	def browse_file(self):
 		
@@ -202,12 +184,3 @@ class HprModel_frame:
 
 		except ValueError as errorMessage:
 			tkMessageBox.showerror("Input values error", errorMessage)
-
-	def play_out_sound(self, extension):
-
-		filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_' + extension + '.wav'
-		if os.path.isfile(filename):
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
-		else:
-			tkMessageBox.showerror("Output audio file not found", "The output audio file has not been computed yet")
