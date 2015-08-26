@@ -3,10 +3,11 @@
 from Tkinter import *
 import tkFileDialog, tkMessageBox
 import sys, os
-import pygame
 from scipy.io.wavfile import read
 import numpy as np
 import stftMorph_function as sT
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
+import utilFunctions as UF
  
 class StftMorph_frame:
   
@@ -14,7 +15,6 @@ class StftMorph_frame:
 		 
 		self.parent = parent        
 		self.initUI()
-		pygame.init()
 
 	def initUI(self):
 
@@ -35,7 +35,7 @@ class StftMorph_frame:
 		open_file1.grid(row=0, column=0, sticky=W, padx=(330, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 1
-		preview1 = Button(self.parent, text=">", command=self.preview_sound1, bg="gray30", fg="white")
+		preview1 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation1.get()), bg="gray30", fg="white")
 		preview1.grid(row=0, column=0, sticky=W, padx=(375,6), pady=(10,2))
 		
 		#ANALYSIS WINDOW TYPE SOUND 1
@@ -95,7 +95,7 @@ class StftMorph_frame:
 		open_file2.grid(row=3, column=0, sticky=W, padx=(330, 6), pady=(2,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 2
-		preview2 = Button(self.parent, text=">", command=self.preview_sound2, bg="gray30", fg="white")
+		preview2 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation2.get()), bg="gray30", fg="white")
 		preview2.grid(row=3, column=0, sticky=W, padx=(375,6), pady=(2,2))
 
 
@@ -155,7 +155,7 @@ class StftMorph_frame:
 		self.compute.grid(row=11, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('stftMorph'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_stftMorph.wav'), bg="gray30", fg="white")
 		self.transf_output.grid(row=11, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -164,23 +164,6 @@ class StftMorph_frame:
 		options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
-
-	def preview_sound1(self):
-		filename = self.filelocation1.get()
-
-		if filename[-4:] == '.wav':
-			(fs, x) = read(filename)
-		else:
-			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-			return
-
-		if len(x.shape) > 1 :
-			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")
-		elif fs != 44100:
-			tkMessageBox.showerror("Sample Frequency", "Sample frequency must be 44100 Hz")
-		else:
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
  
 	def browse_file1(self):
 		
@@ -189,23 +172,6 @@ class StftMorph_frame:
 		#set the text of the self.filelocation
 		self.filelocation1.delete(0, END)
 		self.filelocation1.insert(0,self.filename1)
-
-	def preview_sound2(self):
-		filename = self.filelocation2.get()
-
-		if filename[-4:] == '.wav':
-			(fs, x) = read(filename)
-		else:
-			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-			return
-
-		if len(x.shape) > 1 :
-			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")
-		elif fs != 44100:
-			tkMessageBox.showerror("Sample Frequency", "Sample frequency must be 44100 Hz")
-		else:
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
  
 	def browse_file2(self):
 		
@@ -234,12 +200,3 @@ class StftMorph_frame:
 
 		except ValueError as errorMessage:
 			tkMessageBox.showerror("Input values error", errorMessage)
-
-	def play_out_sound(self, extension):
-
-		filename = 'output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_' + extension + '.wav'
-		if os.path.isfile(filename):
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
-		else:
-			tkMessageBox.showerror("Output audio file not found", "The output audio file has not been computed yet")

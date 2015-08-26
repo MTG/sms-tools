@@ -58,7 +58,7 @@ def wavplay(filename):
 	filename: name of file to read
 	"""
 	if (os.path.isfile(filename) == False):                  # raise error if wrong input file
-		print("Input file does not exist. Make sure you clicked \'compute\'")
+		print("Input file does not exist. Make sure you computed the analysis/synthesis")
 	else:
 		if sys.platform == "linux" or sys.platform == "linux2":
 		    # linux

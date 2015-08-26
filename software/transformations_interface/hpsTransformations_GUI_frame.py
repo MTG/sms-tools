@@ -3,10 +3,11 @@
 from Tkinter import *
 import tkFileDialog, tkMessageBox
 import sys, os
-import pygame
 from scipy.io.wavfile import read
 import numpy as np
 import hpsTransformations_function as hT
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
+import utilFunctions as UF
  
 class HpsTransformations_frame:
   
@@ -14,7 +15,6 @@ class HpsTransformations_frame:
 		 
 		self.parent = parent        
 		self.initUI()
-		pygame.init()
 
 	def initUI(self):
 
@@ -34,7 +34,7 @@ class HpsTransformations_frame:
 		open_file.grid(row=0, column=0, sticky=W, padx=(340, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		preview = Button(self.parent, text=">", command=self.preview_sound, bg="gray30", fg="white")
+		preview = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation.get()), bg="gray30", fg="white")
 		preview.grid(row=0, column=0, sticky=W, padx=(385,6), pady=(10,2))
 
 		## HPS TRANSFORMATIONS ANALYSIS
@@ -142,7 +142,7 @@ class HpsTransformations_frame:
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
 		#BUTTON TO PLAY ANALYSIS/SYNTHESIS OUTPUT
-		self.output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModel'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_hpsModel.wav'), bg="gray30", fg="white")
 		self.output.grid(row=4, column=0, padx=(145,5), pady=(10,5), sticky=W)
 
 		###
@@ -191,7 +191,7 @@ class HpsTransformations_frame:
 		self.compute.grid(row=13, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:self.play_out_sound('hpsModelTransformation'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_hpsModelTransformation.wav'), bg="gray30", fg="white")
 		self.transf_output.grid(row=13, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -200,23 +200,6 @@ class HpsTransformations_frame:
 		options['filetypes'] = [('All files', '.*'), ('Wav files', '.wav')]
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
-
-	def preview_sound(self):
-		filename = self.filelocation.get()
-
-		if filename[-4:] == '.wav':
-			(fs, x) = read(filename)
-		else:
-			tkMessageBox.showerror("Wav file", "The audio file must be a .wav")
-			return
-
-		if len(x.shape) > 1 :
-			tkMessageBox.showerror("Stereo file", "Audio file must be Mono not Stereo")
-		elif fs != 44100:
-			tkMessageBox.showerror("Sample Frequency", "Sample frequency must be 44100 Hz")
-		else:
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
  
 	def browse_file(self):
 		
@@ -267,12 +250,3 @@ class HpsTransformations_frame:
 
 		except AttributeError:
 			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
-
-	def play_out_sound(self, extension):
-
-		filename = 'output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_' + extension + '.wav'
-		if os.path.isfile(filename):
-			sound = pygame.mixer.Sound(filename)
-			sound.play()
-		else:
-			tkMessageBox.showerror("Output audio file not found", "The output audio file has not been computed yet")
