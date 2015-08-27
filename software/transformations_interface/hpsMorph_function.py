@@ -168,7 +168,7 @@ def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 	
 
 if __name__ == "__main__":

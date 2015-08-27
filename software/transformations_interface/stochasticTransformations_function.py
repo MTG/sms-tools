@@ -78,7 +78,7 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	plt.xlabel('time (sec)')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == '__main__':
 	main()

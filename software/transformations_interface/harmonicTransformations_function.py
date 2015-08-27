@@ -1,4 +1,4 @@
-# function call to the transformation functions of relevance for the hpsModel
+block=False# function call to the transformation functions of relevance for the hpsModel
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -153,7 +153,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling = np.array(
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	
