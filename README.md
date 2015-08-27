@@ -6,7 +6,7 @@ Sound analysis/synthesis tools for music applications written in python (with a 
 How to use
 ----------
 
-In order to use these tools you have to install version 2.7.* of python and the following modules: ipython, numpy, matplotlib, scipy, pygame, and cython. 
+In order to use these tools you have to install version 2.7.* of python and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
 
 In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
 
