@@ -16,6 +16,11 @@ In OSX (which has some problems and that we do not support) you install these mo
 
 <code>$ pip install ipython numpy matplotlib scipy cython</code>
 
+In OS X, you can use [homebrew](http://brew.sh/) and [pip](http://pip.readthedocs.org/en/latest/):
+
+<code>$ brew install sdl sdl_image sdl_mixer sdl_ttf smpeg portmidi python</code>
+<code>$ pip install ipython numpy matplotlib scipy hg+http://bitbucket.org/pygame/pygame cython</code>
+
 then for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
 <code>$ python compileModule.py build_ext --inplace </code>
