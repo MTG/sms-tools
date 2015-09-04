@@ -81,7 +81,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 	
 
 if __name__ == "__main__":

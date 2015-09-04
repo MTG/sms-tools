@@ -90,7 +90,7 @@ def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-ma
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show(block=False)
+	plt.show()
 
 if __name__ == '__main__':
 	main()
