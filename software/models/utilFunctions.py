@@ -13,7 +13,7 @@ except ImportError:
 	print "-------------------------------------------------------------------------------"
 	print "Warning:"
 	print "Cython modules for some of the core functions were not imported."
-	print "Please refer to the README file for the instructions to compile the cython modules"
+	print "Please refer to the README.md file in the 'sms-tools' directory, for the instructions to compile the cython modules"
 	print "Exiting the code!!"
 	print "-------------------------------------------------------------------------------"
 	print "\n"
