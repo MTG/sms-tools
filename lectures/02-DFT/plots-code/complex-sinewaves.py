@@ -8,7 +8,7 @@ for k in range(N):
 	plt.subplot(N/2, 2, k+1)
 	plt.plot(np.real(s), 'b', lw=1.5)
 	plt.axis([0,N-1,-1.5,1.5])
-	plt.title(r"$\overline{s}_{%s}$"%(k), fontsize=18)
+	plt.title(r"$s^{*}_{%s}$"%(k), fontsize=18)
 	plt.subplot(N/2, 2, k+1)
 	plt.plot(np.imag(s), 'g', lw=1.5)
 	plt.axis([0,N-1,-1.5,1.5])
