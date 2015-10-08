@@ -5,7 +5,7 @@ import numpy as np
 import math
 from scipy.fftpack import fft, ifft
 import utilFunctions as UF
-tol = 1e-5                                                      # threshold used to compute phase
+tol = 1e-14                                                      # threshold used to compute phase
 
 def dftModel(x, w, N):
 	"""

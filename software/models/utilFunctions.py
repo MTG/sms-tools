@@ -18,6 +18,14 @@ except ImportError:
 	print "-------------------------------------------------------------------------------"
 	print "\n"
 	sys.exit(0)
+	
+winsound_imported = False	
+if sys.platform == "win32":
+	try:
+		import winsound
+		winsound_imported = True
+	except:
+		print "You won't be able to play sounds, winsound could not be imported"
 
 def isPower2(num):
 	"""
@@ -68,8 +76,10 @@ def wavplay(filename):
 			# OS X
 			subprocess.call(["afplay", filename])
 		elif sys.platform == "win32":
-			import winsound
-			winsound.PlaySound(filename, winsound.SND_FILENAME)
+			if winsound_imported:
+				winsound.PlaySound(filename, winsound.SND_FILENAME)
+			else:
+				print("Cannot play sound, winsound could not be imported")
 		else:
 			print("Platform not recognized")
 
