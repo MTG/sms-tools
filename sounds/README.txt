@@ -1,5 +1,0 @@
-All sounds in this directory are released under Creative Commons Attribution 4.0 (CC BY 4.0) license. Under the license terms, you can copy and redistribute the sounds in any medium or format. You can remix, transform, and build upon the material for any purpose, even commercially. However, you must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner. 
-
-This directory includes sounds that come from freesound.org, in particular from http://www.freesound.org/people/xserra/packs/13038/. Attribute the sounds to freesound.org, with a link to the sound. 
-
-The full text of the license can be found at http://creativecommons.org/licenses/by/4.0/
