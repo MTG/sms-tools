@@ -123,7 +123,6 @@ def sineModel(x, fs, w, N, t):
 		x1 = x[pin-hM1:pin+hM2]                               # select frame
 		mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft
 		ploc = UF.peakDetection(mX, t)                        # detect locations of peaks
-		pmag = mX[ploc]                                       # get the magnitude of the peaks
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
 		ipfreq = fs*iploc/float(N)                            # convert peak locations to Hertz
 	#-----synthesis-----
@@ -159,7 +158,6 @@ def sineModelAnal(x, fs, w, N, H, t, maxnSines = 100, minSineDur=.01, freqDevOff
 		x1 = x[pin-hM1:pin+hM2]                               # select frame
 		mX, pX = DFT.dftAnal(x1, w, N)                        # compute dft
 		ploc = UF.peakDetection(mX, t)                        # detect locations of peaks
-		pmag = mX[ploc]                                       # get the magnitude of the peaks
 		iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)   # refine peak values by interpolation
 		ipfreq = fs*iploc/float(N)                            # convert peak locations to Hertz
 		# perform sinusoidal tracking by adding peaks to trajectories
