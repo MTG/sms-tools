@@ -22,12 +22,12 @@ freqDevOffset = 20
 freqDevSlope = 0.02
 Ns = 512
 H = Ns/4
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 freqScaling = np.array([0, .8, 1, 1.2])           
 ytfreq = SMT.sineFreqScaling(tfreq, freqScaling)
 y = SM.sineModelSynth(ytfreq, tmag, np.array([]), Ns, H, fs)
-mY, pY = STFT.stftAnal(y, fs, w, N, H)
+mY, pY = STFT.stftAnal(y, w, N, H)
 UF.wavwrite(y,fs, 'sineModelFreqScale-orchestra.wav')
 
 maxplotfreq = 4000.0

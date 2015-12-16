@@ -24,8 +24,8 @@ smoothf = .2
 balancef = 0.5
 y = STFTT.stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
 mX2 = STOC.stochasticModelAnal(x2,H1,H1*2, smoothf)
-mX,pX = STFT.stftAnal(x1, fs, w1, N1, H1)
-mY,pY = STFT.stftAnal(y, fs, w1, N1, H1)
+mX,pX = STFT.stftAnal(x1, w1, N1, H1)
+mY,pY = STFT.stftAnal(y, w1, N1, H1)
 maxplotfreq = 10000.0
 
 plt.figure(1, figsize=(12, 9))

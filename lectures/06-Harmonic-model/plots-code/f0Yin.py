@@ -37,7 +37,7 @@ if __name__ == '__main__':
   N = 2048
   H = 256
   w = hamming(2048)
-  mX, pX = STFT.stftAnal(x, fs, w, N, H)
+  mX, pX = STFT.stftAnal(x, w, N, H)
   maxplotfreq = 2000.0
   frmTime = H*np.arange(mX[:,0].size)/float(fs)                             
   binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        

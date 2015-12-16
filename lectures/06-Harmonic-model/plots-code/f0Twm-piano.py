@@ -23,7 +23,7 @@ H = 128
 x1 = x[1.5*fs:1.8*fs]
 
 plt.figure(1, figsize=(9, 7))
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 f0 = HM.f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et)
 f0 = UF.cleaningTrack(f0, 5)
 yf0 = UF.sinewaveSynth(f0, .8, H, fs)

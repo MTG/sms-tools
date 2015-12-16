@@ -39,7 +39,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	tfreq, tmag, tphase, xr = SPR.sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)
 		
 	# compute spectrogram of residual
-	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
+	mXr, pXr = STFT.stftAnal(xr, w, N, H)
 
 	# sum sinusoids and residual
 	y, ys = SPR.sprModelSynth(tfreq, tmag, tphase, xr, Ns, H, fs)

@@ -13,7 +13,7 @@ from scipy.signal import hamming
 w = np.hamming(1024)
 N = 1024
 H = 512
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 y = STFT.stftSynth(mX, pX, w.size, H)
 
 plt.figure(1, figsize=(9.5, 7))

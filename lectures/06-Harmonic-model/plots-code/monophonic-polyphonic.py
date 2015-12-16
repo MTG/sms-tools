@@ -19,7 +19,7 @@ minSineDur = .02
 maxnSines = 150
 freqDevOffset = 20
 freqDevSlope = 0.02
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
 maxplotfreq = 3000.0
@@ -46,7 +46,7 @@ minSineDur = .1
 maxnSines = 200
 freqDevOffset = 20
 freqDevSlope = 0.02
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 
 maxplotfreq = 3000.0

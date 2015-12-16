@@ -36,10 +36,10 @@ def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-ma
 	y = STFTT.stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef)
 
 	# compute the magnitude and phase spectrogram of input sound (for plotting)
-	mX1, pX1 = STFT.stftAnal(x1, fs, w1, N1, H1)
+	mX1, pX1 = STFT.stftAnal(x1, w1, N1, H1)
 	
 	# compute the magnitude and phase spectrogram of output sound (for plotting)
-	mY, pY = STFT.stftAnal(y, fs, w1, N1, H1)
+	mY, pY = STFT.stftAnal(y, w1, N1, H1)
 	
 	# write output sound
 	outputFile = 'output_sounds/' + os.path.basename(inputFile1)[:-4] + '_stftMorph.wav'

@@ -18,8 +18,8 @@ bandpass = (np.hanning(nBins) * 65.0) - 60
 filt = np.zeros(N/2+1)-60
 filt[startBin:startBin+nBins] = bandpass
 y = STFTT.stftFiltering(x, fs, w, N, H, filt)
-mX,pX = STFT.stftAnal(x, fs, w, N, H)
-mY,pY = STFT.stftAnal(y, fs, w, N, H)
+mX,pX = STFT.stftAnal(x, w, N, H)
+mY,pY = STFT.stftAnal(y, w, N, H)
 
 plt.figure(1, figsize=(12, 9))
 plt.subplot(311)

@@ -38,7 +38,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	hfreq, hmag, hphase, xr = HPR.hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 	  
 	# compute spectrogram of residual
-	mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
+	mXr, pXr = STFT.stftAnal(xr, w, N, H)
 	  
 	# synthesize hpr model
 	y, yh = HPR.hprModelSynth(hfreq, hmag, hphase, xr, Ns, H, fs)

@@ -25,7 +25,7 @@ harmDevSlope = 0.01
 Ns = 512
 H = Ns/4
 
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
 mXr, pXr = STFT.stftAnal(xr, fs, hamming(Ns), Ns, H)

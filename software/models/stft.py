@@ -5,7 +5,7 @@ import numpy as np
 import math
 import dftModel as DFT
 
-def stft(x, fs, w, N, H):
+def stft(x, w, N, H):
 	"""
 	Analysis/synthesis of a sound using the short-time Fourier transform
 	x: input sound, w: analysis window, N: FFT size, H: hop size
@@ -36,7 +36,7 @@ def stft(x, fs, w, N, H):
 	y = np.delete(y, range(y.size-hM1, y.size))    # delete half of the last window which as added in stftAnal
 	return y
 
-def stftAnal(x, fs, w, N, H) :
+def stftAnal(x, w, N, H) :
 	"""
 	Analysis of a sound using the short-time Fourier transform
 	x: input array sound, w: analysis window, N: FFT size, H: hop size
@@ -53,7 +53,6 @@ def stftAnal(x, fs, w, N, H) :
 	pin = hM1                                       # initialize sound pointer in middle of analysis window       
 	pend = x.size-hM1                               # last sample to start a frame
 	w = w / sum(w)                                  # normalize analysis window
-	y = np.zeros(x.size)                            # initialize output array
 	while pin<=pend:                                # while sound pointer is smaller than last sample      
 		x1 = x[pin-hM1:pin+hM2]                       # select one frame of input sound
 		mX, pX = DFT.dftAnal(x1, w, N)                # compute dft

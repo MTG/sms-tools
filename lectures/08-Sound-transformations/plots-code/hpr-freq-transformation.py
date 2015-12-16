@@ -29,7 +29,7 @@ H = 128
 w = get_window(window, M)
 hfreq, hmag, hphase, xr = HPR.hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
-mXr, pXr = STFT.stftAnal(xr, fs, w, N, H)
+mXr, pXr = STFT.stftAnal(xr, w, N, H)
 
 freqScaling = np.array([0, 1.5, 1, 1.5])
 freqStretching = np.array([0, 1.1, 1, 1.1])

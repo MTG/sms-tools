@@ -18,7 +18,7 @@ H = 256
 stocf = .1
 mYst = STM.stochasticModelAnal(x, H, N, stocf)
 y = STM.stochasticModelSynth(mYst, H, N)
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 
 plt.figure(1, figsize=(9, 7))
 plt.subplot(411)

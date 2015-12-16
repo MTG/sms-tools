@@ -14,7 +14,7 @@ import math
 w = np.hamming(1001)
 N = 1024
 H = 256
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 
 plt.figure(1, figsize=(9.5, 6))
 

@@ -55,7 +55,7 @@ yf0 = UF.sinewaveSynth(pitch, .6, hopSize, sampleRate)
 
 figure(1, figsize=(9, 6))
 
-mX, pX = STFT.stftAnal(audio, sampleRate, hamming(frameSize), frameSize, hopSize)
+mX, pX = STFT.stftAnal(audio, hamming(frameSize), frameSize, hopSize)
 maxplotfreq = 3000.0
 numFrames = int(mX[:,0].size)
 frmTime = hopSize*arange(numFrames)/float(sampleRate)                             

@@ -26,12 +26,12 @@ freqDevOffset = 20
 freqDevSlope = 0.02
 Ns = 512
 H = Ns/4
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 timeScale = np.array([.01, .0, .03, .03, .335, .4, .355, .42, .671, .8, .691, .82, .858, 1.2, .878, 1.22, 1.185, 1.6, 1.205, 1.62, 1.497, 2.0, 1.517, 2.02, 1.686, 2.4, 1.706, 2.42, 1.978, 2.8])          
 ytfreq, ytmag = SMT.sineTimeScaling(tfreq, tmag, timeScale)
 y = SM.sineModelSynth(ytfreq, ytmag, np.array([]), Ns, H, fs)
-mY, pY = STFT.stftAnal(y, fs, w, N, H)
+mY, pY = STFT.stftAnal(y, w, N, H)
 
 plt.figure(1, figsize=(12, 9))
 maxplotfreq = 4000.0
