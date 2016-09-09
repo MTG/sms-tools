@@ -34,7 +34,7 @@ To modify the existing code, or to create your own using some of the functions, 
 Content
 -------
 
-All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lecture</code> directory, the assignments related to the lectures in the  <code>assignments</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
+All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the assignments related to the lectures in the  <code>assignments</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
 
 License
 -------
