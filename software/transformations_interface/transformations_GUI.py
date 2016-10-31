@@ -1,3 +1,8 @@
+import sys
+if sys.platform == 'darwin':
+    import matplotlib
+    matplotlib.use('TkAgg')
+
 from Tkinter import *
 from notebook import *   # window with tabs
 
