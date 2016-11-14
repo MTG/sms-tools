@@ -18,16 +18,16 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	# read input sound
 	(fs, x) = UF.wavread(inputFile)
 
-	# compute stochastic model                                          
-	stocEnv = STM.stochasticModelAnal(x, H, N, stocf)             
+	# compute stochastic model
+	stocEnv = STM.stochasticModelAnal(x, H, N, stocf)
 
 	# synthesize sound from stochastic model
-	y = STM.stochasticModelSynth(stocEnv, H, N)    
+	y = STM.stochasticModelSynth(stocEnv, H, N)
 
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_stochasticModel.wav'
 
 	# write output sound
-	UF.wavwrite(y, fs, outputFile)               
+	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to plot
 	plt.figure(figsize=(12, 9))
@@ -59,7 +59,8 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	plt.xlabel('time (sec)')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
-  
+
 if __name__ == "__main__":
 	main()

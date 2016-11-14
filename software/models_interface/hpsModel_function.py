@@ -8,15 +8,15 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 import utilFunctions as UF
 import hpsModel as HPS
 
-def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100, 
+def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601, N=1024, t=-100,
 	minSineDur=0.1, nH=100, minf0=350, maxf0=700, f0et=5, harmDevSlope=0.01, stocf=0.1):
 	"""
 	inputFile: input sound file (monophonic with sampling rate of 44100)
-	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)
 	M: analysis window size; N: fft size (power of two, bigger or equal than M)
 	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
 	nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
-	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm
 	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
 	stocf: decimation factor used for the stochastic approximation
 	"""
@@ -35,7 +35,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 
 	# compute the harmonic plus stochastic model of the whole sound
 	hfreq, hmag, hphase, stocEnv = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
-		
+
 	# synthesize a sound from the harmonic plus stochastic representation
 	y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, stocEnv, Ns, H, fs)
 
@@ -68,7 +68,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	numFrames = int(stocEnv[:,0].size)
 	sizeEnv = int(stocEnv[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
-	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
+	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv
 	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
 	plt.autoscale(tight=True)
 
@@ -77,7 +77,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 		harms = hfreq*np.less(hfreq,maxplotfreq)
 		harms[harms==0] = np.nan
 		numFrames = harms.shape[0]
-		frmTime = H*np.arange(numFrames)/float(fs) 
+		frmTime = H*np.arange(numFrames)/float(fs)
 		plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
 		plt.xlabel('time (sec)')
 		plt.ylabel('frequency (Hz)')
@@ -93,6 +93,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	plt.title('output sound: y')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
 
 if __name__ == "__main__":

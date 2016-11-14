@@ -9,16 +9,16 @@ import utilFunctions as UF
 import sineModel as SM
 import harmonicModel as HM
 
-def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90, 
+def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048, t=-90,
 	minSineDur=0.1, nH=100, minf0=130, maxf0=300, f0et=7, harmDevSlope=0.01):
 	"""
 	Analysis and synthesis using the harmonic model
 	inputFile: input sound file (monophonic with sampling rate of 44100)
-	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)
 	M: analysis window size; N: fft size (power of two, bigger or equal than M)
 	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
 	nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
-	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm                                                                                            
+	maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm
 	harmDevSlope: allowed deviation of harmonic tracks, higher harmonics could have higher allowed deviation
 	"""
 
@@ -38,7 +38,7 @@ def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
 
 	# synthesize the harmonics
-	y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)  
+	y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
 
 	# output sound file (monophonic with sampling rate of 44100)
 	outputFile = 'output_sounds/' + os.path.basename(inputFile)[:-4] + '_harmonicModel.wav'
@@ -79,6 +79,7 @@ def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048
 	plt.title('output sound: y')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
 
 if __name__ == "__main__":
