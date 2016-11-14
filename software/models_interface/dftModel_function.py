@@ -11,10 +11,10 @@ import dftModel as DFT
 def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N = 1024, time = .2):
 	"""
 	inputFile: input sound file (monophonic with sampling rate of 44100)
-	window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)	
+	window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)
 	M: analysis window size (odd integer value)
 	N: fft size (power of two, bigger or equal than than M)
-	time: time  to start analysis (in seconds)          
+	time: time  to start analysis (in seconds)
 	"""
 
 	# read input sound (monophonic with sampling rate of 44100)
@@ -22,13 +22,13 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 
 	# compute analysis window
 	w = get_window(window, M)
-		
+
 	# get a fragment of the input sound of size M
 	sample = int(time*fs)
 	if (sample+M >= x.size or sample < 0):                          # raise error if time outside of sound
 		raise ValueError("Time outside sound boundaries")
 	x1 = x[sample:sample+M]
-	 
+
 	# compute the dft of the sound fragment
 	mX, pX = DFT.dftAnal(x1, w, N)
 
@@ -71,6 +71,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
 	plt.title('output sound: y')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
 
 if __name__ == "__main__":

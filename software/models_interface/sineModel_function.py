@@ -8,19 +8,19 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 import utilFunctions as UF
 import sineModel as SM
 
-def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02, 
+def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, t=-80, minSineDur=0.02,
 					maxnSines=150, freqDevOffset=10, freqDevSlope=0.001):
 	"""
 	Perform analysis/synthesis using the sinusoidal model
 	inputFile: input sound file (monophonic with sampling rate of 44100)
-	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)	
+	window: analysis window type (rectangular, hanning, hamming, blackman, blackmanharris)
 	M: analysis window size; N: fft size (power of two, bigger or equal than M)
 	t: magnitude threshold of spectral peaks; minSineDur: minimum duration of sinusoidal tracks
 	maxnSines: maximum number of parallel sinusoids
-	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0   
+	freqDevOffset: frequency deviation allowed in the sinusoids from frame to frame at frequency 0
 	freqDevSlope: slope of the frequency deviation, higher frequencies have bigger deviation
 	"""
-		
+
 	# size of fft used in synthesis
 	Ns = 512
 
@@ -58,7 +58,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.ylabel('amplitude')
 	plt.xlabel('time (sec)')
 	plt.title('input sound: x')
-				
+
 	# plot the sinusoidal frequencies
 	plt.subplot(3,1,2)
 	if (tfreq.shape[1] > 0):
@@ -78,6 +78,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.title('output sound: y')
 
 	plt.tight_layout()
+        plt.ion()
 	plt.show()
 
 
