@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import os
+import zipfile
+
+if __name__ == '__main__':
+    assignments = os.listdir('assignments')
+    selection = ''
+    while selection not in assignments:
+        selection = raw_input("\n\tWhich assignment would you like to begin working on?\n\n\t" +
+                              " | ".join(assignments) + "\n")
+    with zipfile.ZipFile('assignments/{0}/{0}_2016.zip'.format(selection)) as zipRef:
+        zipRef.extractall('workspace/')
+
+    print("\nAssignment successfully extracted to {0}/workspace/{1}".format(os.getcwd(), selection))

@@ -7,35 +7,30 @@ Sound analysis/synthesis tools for music applications written in python (with a 
 How to use
 ----------
 
-In order to use these tools you have to install version 2.7.* of python and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
+In order to use these tools you have to install version 2.7.* of python.
 
-In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
+Simply run `python setup.py install` from the top-level directory to install sms_tools.
 
-<code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy cython</code>
+The basic sound analysis/synthesis functions, or models, are in the directory <code>sms_tools/models</code> and there is a graphical interface and individual example functions in <code>sms_tools/models_interface</code>. To execute the models GUI type: 
 
-In OSX (which we do not support but that should work) you install these modules by typing in the Terminal:
+<code>$ bin/models_GUI.py </code>
 
-<code>$ pip install ipython numpy matplotlib scipy cython</code>
+To execute the transformations GUI that calls various sound transformation functions type: 
 
-then, for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
+<code>$ bin/transformations_GUI.py </code>
 
-<code>$ python compileModule.py build_ext --inplace </code>
+Assignments
+-----------
 
-The basic sound analysis/synthesis functions, or models, are in the directory <code>software/models</code> and there is a graphical interface and individual example functions in <code>software/models_interface</code>. To execute the models GUI you have to go to the directory <code>software/models_interface</code> and type: 
+To begin working on an assignment, run <code>bin/startAssignment</code>. The program will prompt you to input the assignment you wish to work on, and then it will extract the proper zip file to a new subdirectory in your <code>workspace</code> directory.
 
-<code>$ python models_GUI.py </code>
-
-To execute the transformations GUI that calls various sound transformation functions go to the directory <code>software/transformations_interface</code> and type: 
-
-<code>$ python transformations_GUI.py </code>
-
-To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>software/models_interface</code> or from <code>software/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files). 
+To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>sms_tools/models_interface</code> or from <code>sms_tools/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files). 
 
 
 Content
 -------
 
-All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the assignments related to the lectures in the  <code>assignments</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
+All the code is in the <code> sms_tools </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the assignments related to the lectures in the  <code>assignments</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
 
 License
 -------
