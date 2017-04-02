@@ -22,7 +22,7 @@ setup(
     version="0.1",
     packages=find_packages(),
     scripts=['bin/models_GUI', 'bin/transformations_GUI', 'bin/startAssignment'],
-    install_requires=['ipython', 'numpy', 'scipy', 'matplotlib', 'cython'],
+    install_requires=['ipython', 'numpy', 'scipy', 'matplotlib', 'cython', 'requests'],
     cmdclass={'build_ext': build_ext},
     ext_modules=[Extension("utilFunctions_C",
                  sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)],
