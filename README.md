@@ -19,7 +19,7 @@ In OSX (which we do not support but that should work) you install these modules 
 
 In Windows you download precompiled numpy (with MKL) pacakge from http://www.lfd.uci.edu/~gohlke/pythonlibs first. Install it like this:
 
-<code>pip install numpy‑xxxx+mkl‑xxxx.whl</code>
+<code>$ pip install numpy‑xxxx+mkl‑xxxx.whl</code>
 
 Then you install these extra modules by typing in the Terminal:
 
