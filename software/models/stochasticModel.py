@@ -37,7 +37,7 @@ def stochasticModelAnal(x, H, N, stocf):
 		xw = x[pin-No2:pin+No2] * w                           # window the input sound
 		X = fft(xw)                                           # compute FFT
 		mX = 20 * np.log10(abs(X[:hN]))                       # magnitude spectrum of positive frequencies
-		mY = resample(np.maximum(-200, mX), stocf*hN)         # decimate the mag spectrum 
+		mY = resample(np.maximum(-200, mX), (int)(stocf*hN))  # decimate the mag spectrum <-- FIX the non-integer fault
 		if pin == No2:                                        # first frame
 			stocEnv = np.array([mY])
 		else:                                                 # rest of frames
@@ -108,7 +108,7 @@ def stochasticModel(x, H, N, stocf):
 		xw = x[pin-No2:pin+No2]*w                              # window the input sound
 		X = fft(xw)                                            # compute FFT
 		mX = 20 * np.log10(abs(X[:hN]))                        # magnitude spectrum of positive frequencies
-		stocEnv = resample(np.maximum(-200, mX), hN*stocf)     # decimate the mag spectrum     
+		stocEnv = resample(np.maximum(-200, mX), (int)(hN*stocf))  # decimate the mag spectrum <-- FIX the non-integer fault
 	#-----synthesis-----
 		mY = resample(stocEnv, hN)                             # interpolate to original size
 		pY = 2*np.pi*np.random.rand(hN)                        # generate phase random values
