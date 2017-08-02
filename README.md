@@ -23,7 +23,7 @@ In Windows you download precompiled numpy (with MKL) pacakge from http://www.lfd
 
 Then you install these extra modules by typing in the Terminal:
 
-<code>$ pip install ipython numpy matplotlib scipy cython</code>
+<code>$ pip install ipython matplotlib scipy cython</code>
 
 then, for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
