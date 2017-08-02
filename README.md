@@ -21,7 +21,7 @@ In Windows you download precompiled numpy (with MKL) pacakge from http://www.lfd
 
 <code>$ pip install numpy‑xxxx+mkl‑xxxx.whl</code>
 
-Then you install these extra modules by typing in the Terminal:
+Then you install these extra modules by typing in the Terminal (you can also directly install precompiled modules):
 
 <code>$ pip install ipython matplotlib scipy cython</code>
 
