@@ -21,5 +21,5 @@ def stochasticTimeScale(stocEnv, timeScaling):
 	indexes = (L-1)*timeScalingEnv(np.arange(outL)/float(outL)) # generate output time indexes
 	ystocEnv = stocEnv[0,:]                                     # first output frame is same than input
 	for l in indexes[1:]:                                       # step through the output frames
-		ystocEnv = np.vstack((ystocEnv, stocEnv[round(l),:]))     # get the closest input frame
+		ystocEnv = np.vstack((ystocEnv, stocEnv[int(round(l)),:]))     # get the closest input frame
 	return ystocEnv
