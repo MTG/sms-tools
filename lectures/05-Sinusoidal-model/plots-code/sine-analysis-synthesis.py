@@ -11,9 +11,9 @@ import utilFunctions as UF
 M = 601
 w = np.blackman(M)
 N = 1024
-hN = N/2
+hN = N//2
 Ns = 512
-hNs = Ns/2
+hNs = Ns//2
 pin = 5000
 t = -70
 x1 = x[pin:pin+w.size]

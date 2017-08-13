@@ -64,7 +64,7 @@ def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-ma
 	numFrames = int(mX1[:,0].size)
 	frmTime = H1*np.arange(numFrames)/float(fs)                             
 	binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1  
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX1[:,:N1*maxplotfreq/fs+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mX1[:,:int(N1*maxplotfreq/fs)+1]))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
 	plt.title('magnitude spectrogram of x')
@@ -75,7 +75,7 @@ def main(inputFile1='../../sounds/ocean.wav', inputFile2='../../sounds/speech-ma
 	numFrames = int(mY[:,0].size)
 	frmTime = H1*np.arange(numFrames)/float(fs)                             
 	binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1 
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mY[:,:N1*maxplotfreq/fs+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mY[:,:int(N1*maxplotfreq/fs)+1]))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
 	plt.title('magnitude spectrogram of y')

@@ -58,7 +58,7 @@ def dftAnal(x, w, N):
 	if (w.size > N):                                        # raise error if window size bigger than fft size
 		raise ValueError("Window size (M) is bigger than FFT size")
 
-	hN = (N/2)+1                                            # size of positive spectrum, it includes sample 0
+	hN = (N//2)+1                                            # size of positive spectrum, it includes sample 0
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT

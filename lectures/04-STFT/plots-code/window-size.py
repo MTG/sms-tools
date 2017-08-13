@@ -11,7 +11,7 @@ import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 N = 128
-start = .81*fs
+start = int(.81*fs)
 x1 = x[start:start+N] 
 plt.figure(1, figsize=(9.5, 6))
 plt.subplot(321)
@@ -31,7 +31,7 @@ plt.axis([0,fs/2.0,min(pX),max(pX)])
 plt.title('pX1')
 
 N = 1024
-start = .81*fs
+start = int(.81*fs)
 x2 = x[start:start+N]
 mX, pX = DF.dftAnal(x2, np.hamming(N), N)
 

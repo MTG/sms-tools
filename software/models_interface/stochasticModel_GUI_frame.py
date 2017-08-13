@@ -1,7 +1,14 @@
 # GUI frame for the stochasticModel_function.py
 
-from Tkinter import *
-import tkFileDialog, tkMessageBox
+try:
+    # for Python2
+    from Tkinter import *   ## notice capitalized T in Tkinter 
+    import tkFileDialog, tkMessageBox
+except ImportError:
+    # for Python3
+    from tkinter import *   ## notice lowercase 't' in tkinter here
+    from tkinter import filedialog as tkFileDialog
+    from tkinter import messagebox as tkMessageBox
 import sys, os
 from scipy.io.wavfile import read
 import stochasticModel_function

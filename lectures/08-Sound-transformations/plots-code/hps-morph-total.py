@@ -63,7 +63,7 @@ numFrames = int(stocEnv1[:,0].size)
 sizeEnv = int(stocEnv1[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs1)
 binFreq = (.5*fs1)*np.arange(sizeEnv*maxplotfreq/(.5*fs1))/sizeEnv                      
-plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv1[:,:sizeEnv*maxplotfreq/(.5*fs1)+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv1[:,:int(sizeEnv*maxplotfreq/(.5*fs1)+1)]))
 plt.autoscale(tight=True)
 
 # plot harmonic on top of stochastic spectrogram of sound 1
@@ -81,7 +81,7 @@ numFrames = int(stocEnv2[:,0].size)
 sizeEnv = int(stocEnv2[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs2)
 binFreq = (.5*fs2)*np.arange(sizeEnv*maxplotfreq/(.5*fs2))/sizeEnv                      
-plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv2[:,:sizeEnv*maxplotfreq/(.5*fs2)+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv2[:,:int(sizeEnv*maxplotfreq/(.5*fs2)+1)]))
 plt.autoscale(tight=True)
 
 # plot harmonic on top of stochastic spectrogram of sound 2
@@ -99,7 +99,7 @@ numFrames = int(ystocEnv[:,0].size)
 sizeEnv = int(ystocEnv[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs1)
 binFreq = (.5*fs1)*np.arange(sizeEnv*maxplotfreq/(.5*fs1))/sizeEnv                      
-plt.pcolormesh(frmTime, binFreq, np.transpose(ystocEnv[:,:sizeEnv*maxplotfreq/(.5*fs1)+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(ystocEnv[:,:int(sizeEnv*maxplotfreq/(.5*fs1)+1)]))
 plt.autoscale(tight=True)
 
 # plot transformed harmonic on top of stochastic spectrogram

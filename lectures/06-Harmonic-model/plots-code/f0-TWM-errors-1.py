@@ -54,10 +54,10 @@ def TWM (pfreq, pmag, maxnpeaks, f0c):
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 N = 1024
-hN = N/2
+hN = N//2
 M = 801
 t = -40
-start = .8*fs
+start = int(.8*fs)
 minf0 = 100
 maxf0 = 1500
 w = blackman (M)

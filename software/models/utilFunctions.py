@@ -9,14 +9,15 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './uti
 try:
 	import utilFunctions_C as UF_C
 except ImportError:
-	print "\n"
-	print "-------------------------------------------------------------------------------"
-	print "Warning:"
-	print "Cython modules for some of the core functions were not imported."
-	print "Please refer to the README.md file in the 'sms-tools' directory, for the instructions to compile the cython modules"
-	print "Exiting the code!!"
-	print "-------------------------------------------------------------------------------"
-	print "\n"
+	print ("\n")
+	print ("-------------------------------------------------------------------------------")
+	print ("Warning:")
+	print ("Cython modules for some of the core functions were not imported.")
+	print ("Please refer to the README.md file in the 'sms-tools' directory,")
+	print ("for the instructions to compile the cython modules.")
+	print ("Exiting the code!!")
+	print ("-------------------------------------------------------------------------------")
+	print ("\n")
 	sys.exit(0)
 	
 winsound_imported = False	
@@ -25,7 +26,7 @@ if sys.platform == "win32":
 		import winsound
 		winsound_imported = True
 	except:
-		print "You won't be able to play sounds, winsound could not be imported"
+		print ("You won't be able to play sounds, winsound could not be imported")
 
 def isPower2(num):
 	"""
@@ -174,7 +175,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
 	"""
 
 	Y = np.zeros(N, dtype = complex)                 # initialize output complex spectrum
-	hN = N/2                                         # size of positive freq. spectrum
+	hN = N//2                                        # size of positive freq. spectrum
 	for i in range(0, ipfreq.size):                  # generate all sine spectral lobes
 		loc = N * ipfreq[i] / fs                       # it should be in range ]0,hN-1[
 		if loc==0 or loc>hN-1: continue
@@ -350,7 +351,7 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	returns xr: residual sound
 	"""
 
-	hN = N/2                                           # half of fft size
+	hN = N//2                                          # half of fft size
 	x = np.append(np.zeros(hN),x)                      # add zeros at beginning to center first window at sample 0
 	x = np.append(x,np.zeros(hN))                      # add zeros at the end to analyze last sample
 	bh = blackmanharris(N)                             # blackman harris window
@@ -381,7 +382,7 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
 	returns stocEnv: stochastic approximation of residual
 	"""
 
-	hN = N/2                                              # half of fft size
+	hN = N//2                                             # half of fft size
 	x = np.append(np.zeros(hN),x)                         # add zeros at beginning to center first window at sample 0
 	x = np.append(x,np.zeros(hN))                         # add zeros at the end to analyze last sample
 	bh = blackmanharris(N)                                # synthesis window

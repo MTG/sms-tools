@@ -3,7 +3,7 @@ import numpy as np
 from scipy.fftpack import ifft
 
 Ns = 64
-hNs = Ns/2
+hNs = Ns//2
 
 mY = np.zeros(hNs)
 pY = np.zeros(hNs)

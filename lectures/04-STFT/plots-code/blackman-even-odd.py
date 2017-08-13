@@ -5,8 +5,8 @@ from scipy import signal
 
 M = 32
 N = 128
-hN = N/2     
-hM = M/2
+hN = N//2     
+hM = M//2
 fftbuffer = np.zeros(N)
 w = signal.blackman(M)
 
@@ -24,7 +24,7 @@ X = fft(fftbuffer)
 mX = 20*np.log10(abs(fftshift(X)))    
 plt.subplot(3,2,3)
 plt.plot(np.arange(-hN, hN), mX-max(mX), 'r', lw=1.5)
-plt.axis([-hN/2,hN/2,-80,1])
+plt.axis([-hN//2,hN//2,-80,1])
 plt.title('mW1')
 
 pX = np.angle(fftshift(X))
@@ -35,8 +35,8 @@ plt.title('pW1')
 
 M = 31
 N = 128
-hN = N/2     
-hM = (M+1)/2
+hN = N//2     
+hM = (M+1)//2
 fftbuffer = np.zeros(N)
 w = signal.blackman(M)
 

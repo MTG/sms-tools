@@ -59,7 +59,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	sizeEnv = int(stocEnv1[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs1)
 	binFreq = (.5*fs1)*np.arange(sizeEnv*maxplotfreq/(.5*fs1))/sizeEnv                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv1[:,:sizeEnv*maxplotfreq/(.5*fs1)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv1[:,:int(sizeEnv*maxplotfreq/(.5*fs1))+1]))
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram of sound 1
@@ -81,7 +81,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	sizeEnv = int(stocEnv2[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs2)
 	binFreq = (.5*fs2)*np.arange(sizeEnv*maxplotfreq/(.5*fs2))/sizeEnv                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv2[:,:sizeEnv*maxplotfreq/(.5*fs2)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv2[:,:int(sizeEnv*maxplotfreq/(.5*fs2))+1]))
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram of sound 2
@@ -143,7 +143,7 @@ def transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2
 	sizeEnv = int(ystocEnv[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(ystocEnv[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(ystocEnv[:,:int(sizeEnv*maxplotfreq/(.5*fs))+1]))
 	plt.autoscale(tight=True)
 
 	# plot transformed harmonic on top of stochastic spectrogram

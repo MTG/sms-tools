@@ -19,7 +19,7 @@ f0et = 5
 minSineDur = .1
 harmDevSlope = 0.01
 Ns = 512
-H = Ns/4
+H = Ns//4
 stocf = .2
 hfreq, hmag, hphase, mYst = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)
 y, yh, yst = HPS.hpsModelSynth(hfreq, hmag, hphase, mYst, Ns, H, fs)
@@ -37,7 +37,7 @@ numFrames = int(mYst[:,0].size)
 sizeEnv = int(mYst[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs)
 binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
-plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:int(sizeEnv*maxplotfreq/(.5*fs)+1)]))
 
 harms = hfreq*np.less(hfreq,maxplotfreq)
 harms[harms==0] = np.nan

@@ -52,12 +52,12 @@ def hpsModel(x, fs, w, N, t, nH, minf0, maxf0, f0et, stocf):
 	returns y: output sound, yh: harmonic component, yst: stochastic component
 	"""
 
-	hN = N/2                                               # size of positive spectrum
+	hN = N//2                                              # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                    # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                        # half analysis window size by floor
 	Ns = 512                                               # FFT size for synthesis (even)
-	H = Ns/4                                               # Hop size used for analysis and synthesis
-	hNs = Ns/2      
+	H = Ns//4                                              # Hop size used for analysis and synthesis
+	hNs = Ns//2      
 	pin = max(hNs, hM1)                                    # initialize sound pointer in middle of analysis window          
 	pend = x.size - max(hNs, hM1)                          # last sample to start a frame
 	fftbuffer = np.zeros(N)                                # initialize buffer for FFT

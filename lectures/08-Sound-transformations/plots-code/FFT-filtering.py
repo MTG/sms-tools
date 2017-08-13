@@ -11,7 +11,7 @@ import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/orchestra.wav')
 N = 2048
-start = 1.0*fs
+start = int(1.0*fs)
 x1 = x[start:start+N]
 
 plt.figure(1, figsize=(12, 9))

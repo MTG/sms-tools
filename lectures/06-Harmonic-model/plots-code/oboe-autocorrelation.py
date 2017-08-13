@@ -10,7 +10,7 @@ import utilFunctions as UF
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 
 M = 500
-start = .8*fs   
+start = int(.8*fs)   
 xp = x[start:start+M]/float(max(x[start:start+M]))
 r = ess.AutoCorrelation(normalization = 'standard')(xp)
 r = r / max(r)

@@ -60,7 +60,7 @@ maxplotfreq = 3000.0
 numFrames = int(mX[:,0].size)
 frmTime = hopSize*arange(numFrames)/float(sampleRate)                             
 binFreq = sampleRate*arange(frameSize*maxplotfreq/sampleRate)/frameSize                       
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:frameSize*maxplotfreq/sampleRate+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(frameSize*maxplotfreq/sampleRate+1)]))
 plt.autoscale(tight=True)
 
 offset = .5 * frameSize/sampleRate

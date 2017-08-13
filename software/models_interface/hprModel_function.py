@@ -97,7 +97,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-        plt.ion()
+	plt.ion()
 	plt.show()
 
 if __name__ == "__main__":

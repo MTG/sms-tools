@@ -68,7 +68,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	sizeEnv = int(stocEnv[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv
-	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:int(sizeEnv*maxplotfreq/(.5*fs)+1)]))
 	plt.autoscale(tight=True)
 
 	# plot sinusoidal frequencies on top of stochastic component
@@ -92,7 +92,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-        plt.ion()
+	plt.ion()
 	plt.show()
 
 if __name__ == "__main__":

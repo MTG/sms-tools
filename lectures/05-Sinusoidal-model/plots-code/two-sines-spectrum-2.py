@@ -10,7 +10,7 @@ import dftModel as DF
 (fs, x) = UF.wavread('../../../sounds/sine-440-490.wav')
 w = np.hamming(3528)
 N = 16384
-pin = .11*fs
+pin = int(.11*fs)
 x1 = x[pin:pin+w.size]
 mX, pX = DF.dftAnal(x1, w, N)
 
@@ -27,7 +27,7 @@ plt.title ('mX, N=16384')
 
 plt.subplot(3,1,3)
 plt.plot(fs*np.arange(pX.size)/float(N), pX, 'c', lw=1.5)
-plt.axis([100,900,-2,9])
+plt.axis([100,900,7,32])
 plt.title ('pX')
 
 plt.tight_layout()

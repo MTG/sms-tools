@@ -5,8 +5,8 @@ from scipy import signal
 
 M = 64
 N = 512
-hN = N/2     
-hM = M/2
+hN = N//2     
+hM = M//2
 fftbuffer = np.zeros(N)
 mX1 = np.zeros(N)
 

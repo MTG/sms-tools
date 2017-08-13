@@ -13,8 +13,8 @@ import dftModel as DFT
 def stochasticModelFrame(x, w, N, stocf) :
 	# x: input array sound, w: analysis window, N: FFT size,  
 	# stocf: decimation factor of mag spectrum for stochastic analysis
-	hN = N/2+1                                               # size of positive spectrum
-	hM = (w.size)/2                                          # half analysis window size
+	hN = N//2+1                                               # size of positive spectrum
+	hM = (w.size)//2                                          # half analysis window size
 	pin = hM                                                 # initialize sound pointer in middle of analysis window       
 	fftbuffer = np.zeros(N)                                  # initialize buffer for FFT
 	yw = np.zeros(w.size)                                    # initialize output sound frame
@@ -41,14 +41,14 @@ if __name__ == '__main__':
   w = np.hanning(1024)
   N = 1024
   stocf = .1
-  envSize = (N * stocf) // 2
+  envSize = int((N*stocf)/2)
   maxFreq = 10000.0
-  lastbin = N*maxFreq/fs
+  lastbin = int(N*maxFreq/fs)
   first = 4000
   last = first+w.size
   mX, pX = DFT.dftAnal(x[first:last], w, N)
   mXenv = resample(np.maximum(-200, mX), envSize)
-  mY = resample(mXenv, N/2)
+  mY = resample(mXenv, N//2)
  
   plt.figure(1, figsize=(9, 5))
   plt.plot(float(fs)*np.arange(mX.size)/N, mX, 'r', lw=1.5, label=r'$a$')

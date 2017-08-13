@@ -21,11 +21,11 @@ def sineTimeScaling(sfreq, smag, timeScaling):
 	outFrames = outL*timeScaling[1::2]/maxOutTime          # output time values in frames
 	timeScalingEnv = interp1d(outFrames, inFrames, fill_value=0)    # interpolation function
 	indexes = timeScalingEnv(np.arange(outL))              # generate frame indexes for the output
-	ysfreq = sfreq[round(indexes[0]),:]                    # first output frame
-	ysmag = smag[round(indexes[0]),:]                      # first output frame
+	ysfreq = sfreq[int(round(indexes[0])),:]                    # first output frame
+	ysmag = smag[int(round(indexes[0])),:]                      # first output frame
 	for l in indexes[1:]:                                  # generate frames for output sine tracks
-		ysfreq = np.vstack((ysfreq, sfreq[round(l),:]))    # get closest frame to scaling value
-		ysmag = np.vstack((ysmag, smag[round(l),:]))       # get closest frame to scaling value
+		ysfreq = np.vstack((ysfreq, sfreq[int(round(l)),:]))    # get closest frame to scaling value
+		ysmag = np.vstack((ysmag, smag[int(round(l)),:]))       # get closest frame to scaling value
 	return ysfreq, ysmag
 
 def sineFreqScaling(sfreq, freqScaling):

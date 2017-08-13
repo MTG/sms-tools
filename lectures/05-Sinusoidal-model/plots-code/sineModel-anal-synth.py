@@ -17,7 +17,7 @@ maxnSines = 150
 freqDevOffset = 20
 freqDevSlope = 0.02
 Ns = 512
-H = Ns/4
+H = Ns//4
 tfreq, tmag, tphase = SM.sineModelAnal(x1, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)
 y = SM.sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
 

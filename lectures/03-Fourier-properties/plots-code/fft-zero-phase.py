@@ -9,9 +9,9 @@ import utilFunctions as UF
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 N = 512
 M = 401
-hN = N/2 
-hM = (M+1)/2     
-start = .8*fs
+hN = N//2 
+hM = (M+1)//2     
+start = int(.8*fs)
 xw = x[start-hM:start+hM-1] * np.hamming(M)
 
 plt.figure(1, figsize=(9.5, 6.5))

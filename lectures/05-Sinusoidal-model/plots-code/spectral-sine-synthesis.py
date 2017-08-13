@@ -12,7 +12,7 @@ import sineModel as SM
 import utilFunctions as UF
   
 Ns = 256
-hNs = Ns/2
+hNs = Ns//2
 yw = np.zeros(Ns)
 fs = 44100
 freqs = np.array([1000.0, 4000.0, 8000.0])
