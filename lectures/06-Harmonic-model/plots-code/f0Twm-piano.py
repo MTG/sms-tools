@@ -20,7 +20,7 @@ maxf0 = 300
 f0et = 1
 maxnpeaksTwm = 4
 H = 128
-x1 = x[1.5*fs:1.8*fs]
+x1 = x[int(1.5*fs):int(1.8*fs)]
 
 plt.figure(1, figsize=(9, 7))
 mX, pX = STFT.stftAnal(x, w, N, H)
@@ -32,7 +32,7 @@ maxplotfreq = 800.0
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(N*maxplotfreq/fs+1)]))
 plt.autoscale(tight=True)
   
 plt.plot(frmTime, f0, linewidth=2, color='k')

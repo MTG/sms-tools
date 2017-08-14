@@ -89,4 +89,4 @@ plt.title('y')
 
 plt.tight_layout()
 plt.savefig('hpr-freq-transformations.png')
-plt.show(block=False)
+plt.show()

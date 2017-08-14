@@ -43,7 +43,7 @@ mY2 = 20 * np.log10(np.abs(Y2)) - 40
 
 plt.subplot(3,2,6)
 plt.title('X1 * X2')
-plt.plot(np.arange(-N/2, N/2),mY2[M/2:M+M/2], 'r', lw=1.5)
+plt.plot(np.arange(-N//2, N//2),mY2[M//2:M+M//2], 'r', lw=1.5)
 plt.axis([-N/2,N/2,-80,max(mY2)])
 
 plt.tight_layout()

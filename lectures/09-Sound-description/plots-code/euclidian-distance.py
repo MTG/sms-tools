@@ -12,8 +12,8 @@ vec2 = np.array([.6, .7])
 
 plt.figure(1, figsize=(4, 3))
 
-plt.scatter(vec1[0], vec1[1], c = 'r', s=50, hold = True, alpha=0.75)
-plt.scatter(vec2[0], vec2[1], c = 'b', s=50, hold = True, alpha=0.75)
+plt.scatter(vec1[0], vec1[1], c = 'r', s=50, alpha=0.75)
+plt.scatter(vec2[0], vec2[1], c = 'b', s=50, alpha=0.75)
 plt.plot([vec1[0], vec2[0]], [vec1[1], vec2[1]], 'k')
 plt.ylabel('first dimension', fontsize =16)
 plt.xlabel('second dimension', fontsize =16)

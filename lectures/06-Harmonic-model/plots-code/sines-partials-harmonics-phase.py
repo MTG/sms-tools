@@ -22,7 +22,7 @@ plt.figure(1, figsize=(9, 6))
 plt.subplot(311)
 plt.plot(fs*np.arange(pX1.size)/float(N), pX1, 'c', lw=1.5)
 plt.plot(fs * iploc / N, ipphase, marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5) 
-plt.axis([200, 1000, -2, 8])
+plt.axis([200, 1000, 50, 200])
 plt.title('pX + peaks (sine-440-490.wav)')
 
 

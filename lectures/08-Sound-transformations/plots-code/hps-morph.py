@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import get_window
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../transformations/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
 import hpsModel as HPS
 import hpsTransformations as HPST
 import harmonicTransformations as HT

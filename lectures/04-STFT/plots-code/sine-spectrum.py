@@ -7,8 +7,8 @@ M = 63
 f0 = 1000
 fs = 10000
 A0 = .8 
-hN = N/2 
-hM = (M+1)/2
+hN = N//2 
+hM = (M+1)//2
 fftbuffer = np.zeros(N)
 X1 = np.zeros(N, dtype='complex')
 X2 = np.zeros(N, dtype='complex')

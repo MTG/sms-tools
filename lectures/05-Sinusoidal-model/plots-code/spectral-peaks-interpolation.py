@@ -14,9 +14,9 @@ N = 512*2
 M = 511
 t = -60
 w = np.hamming(M)
-start = .8*fs
-hN = N/2
-hM = (M+1)/2
+start = int(.8*fs)
+hN = N//2
+hM = (M+1)//2
 
 x1 = x[start:start+M]
 mX, pX = DFT.dftAnal(x1, w, N)

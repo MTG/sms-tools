@@ -5,7 +5,7 @@ from scipy.io.wavfile import read
 (fs, x) = read('../../../sounds/oboe-A4.wav')
 M = 256
 H = 128
-start = .8*fs
+start = int(.8*fs)
 
 plt.figure(1)
 x0 = x[start:start+3*M]/float(max(x))

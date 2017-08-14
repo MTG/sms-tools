@@ -14,8 +14,8 @@ def stochasticModelAnal(x, H, N, stocf):
 	returns stocEnv: stochastic envelope
 	"""
 
-	hN = N/2+1                                             # positive size of fft
-	No2 = N/2                                              # half of N
+	hN = N//2+1                                            # positive size of fft
+	No2 = N//2                                             # half of N
 	if (hN*stocf < 3):                                     # raise exception if decimation factor too small
 		raise ValueError("Stochastic decimation factor too small")
 		
@@ -37,7 +37,7 @@ def stochasticModelAnal(x, H, N, stocf):
 		xw = x[pin-No2:pin+No2] * w                           # window the input sound
 		X = fft(xw)                                           # compute FFT
 		mX = 20 * np.log10(abs(X[:hN]))                       # magnitude spectrum of positive frequencies
-		mY = resample(np.maximum(-200, mX), stocf*hN)         # decimate the mag spectrum 
+		mY = resample(np.maximum(-200, mX), int(stocf*hN))    # decimate the mag spectrum 
 		if pin == No2:                                        # first frame
 			stocEnv = np.array([mY])
 		else:                                                 # rest of frames
@@ -55,8 +55,8 @@ def stochasticModelSynth(stocEnv, H, N):
 	if not(UF.isPower2(N)):                                 	# raise error if N not a power of two
 		raise ValueError("N is not a power of two")
  
-	hN = N/2+1                                                  # positive size of fft
-	No2 = N/2                                                   # half of N
+	hN = N//2+1                                                 # positive size of fft
+	No2 = N//2                                                  # half of N
 	L = stocEnv[:,0].size                                    	# number of frames
 	ysize = H*(L+3)                                         	# output sound size
 	y = np.zeros(ysize)                                     	# initialize output array
@@ -83,12 +83,12 @@ def stochasticModel(x, H, N, stocf):
 	stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
 	returns y: output sound
 	"""
-	hN = N/2+1                                            		# positive size of fft
-	No2 = N/2							# half of N
-	if (hN*stocf < 3):                                              # raise exception if decimation factor too small
+	hN = N//2+1                                            		# positive size of fft
+	No2 = N//2							                        # half of N
+	if (hN*stocf < 3):                                          # raise exception if decimation factor too small
 		raise ValueError("Stochastic decimation factor too small")
 		
-	if (stocf > 1):                                          # raise exception if decimation factor too big
+	if (stocf > 1):                                             # raise exception if decimation factor too big
 		raise ValueError("Stochastic decimation factor above 1")
 	
 	if (H <= 0):                                             # raise error if hop size 0 or negative
@@ -108,7 +108,7 @@ def stochasticModel(x, H, N, stocf):
 		xw = x[pin-No2:pin+No2]*w                              # window the input sound
 		X = fft(xw)                                            # compute FFT
 		mX = 20 * np.log10(abs(X[:hN]))                        # magnitude spectrum of positive frequencies
-		stocEnv = resample(np.maximum(-200, mX), hN*stocf)     # decimate the mag spectrum     
+		stocEnv = resample(np.maximum(-200, mX), int(hN*stocf)) # decimate the mag spectrum     
 	#-----synthesis-----
 		mY = resample(stocEnv, hN)                             # interpolate to original size
 		pY = 2*np.pi*np.random.rand(hN)                        # generate phase random values

@@ -31,7 +31,7 @@ x2 = x2[loc2-hM2_1:loc2+hM2_2]
 mX1, pX1 = DFT.dftAnal(x1, w1, N1)           # compute dft
 mX2, pX2 = DFT.dftAnal(x2, w2, N2)           # compute dft
 # morph
-mX2smooth = resample(np.maximum(-200, mX2), mX2.size*smoothf)       # smooth spectrum of second sound
+mX2smooth = resample(np.maximum(-200, mX2), int(mX2.size*smoothf))  # smooth spectrum of second sound
 mX2 = resample(mX2smooth, mX2.size) 
 mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 #-----synthesis-----

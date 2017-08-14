@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import dftModel as DFT
-import utilFunctions as UF
-
 f0 = 1.0
 harms = np.arange(1,6)*f0
 freqtransp = harms*2

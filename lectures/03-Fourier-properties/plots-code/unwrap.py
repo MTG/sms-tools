@@ -20,8 +20,8 @@ plt.plot(x1, lw=1.5)
 plt.axis([0,N,min(x1),max(x1)])
 
 X = fft(fftshift(x1))
-mX = 20*np.log10(np.abs(X[0:N/2]))
-pX = np.angle(X[0:N/2])
+mX = 20*np.log10(np.abs(X[0:N//2]))
+pX = np.angle(X[0:N//2])
 
 plt.subplot(4,1,2)
 plt.title ('mX = magnitude spectrum')

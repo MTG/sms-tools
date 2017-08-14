@@ -22,8 +22,8 @@ def dftModel(x, w, N):
 
 	if all(x==0):                                           # if input array is zeros return empty output
 		return np.zeros(x.size)
-	hN = (N/2)+1                                            # size of positive spectrum, it includes sample 0
-	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
+	hN = (N//2)+1                                           # size of positive spectrum, it includes sample 0
+	hM1 = (w.size+1)//2                                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
 	y = np.zeros(x.size)                                    # initialize output array
@@ -58,9 +58,9 @@ def dftAnal(x, w, N):
 	if (w.size > N):                                        # raise error if window size bigger than fft size
 		raise ValueError("Window size (M) is bigger than FFT size")
 
-	hN = (N/2)+1                                            # size of positive spectrum, it includes sample 0
-	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
-	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
+	hN = (N//2)+1                                           # size of positive spectrum, it includes sample 0
+	hM1 = (w.size+1)//2                                     # half analysis window size by rounding
+	hM2 = w.size//2                                         # half analysis window size by floor
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
 	w = w / sum(w)                                          # normalize analysis window
 	xw = x*w                                                # window the input sound

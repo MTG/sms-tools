@@ -13,8 +13,8 @@ import utilFunctions as UF
 
 M = 256
 N = 256
-hN = N/2
-hM = int(M/2.0)
+hN = N//2
+hM = M//2
 fs = 44100
 f0 = 5000.0
 A0 = 1
@@ -32,7 +32,7 @@ pX = np.angle(X[0:hN])
 
 powerX = sum(2*mX[0:hN]**2)/N
 
-mask = np.zeros(N/2)
+mask = np.zeros(N//2)
 mask[int(N*f0/fs-2*N/float(M)):int(N*f0/fs+3*N/float(M))] = 1.0
 mY = mask*mX[0:hN]
 powerY = sum(2*mY[0:hN]**2)/N
@@ -75,7 +75,7 @@ pX = np.angle(X[0:hN])
 
 powerX = sum(2*mX[0:hN]**2)/N
 
-mask = np.zeros(N/2)
+mask = np.zeros(N//2)
 mask[int(N*f0/fs-4*N/float(M)):int(N*f0/fs+5*N/float(M))] = 1.0
 mY = mask*mX[0:hN]
 powerY = sum(2*mY[0:hN]**2)/N

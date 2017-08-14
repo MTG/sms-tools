@@ -104,8 +104,8 @@ def sineModel(x, fs, w, N, t):
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	Ns = 512                                                # FFT size for synthesis (even)
-	H = Ns/4                                                # Hop size used for analysis and synthesis
-	hNs = Ns/2                                              # half of synthesis FFT size
+	H = Ns//4                                               # Hop size used for analysis and synthesis
+	hNs = Ns//2                                             # half of synthesis FFT size
 	pin = max(hNs, hM1)                                     # init sound pointer in middle of anal window       
 	pend = x.size - max(hNs, hM1)                           # last sample to start a frame
 	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
@@ -192,7 +192,7 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 	returns y: output array sound
 	"""
 	
-	hN = N/2                                                # half of FFT size for synthesis
+	hN = N//2                                               # half of FFT size for synthesis
 	L = tfreq.shape[0]                                      # number of frames
 	pout = 0                                                # initialize output sound pointer         
 	ysize = H*(L+3)                                         # output sound size

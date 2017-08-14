@@ -11,10 +11,10 @@ import utilFunctions as UF
 import harmonicModel as HM
 
 (fs, x) = UF.wavread('../../../sounds/flute-A4.wav')
-pos = .8*fs
+pos = int(.8*fs)
 M = 601
-hM1 = int(math.floor((M+1)/2)) 
-hM2 = int(math.floor(M/2)) 
+hM1 = (M+1)//2 
+hM2 = M//2 
 w = np.hamming(M)
 N = 1024
 t = -100
@@ -25,10 +25,10 @@ f0et = 5
 minSineDur = .1
 harmDevSlope = 0.01
 Ns = 512
-H = Ns/4
+H = Ns//4
 stocf = .2
 x1 = x[pos-hM1:pos+hM2]
-x2 = x[pos-Ns/2-1:pos+Ns/2-1]
+x2 = x[pos-Ns//2-1:pos+Ns//2-1]
 
 mX, pX = DFT.dftAnal(x1, w, N)
 ploc = UF.peakDetection(mX, t)
@@ -38,12 +38,12 @@ f0 = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0)
 hfreqp = []
 hfreq, hmag, hphase = HM.harmonicDetection(ipfreq, ipmag, ipphase, f0, nH, hfreqp, fs, harmDevSlope)
 Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs) 
-mYh = 20 * np.log10(abs(Yh[:Ns/2]))     
+mYh = 20 * np.log10(abs(Yh[:Ns//2]))     
 bh=blackmanharris(Ns)
 X2 = fft(fftshift(x2*bh/sum(bh)))        
 Xr = X2-Yh 
-mXr = 20 * np.log10(abs(Xr[:Ns/2])) 
-mYst = resample(np.maximum(-200, mXr), mXr.size*stocf)  # decimate the mag spectrum                        
+mXr = 20 * np.log10(abs(Xr[:Ns//2])) 
+mYst = resample(np.maximum(-200, mXr), int(mXr.size*stocf))  # decimate the mag spectrum                        
 
 
 maxplotfreq = 8000.0

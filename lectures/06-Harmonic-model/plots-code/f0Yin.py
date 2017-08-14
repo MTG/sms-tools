@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming
 import sys, os
+import essentia
 import essentia.standard as ess
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
@@ -31,7 +32,7 @@ def f0Yin(x, N, H, minf0, maxf0):
   return f0
 
 if __name__ == '__main__':
-  (fs, x) = UF.wavread('../../../sounds/bendir.wav')
+  (fs, x) = UF.wavread('../../../sounds/vignesh.wav')
 
   plt.figure(1, figsize=(9, 7))
   N = 2048
@@ -41,7 +42,7 @@ if __name__ == '__main__':
   maxplotfreq = 2000.0
   frmTime = H*np.arange(mX[:,0].size)/float(fs)                             
   binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
-  plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
+  plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(N*maxplotfreq/fs+1)]))
   
   N = 2048
   minf0 = 130

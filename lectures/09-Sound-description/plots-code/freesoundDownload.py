@@ -36,20 +36,20 @@ def downloadSoundsFreesound(queryText = "", API_Key = "", outputDir = "", topNRe
   
   #checking if the compulsory input parameters are provided
   if queryText == "":
-    print "\n"
-    print "Provide a query text to search for sounds"
+    print ("\n")
+    print ("Provide a query text to search for sounds")
     return -1
     
   if API_Key == "":
-    print "\n"
-    print "You need a valid freesound API key to be able to download sounds."
-    print "Please apply for one here: www.freesound.org/apiv2/apply/"
-    print "\n"
+    print ("\n")
+    print ("You need a valid freesound API key to be able to download sounds.")
+    print ("Please apply for one here: www.freesound.org/apiv2/apply/")
+    print ("\n")
     return -1
     
   if outputDir == "" or not os.path.exists(outputDir):
-    print "\n"
-    print "Please provide a valid output directory"
+    print ("\n")
+    print ("Please provide a valid output directory")
     return -1    
   
   #checking authentication stuff

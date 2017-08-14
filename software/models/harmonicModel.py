@@ -27,7 +27,7 @@ def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):
 	if (H <= 0):                                               # raise error if hop size 0 or negative
 		raise ValueError("Hop size (H) smaller or equal to 0")
 		
-	hN = N/2                                                   # size of positive spectrum
+	hN = N//2                                                  # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                        # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                            # half analysis window size by floor
 	x = np.append(np.zeros(hM2),x)                             # add zeros at beginning to center first window at sample 0
@@ -100,7 +100,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
 	returns y: output array sound
 	"""
 
-	hN = N/2                                                # size of positive spectrum
+	hN = N//2                                               # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	x = np.append(np.zeros(hM2),x)                          # add zeros at beginning to center first window at sample 0
@@ -162,7 +162,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
 	if (minSineDur <0):                                     # raise exception if minSineDur is smaller than 0
 		raise ValueError("Minimum duration of sine tracks smaller than 0")
 		
-	hN = N/2                                                # size of positive spectrum
+	hN = N//2                                               # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                     # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                         # half analysis window size by floor
 	x = np.append(np.zeros(hM2),x)                          # add zeros at beginning to center first window at sample 0

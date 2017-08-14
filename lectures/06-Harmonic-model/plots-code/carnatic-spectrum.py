@@ -9,11 +9,11 @@ import dftModel as DFT
 import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/carnatic.wav')
-pin = 1.4*fs
+pin = int(1.4*fs)
 w = np.blackman(1601)
 N = 4096
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2))  
+hM1 = (w.size+1)//2
+hM2 = w.size//2  
 x1 = x[pin-hM1:pin+hM2]
 mX, pX = DFT.dftAnal(x1, w, N)
 

@@ -11,7 +11,7 @@ import utilFunctions as UF
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 M = 512
 N = 512
-start = .8*fs
+start = int(.8*fs)
 x1 = x[start:start+M]
 xw = x1 * np.hamming(M) 
 
@@ -29,7 +29,7 @@ plt.title('mX, N = 512')
 
 M = 512
 N = 2048
-start = .8*fs
+start = int(.8*fs)
 x1 = x[start:start+M]
 xw = x1 * np.hamming(M)
 mX, pX = DF.dftAnal(x1, np.hamming(M), N)

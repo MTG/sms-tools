@@ -17,11 +17,11 @@ first = 20000
 last = first+N
 x1 = x[first:last]
 X = fft(hamming(N)*x1) 
-mX = 20 * np.log10(abs(X[:N/2]))
+mX = 20 * np.log10(abs(X[:N//2]))
 
 coeff = lpc(x1)
 Y = fft(coeff[0], N) 
-mY = 20 * np.log10(abs(Y[:N/2]))
+mY = 20 * np.log10(abs(Y[:N//2]))
 
   
 plt.figure(1, figsize=(9, 5))

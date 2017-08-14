@@ -15,7 +15,7 @@ H = 150
 t = -80
 minSineDur = .1
 maxnSines = 150
-mX, pX = STFT.stftAnal(x, fs, w, N, H)
+mX, pX = STFT.stftAnal(x, w, N, H)
 tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur)
 
 plt.figure(1, figsize=(9.5, 5))

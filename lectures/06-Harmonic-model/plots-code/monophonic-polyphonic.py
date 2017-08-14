@@ -10,7 +10,7 @@ import utilFunctions as UF
 plt.figure(1, figsize=(9, 6))
 plt.subplot(211)
 (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/carnatic.wav'))
-x1 = x[4.35*fs:]
+x1 = x[int(4.35*fs):]
 w = np.blackman(1301)
 N = 2048
 H = 250

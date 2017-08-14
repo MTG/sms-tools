@@ -11,7 +11,7 @@ import utilFunctions as UF
 (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/speech-male.wav'))
 start = 1.25
 end = 1.79
-x1 = x[start*fs:end*fs]
+x1 = x[int(start*fs):int(end*fs)]
 w = np.hamming(801)
 N = 2048
 H = 200

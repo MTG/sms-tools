@@ -4,8 +4,8 @@ from scipy.fftpack import fft
 
 M = 64
 N = 1024
-hN = N/2     
-hM = M/2
+hN = N//2     
+hM = M//2
 fftbuffer = np.zeros(N)
 mX1 = np.zeros(N)
 

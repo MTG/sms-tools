@@ -69,7 +69,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	sizeEnv = int(stocEnv[0,:].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv
-	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:sizeEnv*maxplotfreq/(.5*fs)+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:,:int(sizeEnv*maxplotfreq/(.5*fs)+1)]))
 	plt.autoscale(tight=True)
 
 	# plot harmonic on top of stochastic spectrogram
@@ -93,7 +93,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-        plt.ion()
+	plt.ion()
 	plt.show()
 
 if __name__ == "__main__":
