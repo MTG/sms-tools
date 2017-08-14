@@ -17,6 +17,14 @@ In OSX (which we do not support but that should work) you install these modules 
 
 <code>$ pip install ipython numpy matplotlib scipy cython</code>
 
+In Windows you download precompiled numpy (with MKL) pacakge from http://www.lfd.uci.edu/~gohlke/pythonlibs first. Install it like this:
+
+<code>$ pip install numpy‑xxxx+mkl‑xxxx.whl</code>
+
+Then you install these extra modules by typing in the Terminal (you can also directly install precompiled modules):
+
+<code>$ pip install ipython matplotlib scipy cython</code>
+
 then, for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
 <code>$ python compileModule.py build_ext --inplace </code>

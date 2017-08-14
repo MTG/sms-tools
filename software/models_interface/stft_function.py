@@ -56,7 +56,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	numFrames = int(mX[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = fs*np.arange(N*maxplotfreq/fs)/N
-	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:N*maxplotfreq/fs+1]))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:(int)(N*maxplotfreq/fs+1)]))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
 	plt.title('magnitude spectrogram')
@@ -67,7 +67,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	numFrames = int(pX[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
 	binFreq = fs*np.arange(N*maxplotfreq/fs)/N
-	plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:N*maxplotfreq/fs+1],axis=1)))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:(int)(N*maxplotfreq/fs+1)],axis=1)))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')
 	plt.title('phase spectrogram (derivative)')

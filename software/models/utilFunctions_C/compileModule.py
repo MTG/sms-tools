@@ -5,6 +5,7 @@ from Cython.Distutils import build_ext
 import numpy
 import os
 import os.path
+import platform
 
 try:
    from distutils.command.build_py import build_py_2to3 \
@@ -28,7 +29,13 @@ ext_inc = os
 
 sourcefiles = ["utilFunctions.c", "cutilFunctions.pyx"]
 
+sysstr = platform.system()
+if(sysstr =="Windows"):
+   libraries_setup = []
+else:
+   libraries_setup = ['m']
+
 setup(
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("utilFunctions_C",sourcefiles, libraries=['m'], include_dirs=py_inc + np_inc)]
+    ext_modules = [Extension("utilFunctions_C",sourcefiles, libraries=libraries_setup, include_dirs=py_inc + np_inc)]
   )
