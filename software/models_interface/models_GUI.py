@@ -1,5 +1,5 @@
 import sys
-if sys.platform == 'darwin':
+if sys.platform == 'darwin' or sys.platform == 'linux':
     import matplotlib
     matplotlib.use('TkAgg')
 
@@ -9,6 +9,7 @@ try:
 except ImportError:
     # for Python3
     from tkinter import *   ## notice lowercase 't' in tkinter here
+
 from notebook import *   # window with tabs
 from dftModel_GUI_frame import *
 from stft_GUI_frame import *
