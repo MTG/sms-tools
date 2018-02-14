@@ -239,7 +239,7 @@ def cleaningTrack(track, minTrackLength=3):
 
 	nFrames = track.size                                # number of frames
 	cleanTrack = np.copy(track)                         # copy arrat
-	trackBegs = np.nonzero((track[:nFrames-1] <= 0)     # begining of track contours
+	trackBegs = np.nonzero((track[:nFrames-1] <= 0)     # beginning of track contours
 								& (track[1:]>0))[0] + 1
 	if track[0]>0:
 		trackBegs = np.insert(trackBegs, 0, 0)
@@ -263,7 +263,7 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	returns f0: fundamental frequency in Hz
 	"""
 	if (minf0 < 0):                                  # raise exception if minf0 is smaller than 0
-		raise ValueError("Minumum fundamental frequency (minf0) smaller than 0")
+		raise ValueError("Minimum fundamental frequency (minf0) smaller than 0")
 
 	if (maxf0 >= 10000):                             # raise exception if maxf0 is bigger than 10000Hz
 		raise ValueError("Maximum fundamental frequency (maxf0) bigger than 10000Hz")
