@@ -1,8 +1,6 @@
 import sys
-if sys.platform == 'darwin':
-    import matplotlib
-    matplotlib.use('TkAgg')
-
+import matplotlib
+matplotlib.use('TkAgg')
 try:
     # for Python2
     from Tkinter import *   ## notice capitalized T in Tkinter 
