@@ -7,3 +7,4 @@ workspace_dev/*
 workspace/*
 software/models_interface/output_sounds/*.wav
 software/transformations_interface/output_sounds/*.wav
+.ipynb_checkpoints/
