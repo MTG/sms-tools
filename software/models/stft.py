@@ -53,16 +53,16 @@ def stftAnal(x, w, N, H) :
 	pin = hM1                                       # initialize sound pointer in middle of analysis window       
 	pend = x.size-hM1                               # last sample to start a frame
 	w = w / sum(w)                                  # normalize analysis window
+	xmX = []                                       # Initialise empty list for mX
+	xpX = []                                       # Initialise empty list for pX
 	while pin<=pend:                                # while sound pointer is smaller than last sample      
 		x1 = x[pin-hM1:pin+hM2]                     # select one frame of input sound
 		mX, pX = DFT.dftAnal(x1, w, N)              # compute dft
-		if pin == hM1:                              # if first frame create output arrays
-			xmX = np.array([mX])
-			xpX = np.array([pX])
-		else:                                       # append output to existing array 
-			xmX = np.vstack((xmX,np.array([mX])))
-			xpX = np.vstack((xpX,np.array([pX])))
+		xmX.append(np.array(mX))                    # Append output to list
+		xpX.append(np.array(pX))
 		pin += H                                    # advance sound pointer
+	xmX = np.array(xmX)                             # Convert to numpy array
+	xpX = np.array(xpX)
 	return xmX, xpX
 
 def stftSynth(mY, pY, M, H) :
