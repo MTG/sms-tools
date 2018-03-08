@@ -31,6 +31,16 @@ To execute the transformations GUI that calls various sound transformation funct
 
 To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>software/models_interface</code> or from <code>software/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files). 
 
+Jupyter Notebook instructions
+-------
+
+Install Jupyter Notebook according to it's instructions https://jupyter.org/install
+
+Start up jupyter notebook
+
+<code>$ jupyter notebook</code> 
+
+Follow instructions appearing in the console regarding navigating your browser to the notebook
 
 Content
 -------
