@@ -182,7 +182,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
 		binremainder = round(loc)-loc;
 		lb = np.arange(binremainder-4, binremainder+5) # main lobe (real value) bins to read
 		lmag = genBhLobe(lb) * 10**(ipmag[i]/20)       # lobe magnitudes of the complex exponential
-		b = np.arange(round(loc)-4, round(loc)+5)
+		b = np.arange(round(loc)-4, round(loc)+5, dtype='int')
 		for m in range(0, 9):
 			if b[m] < 0:                                 # peak lobe crosses DC bin
 				Y[-b[m]] += lmag[m]*np.exp(-1j*ipphase[i])
