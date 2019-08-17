@@ -108,7 +108,6 @@ def sineModel(x, fs, w, N, t):
 	hNs = Ns//2                                             # half of synthesis FFT size
 	pin = max(hNs, hM1)                                     # init sound pointer in middle of anal window       
 	pend = x.size - max(hNs, hM1)                           # last sample to start a frame
-	fftbuffer = np.zeros(N)                                 # initialize buffer for FFT
 	yw = np.zeros(Ns)                                       # initialize output sound frame
 	y = np.zeros(x.size)                                    # initialize output array
 	w = w / sum(w)                                          # normalize analysis window
