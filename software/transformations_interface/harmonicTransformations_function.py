@@ -56,7 +56,7 @@ def analysis(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=
 	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to show plots
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# frequency range to plot
 	maxplotfreq = 5000.0

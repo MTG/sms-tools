@@ -36,7 +36,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
     y = DFT.dftSynth(mX, pX, w.size)*sum(w)
 
     # create figure
-    plt.figure(figsize=(12, 9))
+    plt.figure(figsize=(9, 6))
 
     # plot the sound fragment
     plt.subplot(4,1,1)

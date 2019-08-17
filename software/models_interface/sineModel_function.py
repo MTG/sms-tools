@@ -46,7 +46,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to show plots
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# frequency range to plot
 	maxplotfreq = 5000.0

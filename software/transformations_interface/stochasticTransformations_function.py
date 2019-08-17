@@ -38,7 +38,7 @@ def main (inputFile='../../sounds/rain.wav', stocf=0.1, timeScaling = np.array([
 	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to plot
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# plot the input sound
 	plt.subplot(4,1,1)

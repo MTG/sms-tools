@@ -38,7 +38,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to plot
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# frequency range to plot
 	maxplotfreq = 5000.0

@@ -30,7 +30,7 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	UF.wavwrite(y, fs, outputFile)
 
 	# create figure to plot
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# plot the input sound
 	plt.subplot(3,1,1)

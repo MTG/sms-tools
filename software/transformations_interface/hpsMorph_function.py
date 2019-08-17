@@ -48,7 +48,7 @@ def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=100
 	hfreq2, hmag2, hphase2, stocEnv2 = HPS.hpsModelAnal(x2, fs2, w2, N2, H, t2, nH, minf02, maxf02, f0et2, harmDevSlope2, minSineDur2, Ns, stocf)
 
 	# create figure to plot
-	plt.figure(figsize=(12, 9))
+	plt.figure(figsize=(9, 6))
 
 	# frequency range to plot
 	maxplotfreq = 15000.0
