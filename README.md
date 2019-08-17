@@ -2,12 +2,12 @@ sms-tools
 ========= 
 
 
-Sound analysis/synthesis tools for music applications written in python (with a bit of C) plus complementary lecture materials.
+Sound analysis/synthesis tools for music applications written in python (with a bit of C) plus complementary teaching materials.
 
 How to use
 ----------
 
-In order to use these tools you have to install python (recommended 3.6) and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
+In order to use these tools you have to install python (recommended 3.7.x) and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
 
 In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
 
