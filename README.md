@@ -34,7 +34,7 @@ To modify the existing code, or to create your own using some of the functions, 
 Jupyter Notebook instructions
 -------
 
-he exercises, in the <code>exercises</code> directory, are jupyter notebooks. Install Jupyter Notebook according to it's instructions https://jupyter.org/install
+The exercises, in the <code>exercises</code> directory, are jupyter notebooks. To read them and do them, Install Jupyter Notebook according to it's instructions https://jupyter.org/install
 
 Start up jupyter notebook
 
