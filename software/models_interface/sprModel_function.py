@@ -33,7 +33,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# perform sinusoidal plus residual analysis
 	tfreq, tmag, tphase, xr = SPR.sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope)

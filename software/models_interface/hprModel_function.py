@@ -32,7 +32,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# find harmonics and residual
 	hfreq, hmag, hphase, xr = HPR.hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)

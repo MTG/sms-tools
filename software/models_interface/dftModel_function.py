@@ -21,7 +21,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N =
     fs, x = UF.wavread(inputFile)
 
     # compute analysis window
-    w = get_window(window, M)
+    w = get_window(window, M, fftbins=True)
 
     # get a fragment of the input sound of size M
     sample = int(time*fs)

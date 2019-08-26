@@ -32,7 +32,7 @@ def main(inputFile='../../sounds/vignesh.wav', window='blackman', M=1201, N=2048
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# detect harmonics of input sound
 	hfreq, hmag, hphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)

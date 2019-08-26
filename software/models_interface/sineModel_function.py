@@ -31,7 +31,7 @@ def main(inputFile='../../sounds/bendir.wav', window='hamming', M=2001, N=2048, 
 	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# analyze the sound with the sinusoidal model
 	tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope)

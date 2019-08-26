@@ -31,7 +31,7 @@ def main(inputFile='../../sounds/sax-phrase-short.wav', window='blackman', M=601
 	(fs, x) = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# compute the harmonic plus stochastic model of the whole sound
 	hfreq, hmag, hphase, stocEnv = HPS.hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf)

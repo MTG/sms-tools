@@ -22,7 +22,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	fs, x = UF.wavread(inputFile)
 
 	# compute analysis window
-	w = get_window(window, M)
+	w = get_window(window, M, fftbins=True)
 
 	# compute the magnitude and phase spectrogram
 
