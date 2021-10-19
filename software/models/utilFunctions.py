@@ -290,7 +290,8 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
 	if (f0cf.size == 0):                             # return 0 if no peak candidates
 		return 0
 
-	f0, f0error = UF_C.twm(pfreq, pmag, f0cf)        # call the TWM function with peak candidates
+	f0, f0error = UF_C.twm(pfreq, pmag, f0cf)        # call the TWM function with peak candidates, cython version
+#	f0, f0error = TWM_p(pfreq, pmag, f0cf)        # call the TWM function with peak candidates, python version
 
 	if (f0>0) and (f0error<ef0max):                  # accept and return f0 if below max error allowed
 		return f0
@@ -364,7 +365,8 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	for l in range(L):
 		xw = x[pin:pin+N]*w                              # window the input sound
 		X = fft(fftshift(xw))                            # compute FFT
-		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines
+		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines, cython version
+#		Yh = genSpecSines_p(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N, fs)   # generate spec sines, python version
 		Xr = X-Yh                                        # subtract sines from original spectrum
 		xrw = np.real(fftshift(ifft(Xr)))                # inverse FFT
 		xr[pin:pin+N] += xrw*sw                          # overlap-add
@@ -392,7 +394,8 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
 	for l in range(L):
 		xw = x[pin:pin+N] * w                               # window the input sound
 		X = fft(fftshift(xw))                               # compute FFT
-		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines
+		Yh = UF_C.genSpecSines(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N)   # generate spec sines, cython version
+#		Yh = genSpecSines_p(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N, fs)   # generate spec sines, python version
 		Xr = X-Yh                                           # subtract sines from original spectrum
 		mXr = 20*np.log10(abs(Xr[:hN]))                     # magnitude spectrum of residual
 		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)  # decimate the mag spectrum

@@ -209,7 +209,8 @@ def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
 			ytphase = tphase[l,:] 
 		else:
 			ytphase += (np.pi*(lastytfreq+tfreq[l,:])/fs)*H     # propagate phases
-		Y = UF.genSpecSines(tfreq[l,:], tmag[l,:], ytphase, N, fs)  # generate sines in the spectrum         
+#		Y = UF.genSpecSines_p(tfreq[l,:], tmag[l,:], ytphase, N, fs)  # generate sines in the spectrum    
+		Y = UF.genSpecSines(tfreq[l,:], tmag[l,:], ytphase, N, fs)  # generate sines in the spectrum      
 		lastytfreq = tfreq[l,:]                               # save frequency for phase propagation
 		ytphase = ytphase % (2*np.pi)                         # make phase inside 2*pi
 		yw = np.real(fftshift(ifft(Y)))                       # compute inverse FFT
