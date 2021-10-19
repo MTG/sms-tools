@@ -12,7 +12,7 @@ x = np.cos(2*np.pi*k0/N*nv)
 
 plt.subplot(311)
 plt.title('x; k_0 = 7.5, N = 64')
-plt.plot(nv, x,'b', lw=1.5)
+plt.plot(nv, x,'b-x', lw=1.5)
 plt.axis([-N/2,N/2-1,-1,1])
 for k in kv:
 	s = np.exp(1j*2*np.pi*k/N*nv)
@@ -23,12 +23,12 @@ X.imag[np.abs(X.imag) < tol] = 0.0
 
 plt.subplot(312)
 plt.title('magnitude spectrum: abs(X)')
-plt.plot(kv, abs(X), 'r', lw=1.5)
+plt.plot(kv, abs(X), 'r-x', lw=1.5)
 plt.axis([-N/2,N/2-1,0,N])
 
 plt.subplot(313)
 plt.title('phase spectrum: angle(X)')
-plt.plot(kv, np.angle(X),'c', lw=1.5)
+plt.plot(kv, np.angle(X),'c-x', lw=1.5)
 plt.axis([-N/2,N/2-1,-np.pi,np.pi])
 
 plt.tight_layout()

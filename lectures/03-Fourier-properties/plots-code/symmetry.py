@@ -10,6 +10,7 @@ import utilFunctions as UF
 import dftModel as DF
 (fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 w = np.hamming(511)
+w = w / sum(w)  
 N = 512
 pin = 5000
 hM1 = int(math.floor((w.size+1)/2)) 
@@ -32,7 +33,7 @@ plt.title('x (soprano-E4.wav)')
 
 plt.subplot(3,1,2)
 plt.plot(np.arange(-N/2,N/2), mX, 'r', lw=1.5)
-plt.axis([-N/2,N/2,-48,max(mX)])
+plt.axis([-N/2,N/2,-100,max(mX)])
 plt.title ('mX = 20*log10(abs(X))')
 plt.ylabel('amplitude (dB)')
 

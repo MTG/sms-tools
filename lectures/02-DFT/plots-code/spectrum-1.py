@@ -7,7 +7,7 @@ sys.path.append('../../../software/models/')
 import utilFunctions as UF
 import dftModel as DFT
 
-(fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
+(fs, x) = UF.wavread('../../../sounds/trumpet-A4.wav')
 w = np.hamming(511)
 N = 512
 pin = 5000
@@ -22,7 +22,7 @@ plt.subplot(311)
 plt.plot(np.arange(-hM1, hM2), x1, lw=1.5)
 plt.axis([-hM1, hM2, min(x1), max(x1)])
 plt.ylabel('amplitude')
-plt.title('x (oboe-A4.wav)')
+plt.title('x (trumpet-A4.wav)')
 
 plt.subplot(3,1,2)
 plt.plot(np.arange(mX.size), mX, 'r', lw=1.5)
