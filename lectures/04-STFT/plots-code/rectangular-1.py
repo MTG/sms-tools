@@ -25,7 +25,7 @@ mX1[N-hN:] = mX[:hN]
 plt.subplot(2,1,2)
 plt.plot(np.arange(-hN, hN), mX1-max(mX), 'r', lw=1.5)
 plt.axis([-hN,hN,-40,0])
-plt.title('mW, N = 1024')
+plt.title('mW, M = 64, N = 1024')
 plt.annotate('main-lobe', xy=(0,-10), xytext=(-200, -5), fontsize=16, arrowprops=(dict(facecolor='black', width=2, headwidth=6, shrink=0.01)))
 plt.annotate('highest side-lobe', xy=(32,-13), xytext=(100, -10), fontsize=16, arrowprops=(dict(facecolor='black', width=2, headwidth=6, shrink=0.01)))
 

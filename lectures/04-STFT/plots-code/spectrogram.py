@@ -22,16 +22,16 @@ plt.subplot(211)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(N/2+1)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
-plt.title('mX (piano.wav), M=1001, N=1024, H=256')
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX), shading = 'flat')
+plt.title('mX (piano.wav), Hamming window, M=1001, N=1024, H=256')
 plt.autoscale(tight=True)
 
 plt.subplot(212)
 numFrames = int(pX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(N/2+1)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0))
-plt.title('pX derivative (piano.wav), M=1001, N=1024, H=256')
+plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0), shading = 'flat')
+plt.title('pX derivative (piano.wav), Hamming window, M=1001, N=1024, H=256')
 plt.autoscale(tight=True)
 
 plt.tight_layout()

@@ -26,16 +26,16 @@ plt.subplot(412)
 numFrames = int(mX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(mX[0,:].size)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
-plt.title('mX, M=1024, N=1024, H=512')
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX), shading = 'flat')
+plt.title('mX, Hamming window, M=1024, N=1024, H=512')
 plt.autoscale(tight=True)
 
 plt.subplot(413)
 numFrames = int(pX[:,0].size)
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(pX[0,:].size)*float(fs)/N                         
-plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0))
-plt.title('pX derivative, M=1024, N=1024, H=512')
+plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0), shading = 'flat')
+plt.title('pX derivative, Hamming window, M=1024, N=1024, H=512')
 plt.autoscale(tight=True)
 
 plt.subplot(414)

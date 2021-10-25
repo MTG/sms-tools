@@ -9,7 +9,7 @@ import utilFunctions as UF
 from scipy.fftpack import fft, ifft
 import math
 
-(fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
+(fs, x) = UF.wavread('../../../sounds/trumpet-A4.wav')
 N = 512
 pin = 5000
 w = np.ones(501)
@@ -22,7 +22,7 @@ plt.figure(1, figsize=(9.5, 7))
 plt.subplot(4,1,1)
 plt.plot(np.arange(-hM1, hM2), x1, lw=1.5)
 plt.axis([-hM1, hM2, min(x1), max(x1)])
-plt.title('x (oboe-A4.wav)')
+plt.title('x (trumpet-A4.wav)')
 
 mX, pX = DF.dftAnal(x1, w, N)
 mX = mX - max(mX)
