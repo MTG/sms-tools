@@ -27,9 +27,9 @@ def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	ystocEnv = np.zeros((indexes.shape[0], stocEnv.shape[1]))# allocate space for ystocEnv    
 	frameIdx = 0    
 	for l in indexes[1:]:                                  # iterate over all output frame indexes
-		yhfreq[frameCnt,:] = hfreq[int(round(l)),:]        # get the closest input frame
-		yhmag[frameCnt,:] = hmag[int(round(l)),:]          # get the closest input frame
-		ystocEnv[frameCnt,:] = stocEnv[int(round(l)),:]    # get the closest input frame
+		yhfreq[frameIdx,:] = hfreq[int(round(l)),:]        # get the closest input frame
+		yhmag[frameIdx,:] = hmag[int(round(l)),:]          # get the closest input frame
+		ystocEnv[frameIdx,:] = stocEnv[int(round(l)),:]    # get the closest input frame
 		frameIdx += 1
 	return yhfreq, yhmag, ystocEnv
 	
