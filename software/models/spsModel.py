@@ -2,7 +2,8 @@
 # (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.signal import resample, blackmanharris, triang, hanning
+from scipy.signal import resample, blackmanharris, triang
+from scipy.signal.windows import hann as hanning
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import utilFunctions as UF
