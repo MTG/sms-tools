@@ -6,6 +6,7 @@
 *.lib
 *.exp
 *.py~
+*.sln
 software/.vs/*
 workspace_dev/*
 workspace/*
