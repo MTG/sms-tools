@@ -2,7 +2,8 @@
 # (for example usage check stochasticModel_function.py in the models_interface directory)
 
 import numpy as np
-from scipy.signal import hanning, resample
+from scipy.signal.windows import hann as hanning
+from scipy.signal import resample
 from scipy.fftpack import fft, ifft
 import utilFunctions as UF
 
