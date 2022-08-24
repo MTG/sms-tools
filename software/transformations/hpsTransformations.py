@@ -22,13 +22,15 @@ def hpsTimeScale(hfreq, hmag, stocEnv, timeScaling):
 	outFrames = outL*timeScaling[1::2]/maxOutTime          # output time values in frames
 	timeScalingEnv = interp1d(outFrames, inFrames, fill_value=0)    # interpolation function
 	indexes = timeScalingEnv(np.arange(outL))              # generate frame indexes for the output
-	yhfreq = hfreq[int(round(indexes[0])),:]                    # first output frame
-	yhmag = hmag[int(round(indexes[0])),:]                      # first output frame
-	ystocEnv = stocEnv[int(round(indexes[0])),:]                # first output frame
+	yhfreq = np.zeros((indexes.shape[0], hfreq.shape[1]))    # allocate space for yhfreq
+	yhmag = np.zeros((indexes.shape[0], hmag.shape[1]))      # allocate space for yhmag
+	ystocEnv = np.zeros((indexes.shape[0], stocEnv.shape[1]))# allocate space for ystocEnv    
+	frameIdx = 0    
 	for l in indexes[1:]:                                  # iterate over all output frame indexes
-		yhfreq = np.vstack((yhfreq, hfreq[int(round(l)),:]))      # get the closest input frame
-		yhmag = np.vstack((yhmag, hmag[int(round(l)),:]))         # get the closest input frame
-		ystocEnv = np.vstack((ystocEnv, stocEnv[int(round(l)),:])) # get the closest input frame
+		yhfreq[frameIdx,:] = hfreq[int(round(l)),:]        # get the closest input frame
+		yhmag[frameIdx,:] = hmag[int(round(l)),:]          # get the closest input frame
+		ystocEnv[frameIdx,:] = stocEnv[int(round(l)),:]    # get the closest input frame
+		frameIdx += 1
 	return yhfreq, yhmag, ystocEnv
 	
 	
