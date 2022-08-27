@@ -10,7 +10,6 @@ except ImportError:
     from tkinter import filedialog as tkFileDialog
     from tkinter import messagebox as tkMessageBox
 import sys, os
-from scipy.io.wavfile import read
 import numpy as np
 import hpsMorph_function as hM
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -42,7 +41,7 @@ class HpsMorph_frame:
 		open_file1.grid(row=0, column=0, sticky=W, padx=(330, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 1
-		preview1 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation1.get()), bg="gray30", fg="white")
+		preview1 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation1.get()))
 		preview1.grid(row=0, column=0, sticky=W, padx=(375,6), pady=(10,2))
 		
 		#ANALYSIS WINDOW TYPE SOUND 1
@@ -147,7 +146,7 @@ class HpsMorph_frame:
 		open_file2.grid(row=5, column=0, sticky=W, padx=(330, 6), pady=(2,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 2
-		preview2 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation2.get()), bg="gray30", fg="white")
+		preview2 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation2.get()))
 		preview2.grid(row=5, column=0, sticky=W, padx=(375,6), pady=(2,2))
 
 
@@ -255,7 +254,7 @@ class HpsMorph_frame:
 		self.stocf.insert(0, "0.1")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
-		self.compute = Button(self.parent, text="Analysis", command=self.analysis, bg="dark red", fg="white")
+		self.compute = Button(self.parent, text="Analysis", command=self.analysis)
 		self.compute.grid(row=10, column=0, padx=(210, 5), pady=(2,2), sticky=W)
 
 		###
@@ -292,11 +291,11 @@ class HpsMorph_frame:
 
 
 		#BUTTON TO DO THE SYNTHESIS
-		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
+		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis)
 		self.compute.grid(row=18, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_hpsMorph.wav'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_hpsMorph.wav'))
 		self.transf_output.grid(row=18, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
