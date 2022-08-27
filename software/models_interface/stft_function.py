@@ -66,7 +66,7 @@ def main(inputFile = '../../sounds/piano.wav', window = 'hamming', M = 1024, N =
 	plt.subplot(4,1,3)
 	numFrames = int(pX[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)
-	binFreq = fs*np.arange(N*maxplotfreq/fs)/N
+	binFreq = fs*np.arange(N*maxplotfreq//fs)//N
 	plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:int(N*maxplotfreq/fs+1)],axis=1)))
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')

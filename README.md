@@ -13,6 +13,10 @@ In Ubuntu (which we strongly recommend) in order to install all these modules it
 
 <code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy cython</code>
 
+Ubuntu 20.04 and later requires python3 versions instead:
+
+<code>$ sudo apt-get install python3-dev ipython3 python3-numpy python3-matplotlib python3-scipy cython3</code>
+
 In OSX (which we do not support but that should work) you install these modules by typing in the Terminal:
 
 <code>$ pip install ipython numpy matplotlib scipy cython</code>

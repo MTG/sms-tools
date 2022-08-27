@@ -43,8 +43,8 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	# plot stochastic representation
 	plt.subplot(3,1,2)
 	numFrames = int(stocEnv[:,0].size)
-	frmTime = H*np.arange(numFrames)/float(fs)                             
-	binFreq = np.arange(stocf*(N/2+1))*float(fs)/(stocf*N)                      
+	frmTime = H*np.arange(numFrames)/float(fs)  
+	binFreq = np.arange(int(stocf*(N/2+1)))*float(fs)/(stocf*N)                      
 	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv))
 	plt.autoscale(tight=True)
 	plt.xlabel('time (sec)')

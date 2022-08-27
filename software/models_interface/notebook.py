@@ -9,7 +9,7 @@ class notebook(object):
 	def __init__(self, master, side=LEFT): 
 		self.active_fr = None 
 		self.count = 0 
-		self.choice = IntVar(0) 
+		self.choice = IntVar(master=master, value=0) 
 		if side in (TOP, BOTTOM): 
 			self.side = LEFT 
 		else: self.side = TOP 
