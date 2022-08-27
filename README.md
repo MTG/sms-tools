@@ -7,13 +7,13 @@ Sound analysis/synthesis tools for music applications written in python (with a 
 How to use
 ----------
 
-In order to use these tools you have to install python (recommended 3.10) and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
+In order to use these tools you have to install python 3.* (recommended 3.10) and the following modules: <code>ipython</code>, <code>numpy</code>, <code>matplotlib</code>, <code>scipy</code>, and <code>cython</code>. 
 
-In Ubuntu you install these modules by typing in the Terminal:
+In Ubuntu you can install these modules by typing in the Terminal:
 
 <code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy cython</code>
 
-In OSX you install these modules by typing in the Terminal:
+In OSX you can install these modules by typing in the Terminal:
 
 <code>$ pip install ipython numpy matplotlib scipy cython</code>
 
@@ -33,20 +33,18 @@ To modify the existing code, or to create your own using some of the functions, 
 
 Jupyter Notebooks
 -------
-A number of teaching exercises are available as jupyter notebooks in the <code>notebook</code> directory. To do them you need to install Jupyter.
+A number of teaching exercises are available as jupyter notebooks in the <code>notebook</code> directory. To do them you need to install Jupyter Notebook according to its instructions https://jupyter.org/install
 
-Install Jupyter Notebook according to its instructions https://jupyter.org/install
-
-Start up jupyter notebook by typing in the Termina
+Start up jupyter notebook by typing in the Terminal.
 
 <code>$ jupyter notebook</code> 
 
-Follow instructions appearing in the console regarding navigating your browser to the <code>notebook</code> directory.
+It will open a web browser, from which you can open the <code>notebook</code> directory.
 
 Content
 -------
 
-All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the exercises related to the lectures are in the  <code>notebook</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
+All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the exercises related to the lectures are in the  <code>notebook</code> directory, and the sounds used for the examples and coming from http://freesound.org are in the <code>sounds</code> directory.
 
 License
 -------
