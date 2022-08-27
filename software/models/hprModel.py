@@ -3,8 +3,8 @@
 
 import numpy as np
 import math
-from scipy.signal import blackmanharris, triang
-from scipy.fftpack import fft, ifft, fftshift
+from scipy.signal.windows import blackmanharris, triang
+from scipy.fftpack import fft, ifft
 import harmonicModel as HM
 import dftModel as DFT
 import utilFunctions as UF
@@ -58,7 +58,6 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
 	hNs = Ns//2      
 	pin = max(hNs, hM1)                                           # initialize sound pointer in middle of analysis window          
 	pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
-	fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
 	yhw = np.zeros(Ns)                                            # initialize output sound frame
 	xrw = np.zeros(Ns)                                            # initialize output sound frame
 	yh = np.zeros(x.size)                                         # initialize output array
@@ -98,11 +97,9 @@ def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
 		#-----synthesis-----
 		Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs)          # generate sines
 		Xr = X2-Yh                                                 # get the residual complex spectrum                       
-		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Yh))                              # inverse FFT of harmonic spectrum
 		yhw[:hNs-1] = fftbuffer[hNs+1:]                            # undo zero-phase window
 		yhw[hNs-1:] = fftbuffer[:hNs+1] 
-		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Xr))                              # inverse FFT of residual spectrum
 		xrw[:hNs-1] = fftbuffer[hNs+1:]                            # undo zero-phase window
 		xrw[hNs-1:] = fftbuffer[:hNs+1]

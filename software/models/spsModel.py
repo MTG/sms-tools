@@ -2,8 +2,9 @@
 # (for example usage check the models_interface directory)
 
 import numpy as np
-from scipy.signal import resample, blackmanharris, triang, hanning
-from scipy.fftpack import fft, ifft, fftshift
+from scipy.signal import resample
+from scipy.signal.windows import blackmanharris, triang
+from scipy.fftpack import fft, ifft
 import math
 import utilFunctions as UF
 import dftModel as DFT
@@ -52,7 +53,6 @@ def spsModel(x, fs, w, N, t, stocf):
 	returns y: output sound, ys: sinusoidal component, yst: stochastic component
 	"""
 
-	hN = N//2                                                     # size of positive spectrum
 	hM1 = int(math.floor((w.size+1)/2))                           # half analysis window size by rounding
 	hM2 = int(math.floor(w.size/2))                               # half analysis window size by floor
 	Ns = 512                                                      # FFT size for synthesis (even)
@@ -60,7 +60,6 @@ def spsModel(x, fs, w, N, t, stocf):
 	hNs = Ns//2      
 	pin = max(hNs, hM1)                                           # initialize sound pointer in middle of analysis window          
 	pend = x.size - max(hNs, hM1)                                 # last sample to start a frame
-	fftbuffer = np.zeros(N)                                       # initialize buffer for FFT
 	ysw = np.zeros(Ns)                                            # initialize output sound frame
 	ystw = np.zeros(Ns)                                           # initialize output sound frame
 	ys = np.zeros(x.size)                                         # initialize output array
@@ -91,7 +90,7 @@ def spsModel(x, fs, w, N, t, stocf):
 		
 	#-----synthesis-----
 		Ys = UF.genSpecSines(ipfreq, ipmag, ipphase, Ns, fs)        # generate spec of sinusoidal component          
-		Xr = X2-Ys;                                                 # get the residual complex spectrum
+		Xr = X2-Ys                                                  # get the residual complex spectrum
 		mXr = 20 * np.log10(abs(Xr[:hNs]))                          # magnitude spectrum of residual
 		mXrenv = resample(np.maximum(-200, mXr), mXr.size*stocf)    # decimate the magnitude spectrum and avoid -Inf                     
 		stocEnv = resample(mXrenv, hNs)                             # interpolate to original size
@@ -100,12 +99,10 @@ def spsModel(x, fs, w, N, t, stocf):
 		Yst[:hNs] = 10**(stocEnv/20) * np.exp(1j*pYst)              # generate positive freq.
 		Yst[hNs+1:] = 10**(stocEnv[:0:-1]/20) * np.exp(-1j*pYst[:0:-1])  # generate negative freq.
 
-		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Ys))                               # inverse FFT of harmonic spectrum
 		ysw[:hNs-1] = fftbuffer[hNs+1:]                             # undo zero-phase window
 		ysw[hNs-1:] = fftbuffer[:hNs+1] 
 
-		fftbuffer = np.zeros(Ns)
 		fftbuffer = np.real(ifft(Yst))                              # inverse FFT of stochastic spectrum
 		ystw[:hNs-1] = fftbuffer[hNs+1:]                            # undo zero-phase window
 		ystw[hNs-1:] = fftbuffer[:hNs+1]
