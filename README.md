@@ -7,21 +7,17 @@ Sound analysis/synthesis tools for music applications written in python (with a 
 How to use
 ----------
 
-In order to use these tools you have to install python (recommended 3.7.x) and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
+In order to use these tools you have to install python (recommended 3.10) and the following modules: ipython, numpy, matplotlib, scipy, and cython. 
 
-In Ubuntu (which we strongly recommend) in order to install all these modules it is as simple as typing in the Terminal:
+In Ubuntu you install these modules by typing in the Terminal:
 
 <code>$ sudo apt-get install python-dev ipython python-numpy python-matplotlib python-scipy cython</code>
 
-Ubuntu 20.04 and later requires python3 versions instead:
-
-<code>$ sudo apt-get install python3-dev ipython3 python3-numpy python3-matplotlib python3-scipy cython3</code>
-
-In OSX (which we do not support but that should work) you install these modules by typing in the Terminal:
+In OSX you install these modules by typing in the Terminal:
 
 <code>$ pip install ipython numpy matplotlib scipy cython</code>
 
-then, for using the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
+then, to use the tools, after downloading the whole package, you need to compile some C functions. For that you should go to the directory <code>software/models/utilFunctions_C</code> and type:</p>
 
 <code>$ python compileModule.py build_ext --inplace </code>
 
@@ -35,21 +31,22 @@ To execute the transformations GUI that calls various sound transformation funct
 
 To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>software/models_interface</code> or from <code>software/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files). 
 
-Jupyter Notebook instructions
+Jupyter Notebooks
 -------
+A number of teaching exercises are available as jupyter notebooks in the <code>notebook</code> directory. To do them you need to install Jupyter.
 
-Install Jupyter Notebook according to it's instructions https://jupyter.org/install
+Install Jupyter Notebook according to its instructions https://jupyter.org/install
 
-Start up jupyter notebook
+Start up jupyter notebook by typing in the Termina
 
 <code>$ jupyter notebook</code> 
 
-Follow instructions appearing in the console regarding navigating your browser to the notebook
+Follow instructions appearing in the console regarding navigating your browser to the <code>notebook</code> directory.
 
 Content
 -------
 
-All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the assignments related to the lectures in the  <code>assignments</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
+All the code is in the <code> software </code> directory, with subdirectories for the models, the transformations, and the interfaces. The lecture materials are in the <code>lectures</code> directory, the exercises related to the lectures are in the  <code>notebook</code> directory, and the sounds used for the examples and coming from <code>http://freesound.org</code> are in the <code>sounds</code> directory.
 
 License
 -------
