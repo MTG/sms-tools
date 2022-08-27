@@ -1,18 +1,8 @@
 # GUI frame for the harmonicModel_function.py
 
-try:
-    # for Python2
-    from Tkinter import *  ## notice capitalized T in Tkinter
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
-from scipy.io.wavfile import read
 import harmonicModel_function
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
 
@@ -158,7 +148,7 @@ class HarmonicModel_frame:
 
     def browse_file(self):
 
-        self.filename = tkFileDialog.askopenfilename(**self.file_opt)
+        self.filename = filedialog.askopenfilename(**self.file_opt)
 
         # set the text of the self.filelocation
         self.filelocation.delete(0, END)
@@ -182,4 +172,4 @@ class HarmonicModel_frame:
             harmonicModel_function.main(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope)
 
         except ValueError as errorMessage:
-            tkMessageBox.showerror("Input values error", errorMessage)
+            messagebox.showerror("Input values error", errorMessage)

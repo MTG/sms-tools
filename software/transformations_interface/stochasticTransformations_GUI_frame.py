@@ -1,15 +1,8 @@
 # GUI frame for the stochasticTransformations_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   # notice capitalized T in Tkinter
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  # notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
-import sys, os
+import os
+import sys
+from tkinter import *  # notice lowercase 't' in tkinter here
 import numpy as np
 import stochasticTransformations_function as sT
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -80,7 +73,7 @@ class StochasticTransformations_frame:
  
 	def browse_file(self):
 		
-		self.filename = tkFileDialog.askopenfilename(**self.file_opt)
+		self.filename = filedialog.askopenfilename(**self.file_opt)
  
 		#set the text of the self.filelocation
 		self.filelocation.delete(0, END)
@@ -96,4 +89,4 @@ class StochasticTransformations_frame:
 			sT.main(inputFile, stocf, timeScaling)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)

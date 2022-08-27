@@ -1,14 +1,6 @@
 # GUI frame for the harmonicTransformations_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   # notice capitalized T in Tkinter
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  # notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
 import numpy as np
 import harmonicTransformations_function as hT
@@ -241,7 +233,7 @@ class HarmonicTransformations_frame:
 			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling, freqStretching, timbrePreservation, timeScaling)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+			messagebox.showerror("Analysis not computed", "First you must analyse the sound!")

@@ -1,15 +1,8 @@
 # GUI frame for the stftMorph_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   # notice capitalized T in Tkinter
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  # notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
-import sys, os
+import os
+import sys
+from tkinter import *
 import stftMorph_function as sT
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
@@ -172,7 +165,7 @@ class StftMorph_frame:
  
     def browse_file1(self):
 
-        self.filename1 = tkFileDialog.askopenfilename(**self.file_opt)
+        self.filename1 = filedialog.askopenfilename(**self.file_opt)
  
         #set the text of the self.filelocation
         self.filelocation1.delete(0, END)
@@ -180,7 +173,7 @@ class StftMorph_frame:
  
     def browse_file2(self):
 
-        self.filename2 = tkFileDialog.askopenfilename(**self.file_opt)
+        self.filename2 = filedialog.askopenfilename(**self.file_opt)
  
         #set the text of the self.filelocation
         self.filelocation2.delete(0, END)
@@ -204,4 +197,4 @@ class StftMorph_frame:
             sT.main(inputFile1, inputFile2, window1, window2, M1, M2, N1, N2, H1, smoothf, balancef)
 
         except ValueError as errorMessage:
-            tkMessageBox.showerror("Input values error", errorMessage)
+            messagebox.showerror("Input values error", errorMessage)

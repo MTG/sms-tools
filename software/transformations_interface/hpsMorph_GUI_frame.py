@@ -1,14 +1,6 @@
 # GUI frame for the hpsMorph_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   ## notice capitalized T in Tkinter 
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
 import numpy as np
 import hpsMorph_function as hM
@@ -375,7 +367,7 @@ class HpsMorph_frame:
 			hM.transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+			messagebox.showerror("Analysis not computed", "First you must analyse the sound!")

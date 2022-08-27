@@ -1,11 +1,5 @@
 import matplotlib
 matplotlib.use('TkAgg')
-try:
-    # for Python2
-    from Tkinter import *  # notice capitalized T in Tkinter
-except ImportError:
-    # for Python3
-    from tkinter import *  # notice lowercase 't' in tkinter here
 
 from notebook import *  # window with tabs
 from dftModel_GUI_frame import *

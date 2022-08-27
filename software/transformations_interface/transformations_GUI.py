@@ -2,12 +2,7 @@ import sys
 import matplotlib
 
 matplotlib.use('TkAgg')
-try:
-    # for Python2
-    from Tkinter import *  # notice capitalized T in Tkinter
-except ImportError:
-    # for Python3
-    from tkinter import *  # notice lowercase 't' in tkinter here
+from tkinter import *
 from notebook import *  # window with tabs
 from stftMorph_GUI_frame import *
 from sineTransformations_GUI_frame import *

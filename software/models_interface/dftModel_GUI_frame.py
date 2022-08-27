@@ -1,21 +1,9 @@
 # GUI frame for the dftModel_function.py
-
-try:
-    # for Python2
-    from Tkinter import *  ## notice capitalized T in Tkinter 
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
 import sys, os
-from scipy.io.wavfile import read
 import dftModel_function
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
 import utilFunctions as UF
-
+from tkinter import *
 
 class DftModel_frame:
 
@@ -86,7 +74,6 @@ class DftModel_frame:
         self.time.insert(0, ".2")
 
         # BUTTON TO COMPUTE EVERYTHING
-       # self.compute = Button(self.parent, text="Compute", command=self.compute_model, bg="dark red", fg="white")
         self.compute = Button(self.parent, text="Compute", command=self.compute_model)
         self.compute.grid(row=6, column=0, padx=5, pady=(10, 15), sticky=W)
 
@@ -99,7 +86,7 @@ class DftModel_frame:
 
     def browse_file(self):
 
-        self.filename = tkFileDialog.askopenfilename(**self.file_opt)
+        self.filename = filedialog.askopenfilename(**self.file_opt)
 
         # set the text of the self.filelocation
         self.filelocation.delete(0, END)
@@ -117,4 +104,4 @@ class DftModel_frame:
             dftModel_function.main(inputFile, window, M, N, time)
 
         except ValueError as errorMessage:
-            tkMessageBox.showerror("Input values error", errorMessage)
+            messagebox.showerror("Input values error", errorMessage)

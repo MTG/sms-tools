@@ -1,14 +1,6 @@
 # GUI frame for the hpsTransformations_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   ## notice capitalized T in Tkinter 
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
 import numpy as np
 import hpsTransformations_function as hT
@@ -209,7 +201,7 @@ class HpsTransformations_frame:
  
 	def browse_file(self):
 		
-		self.filename = tkFileDialog.askopenfilename(**self.file_opt)
+		self.filename = filedialog.askopenfilename(**self.file_opt)
  
 		#set the text of the self.filelocation
 		self.filelocation.delete(0, END)
@@ -234,7 +226,7 @@ class HpsTransformations_frame:
 			self.inputFile, self.fs, self.hfreq, self.hmag, self.mYst = hT.analysis(inputFile, window, M, N, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope, stocf)
 
 		except ValueError:
-			tkMessageBox.showerror("Input values error", "Some parameters are incorrect")
+			messagebox.showerror("Input values error", "Some parameters are incorrect")
 
 	def transformation_synthesis(self):
 
@@ -252,7 +244,7 @@ class HpsTransformations_frame:
 			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling, freqStretching, timbrePreservation, timeScaling)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+			messagebox.showerror("Analysis not computed", "First you must analyse the sound!")
