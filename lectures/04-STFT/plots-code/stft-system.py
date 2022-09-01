@@ -23,15 +23,18 @@ plt.title('x (piano.wav)')
 plt.axis([0,x.size/float(fs),min(x),max(x)])
 
 plt.subplot(412)
-numFrames = int(mX[:,0].size)
+# Size of X and Y must be 1 larger than the size of mX for flat shading
+numFrames = int(mX[:,0].size) + 1
 frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX[0,:].size)*float(fs)/N                         
+binFreq = np.arange(mX[0,:].size + 1)*float(fs)/N                         
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX), shading = 'flat')
 plt.title('mX, Hamming window, M=1024, N=1024, H=512')
 plt.autoscale(tight=True)
 
 plt.subplot(413)
-numFrames = int(pX[:,0].size)
+# Size of X must be 1 larger than the size of np.diff(pX) (which has the Y axis size
+# reduced by 1) for flat shading
+numFrames = int(pX[:,0].size) + 1
 frmTime = H*np.arange(numFrames)/float(fs)                             
 binFreq = np.arange(pX[0,:].size)*float(fs)/N                         
 plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0), shading = 'flat')
