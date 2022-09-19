@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang
 from scipy.fftpack import fft, ifft, fftshift
 import copy, sys, os
@@ -189,7 +190,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
     for i in range(0, ipfreq.size):  # generate all sine spectral lobes
         loc = N * ipfreq[i] / fs  # it should be in range ]0,hN-1[
         if loc == 0 or loc > hN - 1: continue
-        binremainder = round(loc) - loc;
+        binremainder = round(loc) - loc
         lb = np.arange(binremainder - 4, binremainder + 5)  # main lobe (real value) bins to read
         lmag = genBhLobe(lb) * 10 ** (ipmag[i] / 20)  # lobe magnitudes of the complex exponential
         b = np.arange(round(loc) - 4, round(loc) + 5, dtype='int')
