@@ -3,7 +3,7 @@
 
 import numpy as np
 from scipy.signal import resample
-from scipy.signal.windows import blackmanharris, triang
+from scipy.signal.windows import blackmanharris, triang, hann
 from scipy.fftpack import fft, ifft
 import math
 import utilFunctions as UF
@@ -72,7 +72,7 @@ def spsModel(x, fs, w, N, t, stocf):
 	bh = bh / sum(bh)                                             # normalize synthesis window
 	wr = bh                                                       # window for residual
 	sw[hNs-H:hNs+H] = sw[hNs-H:hNs+H] / bh[hNs-H:hNs+H]
-	sws = H*hanning(Ns)/2                                         # synthesis window for stochastic
+	sws = H*hann(Ns)/2                                         # synthesis window for stochastic
 
 	while pin<pend:  
 	#-----analysis-----             
