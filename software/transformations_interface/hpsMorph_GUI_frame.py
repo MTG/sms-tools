@@ -2,6 +2,8 @@
 
 from tkinter import *
 import sys, os
+from tkinter import messagebox
+
 import numpy as np
 import hpsMorph_function as hM
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -297,7 +299,7 @@ class HpsMorph_frame:
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
  
-	def browse_file1(self):
+	def browse_file1(self, tkFileDialog=None):
 		
 		self.filename1 = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -305,7 +307,7 @@ class HpsMorph_frame:
 		self.filelocation1.delete(0, END)
 		self.filelocation1.insert(0,self.filename1)
  
-	def browse_file2(self):
+	def browse_file2(self, tkFileDialog=None):
 		
 		self.filename2 = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -313,7 +315,7 @@ class HpsMorph_frame:
 		self.filelocation2.delete(0, END)
 		self.filelocation2.insert(0,self.filename2)
 
-	def analysis(self):
+	def analysis(self, tkMessageBox=None):
 		
 		try:
 			inputFile1 = self.filelocation1.get()

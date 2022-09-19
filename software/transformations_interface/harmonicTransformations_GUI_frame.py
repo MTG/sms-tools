@@ -2,6 +2,8 @@
 
 from tkinter import *
 import sys, os
+from tkinter import messagebox
+
 import numpy as np
 import harmonicTransformations_function as hT
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -190,7 +192,7 @@ class HarmonicTransformations_frame:
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
-	def browse_file(self):
+	def browse_file(self, tkFileDialog=None):
 		
 		self.filename = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -198,7 +200,7 @@ class HarmonicTransformations_frame:
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0,self.filename)
 
-	def analysis(self):
+	def analysis(self, tkMessageBox=None):
 		
 		try:
 			inputFile = self.filelocation.get()
