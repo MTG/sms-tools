@@ -7,7 +7,13 @@
 *.exp
 *.py~
 *.sln
-.idea/*
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
 software/.vs/*
 workspace_dev/*
 workspace/*
