@@ -43,7 +43,7 @@ class Stft_frame:
         Label(self.parent, text=wtype_label).grid(row=2, column=0, sticky=W, padx=5, pady=(10, 2))
         self.w_type = StringVar()
         self.w_type.set("hamming")  # initial value
-        window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hanning", "hamming", "blackman",
+        window_option = OptionMenu(self.parent, self.w_type, "rectangular", "hann", "hamming", "blackman",
                                    "blackmanharris")
         window_option.grid(row=2, column=0, sticky=W, padx=(95, 5), pady=(10, 2))
 
@@ -112,4 +112,4 @@ class Stft_frame:
             stft_function.main(inputFile, window, M, N, H)
 
         except ValueError as errorMessage:
-            messagebox.showerror("Input values error", errorMessage)
+            messagebox.showerror("Input values error", str(errorMessage))

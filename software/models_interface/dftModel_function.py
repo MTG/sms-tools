@@ -11,7 +11,7 @@ import dftModel as DFT
 def main(inputFile = '../../sounds/piano.wav', window = 'blackman', M = 511, N = 1024, time = .2):
     """
     inputFile: input sound file (monophonic with sampling rate of 44100)
-    window: analysis window type (choice of rectangular, hanning, hamming, blackman, blackmanharris)
+    window: analysis window type (choice of rectangular, hann, hamming, blackman, blackmanharris)
     M: analysis window size (odd integer value)
     N: fft size (power of two, bigger or equal than than M)
     time: time  to start analysis (in seconds)
