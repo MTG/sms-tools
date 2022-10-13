@@ -45,7 +45,7 @@ def main(inputFile='../../sounds/ocean.wav', H=256, N=512, stocf=.1):
 	numFrames = int(stocEnv[:,0].size)
 	frmTime = H*np.arange(numFrames)/float(fs)  
 	binFreq = np.arange(int(stocf*(N/2+1)))*float(fs)/(stocf*N)                      
-	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv))
+	plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv), shading='auto')
 	plt.autoscale(tight=True)
 	plt.xlabel('time (sec)')
 	plt.ylabel('frequency (Hz)')

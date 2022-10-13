@@ -1,16 +1,9 @@
 # GUI frame for the harmonicTransformations_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   ## notice capitalized T in Tkinter 
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
-from scipy.io.wavfile import read
+from tkinter import messagebox
+
 import numpy as np
 import harmonicTransformations_function as hT
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -41,7 +34,7 @@ class HarmonicTransformations_frame:
 		open_file.grid(row=0, column=0, sticky=W, padx=(340, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE
-		preview = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation.get()), bg="gray30", fg="white")
+		preview = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation.get()))
 		preview.grid(row=0, column=0, sticky=W, padx=(385,6), pady=(10,2))
 
 		## HARMONIC TRANSFORMATIONS ANALYSIS
@@ -136,11 +129,11 @@ class HarmonicTransformations_frame:
 		self.harmDevSlope.insert(0, "0.01")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
-		self.compute = Button(self.parent, text="Analysis/Synthesis", command=self.analysis, bg="dark red", fg="white")
+		self.compute = Button(self.parent, text="Analysis/Synthesis", command=self.analysis)
 		self.compute.grid(row=4, column=0, padx=5, pady=(10,5), sticky=W)
 		
 		#BUTTON TO PLAY ANALYSIS/SYNTHESIS OUTPUT
-		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_harmonicModel.wav'), bg="gray30", fg="white")
+		self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_harmonicModel.wav'))
 		self.output.grid(row=4, column=0, padx=(145,5), pady=(10,5), sticky=W)
 
 		###
@@ -185,11 +178,11 @@ class HarmonicTransformations_frame:
 		self.timeScaling.insert(0, "[0, 0, 0.671, 0.671, 1.978, 1.978+1.0]")
 
 		#BUTTON TO DO THE SYNTHESIS
-		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
+		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis)
 		self.compute.grid(row=13, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_harmonicModelTransformation.wav'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_harmonicModelTransformation.wav'))
 		self.transf_output.grid(row=13, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -199,7 +192,7 @@ class HarmonicTransformations_frame:
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
 
-	def browse_file(self):
+	def browse_file(self, tkFileDialog=None):
 		
 		self.filename = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -207,7 +200,7 @@ class HarmonicTransformations_frame:
 		self.filelocation.delete(0, END)
 		self.filelocation.insert(0,self.filename)
 
-	def analysis(self):
+	def analysis(self, tkMessageBox=None):
 		
 		try:
 			inputFile = self.filelocation.get()
@@ -242,7 +235,7 @@ class HarmonicTransformations_frame:
 			hT.transformation_synthesis(inputFile, fs, hfreq, hmag, freqScaling, freqStretching, timbrePreservation, timeScaling)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+			messagebox.showerror("Analysis not computed", "First you must analyse the sound!")

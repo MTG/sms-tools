@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mo
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../transformations/'))
 import hpsModel as HPS
 import hpsTransformations as HPST
-import harmonicTransformations as HT
 import utilFunctions as UF
 
 def analysis(inputFile1='../../sounds/violin-B3.wav', window1='blackman', M1=1001, N1=1024, t1=-100, 

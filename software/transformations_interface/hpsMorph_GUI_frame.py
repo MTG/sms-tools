@@ -1,16 +1,9 @@
 # GUI frame for the hpsMorph_function.py
 
-try:
-    # for Python2
-    from Tkinter import *   ## notice capitalized T in Tkinter 
-    import tkFileDialog, tkMessageBox
-except ImportError:
-    # for Python3
-    from tkinter import *  ## notice lowercase 't' in tkinter here
-    from tkinter import filedialog as tkFileDialog
-    from tkinter import messagebox as tkMessageBox
+from tkinter import *
 import sys, os
-from scipy.io.wavfile import read
+from tkinter import messagebox
+
 import numpy as np
 import hpsMorph_function as hM
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../models/'))
@@ -42,7 +35,7 @@ class HpsMorph_frame:
 		open_file1.grid(row=0, column=0, sticky=W, padx=(330, 6), pady=(10,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 1
-		preview1 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation1.get()), bg="gray30", fg="white")
+		preview1 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation1.get()))
 		preview1.grid(row=0, column=0, sticky=W, padx=(375,6), pady=(10,2))
 		
 		#ANALYSIS WINDOW TYPE SOUND 1
@@ -147,7 +140,7 @@ class HpsMorph_frame:
 		open_file2.grid(row=5, column=0, sticky=W, padx=(330, 6), pady=(2,2)) #put it beside the filelocation textbox
  
 		#BUTTON TO PREVIEW SOUND FILE 2
-		preview2 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation2.get()), bg="gray30", fg="white")
+		preview2 = Button(self.parent, text=">", command=lambda:UF.wavplay(self.filelocation2.get()))
 		preview2.grid(row=5, column=0, sticky=W, padx=(375,6), pady=(2,2))
 
 
@@ -255,7 +248,7 @@ class HpsMorph_frame:
 		self.stocf.insert(0, "0.1")
 
 		#BUTTON TO DO THE ANALYSIS OF THE SOUND
-		self.compute = Button(self.parent, text="Analysis", command=self.analysis, bg="dark red", fg="white")
+		self.compute = Button(self.parent, text="Analysis", command=self.analysis)
 		self.compute.grid(row=10, column=0, padx=(210, 5), pady=(2,2), sticky=W)
 
 		###
@@ -292,11 +285,11 @@ class HpsMorph_frame:
 
 
 		#BUTTON TO DO THE SYNTHESIS
-		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis, bg="dark green", fg="white")
+		self.compute = Button(self.parent, text="Apply Transformation", command=self.transformation_synthesis)
 		self.compute.grid(row=18, column=0, padx=5, pady=(10,15), sticky=W)
 
 		#BUTTON TO PLAY TRANSFORMATION SYNTHESIS OUTPUT
-		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_hpsMorph.wav'), bg="gray30", fg="white")
+		self.transf_output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation1.get())[:-4] + '_hpsMorph.wav'))
 		self.transf_output.grid(row=18, column=0, padx=(165,5), pady=(10,15), sticky=W)
 
 		# define options for opening file
@@ -306,7 +299,7 @@ class HpsMorph_frame:
 		options['initialdir'] = '../../sounds/'
 		options['title'] = 'Open a mono audio file .wav with sample frequency 44100 Hz'
  
-	def browse_file1(self):
+	def browse_file1(self, tkFileDialog=None):
 		
 		self.filename1 = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -314,7 +307,7 @@ class HpsMorph_frame:
 		self.filelocation1.delete(0, END)
 		self.filelocation1.insert(0,self.filename1)
  
-	def browse_file2(self):
+	def browse_file2(self, tkFileDialog=None):
 		
 		self.filename2 = tkFileDialog.askopenfilename(**self.file_opt)
  
@@ -322,7 +315,7 @@ class HpsMorph_frame:
 		self.filelocation2.delete(0, END)
 		self.filelocation2.insert(0,self.filename2)
 
-	def analysis(self):
+	def analysis(self, tkMessageBox=None):
 		
 		try:
 			inputFile1 = self.filelocation1.get()
@@ -376,7 +369,7 @@ class HpsMorph_frame:
 			hM.transformation_synthesis(inputFile1, fs, hfreq1, hmag1, stocEnv1, inputFile2, hfreq2, hmag2, stocEnv2, hfreqIntp, hmagIntp, stocIntp)
 
 		except ValueError as errorMessage:
-			tkMessageBox.showerror("Input values error", errorMessage)
+			messagebox.showerror("Input values error", errorMessage)
 
 		except AttributeError:
-			tkMessageBox.showerror("Analysis not computed", "First you must analyse the sound!")
+			messagebox.showerror("Analysis not computed", "First you must analyse the sound!")
