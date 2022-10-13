@@ -4,6 +4,7 @@ from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft, fftshift
 import math
 import sys, os, functools, time
+eps = np.finfo(float).eps
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
@@ -23,7 +24,9 @@ ypmag = 20*np.log10(amps/2.0)
 ypphase = phases
 
 Y = UF.genSpecSines(freqs, ypmag, ypphase, Ns, fs)       
-mY = 20*np.log10(abs(Y[:hNs]))
+absmY = abs(Y[:hNs])
+absmY[absmY < eps] = eps
+mY = 20*np.log10(absmY)
 pY = np.unwrap(np.angle(Y[:hNs]))
 y= fftshift(ifft(Y))*sum(blackmanharris(Ns))
  
@@ -40,8 +43,8 @@ plt.axis([0, fs/2.0,-.01,3.0])
 plt.title("pY, phases (radians) = .5, 1.2, 2.3")
 
 plt.subplot(3,1,3)
-plt.plot(np.arange(-hNs, hNs), y, 'b', lw=1.5)
-plt.axis([-hNs, hNs,min(y),max(y)])
+plt.plot(np.arange(-hNs, hNs), np.real(y), 'b', lw=1.5)
+plt.axis([-hNs, hNs,min(np.real(y)),max(np.real(y))])
 plt.title("y")
 
 plt.tight_layout()
