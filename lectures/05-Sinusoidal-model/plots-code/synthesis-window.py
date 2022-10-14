@@ -6,6 +6,7 @@ from scipy.fftpack import fft, ifft, fftshift
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 import dftModel as DFT
 import utilFunctions as UF
+eps = np.finfo(float).eps
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 M = 601
@@ -23,9 +24,11 @@ ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
 freqs = iploc*fs/N 
 Y = UF.genSpecSines(freqs, ipmag, ipphase, Ns, fs)       
-mY = 20*np.log10(abs(Y[:hNs]))
+absY = abs(Y[:hNs])
+absY[absY < eps] = eps
+mY = 20*np.log10(absY)
 pY = np.unwrap(np.angle(Y[:hNs]))
-y= fftshift(ifft(Y))*sum(blackmanharris(Ns))
+y= np.real(fftshift(ifft(Y))*sum(blackmanharris(Ns)))
 sw = np.zeros(Ns) 
 ow = triang(2*H);    
 sw[hNs-H:hNs+H] = ow  

@@ -22,10 +22,10 @@ tfreq, tmag, tphase = SM.sineModelAnal(x, fs, w, N, H, t, maxnSines, minSineDur,
 
 plt.figure(1, figsize=(9.5, 7))
 maxplotfreq = 800.0
-maxplotbin = int(N*maxplotfreq/fs)
+maxplotbin = int(np.ceil(N*maxplotfreq/fs))
 numFrames = int(mX[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(maxplotbin+1)*float(fs)/N 
+frmTime = H*np.arange(numFrames)/float(fs)                        
+binFreq = np.arange(maxplotbin)*float(fs)/N 
 plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:maxplotbin+1],axis=1)))                        
 plt.autoscale(tight=True)
   

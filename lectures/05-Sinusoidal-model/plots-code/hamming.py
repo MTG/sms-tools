@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.fftpack import fft
+eps = np.finfo(float).eps
 
 M = 64
 N = 512
@@ -18,7 +19,9 @@ plt.title('w (hamming window), M=64')
 
 
 X = fft(fftbuffer)
-mX = 20*np.log10(abs(X)) 
+absX = abs(X)
+absX[absX < eps] = eps
+mX = 20*np.log10(absX) 
 mX1[:hN] = mX[hN:]
 mX1[N-hN:] = mX[:hN]      
 

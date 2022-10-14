@@ -4,6 +4,7 @@ from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import math
 import sys, os, functools, time
+eps = np.finfo(float).eps
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
@@ -32,7 +33,8 @@ pX = np.angle(X[0:hN])
 
 powerX = sum(2*mX[0:hN]**2)/N
 
-mask = np.zeros(N//2)
+# add eps so that log10 does not error
+mask = np.zeros(N//2) + eps
 mask[int(N*f0/fs-2*N/float(M)):int(N*f0/fs+3*N/float(M))] = 1.0
 mY = mask*mX[0:hN]
 powerY = sum(2*mY[0:hN]**2)/N
@@ -55,13 +57,13 @@ plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', lw=1.5, alpha=.2)
 plt.axis([0,hN,-120,0])
 
 plt.subplot(3,2,3)
-plt.plot(y[0:M], 'b', lw=1.5)
+plt.plot(np.real(y[0:M]), 'b', lw=1.5)
 plt.axis([0,M,-1,1])
 plt.title ('y (synthesis of main lobe)')
 
 plt.subplot(3,2,5)
 yerror = xw - y
-plt.plot(yerror, 'k', lw=1.5)
+plt.plot(np.real(yerror), 'k', lw=1.5)
 plt.axis([0,M,-.003,.003])
 plt.title ("error function: x-y; SNR = ${%d}$ dB" %(SNR1))
 
@@ -75,7 +77,7 @@ pX = np.angle(X[0:hN])
 
 powerX = sum(2*mX[0:hN]**2)/N
 
-mask = np.zeros(N//2)
+mask = np.zeros(N//2) + eps
 mask[int(N*f0/fs-4*N/float(M)):int(N*f0/fs+5*N/float(M))] = 1.0
 mY = mask*mX[0:hN]
 powerY = sum(2*mY[0:hN]**2)/N
@@ -94,13 +96,13 @@ plt.plot(20*np.log10(mX[:hN])-max(20*np.log10(mX[:hN])), 'r', lw=1.5, alpha=.2)
 plt.axis([0,hN,-120,0])
 
 plt.subplot(3,2,4)
-plt.plot(y[0:M], 'b', lw=1.5)
+plt.plot(np.real(y[0:M]), 'b', lw=1.5)
 plt.axis([0,M,-1,1])
 plt.title ('y (synthesis of main lobe)')
 
 plt.subplot(3,2,6)
 yerror2 = xw - y
-plt.plot(yerror2, 'k', lw=1.5)
+plt.plot(np.real(yerror2), 'k', lw=1.5)
 plt.axis([0,M,-.003,.003])
 plt.title ("error function: x-y; SNR = ${%d}$ dB" %(SNR2))
 

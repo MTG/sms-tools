@@ -6,6 +6,7 @@ from scipy.fftpack import fft, ifft, fftshift
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 import dftModel as DFT
 import utilFunctions as UF
+eps = np.finfo(float).eps
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 M = 601
@@ -21,13 +22,14 @@ mX, pX = DFT.dftAnal(x1, w, N)
 ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
 freqs = iploc*fs/N 
-Y = UF.genSpecSines(freqs, ipmag, ipphase, Ns, fs)       
-mY = 20*np.log10(abs(Y[:hNs]))
+Y = UF.genSpecSines(freqs, ipmag, ipphase, Ns, fs)
+absY = abs(Y[:hNs])
+absY[absY < eps] = eps
+mY = 20*np.log10(absY)
 pY = np.unwrap(np.angle(Y[:hNs]))
 y= fftshift(ifft(Y))*sum(blackmanharris(Ns))
 
 plt.figure(1, figsize=(9, 6))
-
 plt.subplot(4,1,1)
 plt.plot(np.arange(-M/2,M/2), x1, 'b', lw=1.5)
 plt.axis([-M/2,M/2, min(x1), max(x1)])
@@ -44,9 +46,10 @@ plt.plot(np.arange(mY.size), mY, 'r', lw=1.5)
 plt.axis([0, hNs,-90,max(mY)+2])
 plt.title("mY; Blackman-Harris; Ns = 512")
 
+yReal = np.real(y)
 plt.subplot(4,1,4)
-plt.plot(np.arange(Ns), y, 'b', lw=1.5)
-plt.axis([0, Ns,min(y),max(y)])
+plt.plot(np.arange(Ns), yReal, 'b', lw=1.5)
+plt.axis([0, Ns,min(yReal),max(yReal)])
 plt.title("y; Ns = 512")
 
 plt.tight_layout()
