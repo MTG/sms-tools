@@ -4,11 +4,22 @@
 import numpy as np
 from scipy.signal import resample
 from scipy.signal.windows import hann
-from scipy.fftpack import fft, ifft
+from scipy.fft import fft, ifft
 import utilFunctions as UF
 
+def hertz_to_mel(f):
+    """
+    Conversion from hertz scale to mel scale
+    """
+    return 2595 * np.log10(1 + f / 700)
 
-def stochasticModelAnal(x, H, N, stocf):
+def mel_to_hetz(m):
+    """
+    Conversion from mel scale to hertz scale
+    """
+    return 700 * (10 ** (m / 2595) - 1)
+
+def stochasticModelAnal(x, H, N, stocf, fs=44100, melScale=1):
     """
 	Stochastic analysis of a sound
 	x: input array sound, H: hop size, N: fftsize
@@ -35,6 +46,10 @@ def stochasticModelAnal(x, H, N, stocf):
     x = np.append(x, np.zeros(No2))  # add zeros at the end to analyze last sample
     pin = No2  # initialize sound pointer in middle of analysis window
     pend = x.size - No2  # last sample to start a frame
+    if melScale == 1:
+        binFreqsMel = hertz_to_mel(np.arange(hN)*fs/float(N))
+        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
+        finalMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], int(stocf * hN))
     while pin <= pend:
         xw = x[pin - No2:pin + No2] * w  # window the input sound
         X = fft(xw)  # compute FFT

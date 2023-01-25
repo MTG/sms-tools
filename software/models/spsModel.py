@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang, hann
-from scipy.fftpack import fft, ifft
+from scipy.fft import fft, ifft
 import math
 import utilFunctions as UF
 import dftModel as DFT

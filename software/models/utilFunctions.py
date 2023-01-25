@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang
-from scipy.fftpack import fft, ifft, fftshift
+from scipy.fft import fft, ifft, fftshift
 import copy, sys, os
 from scipy.io.wavfile import write, read
 import subprocess

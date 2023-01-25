@@ -3,7 +3,7 @@
 
 import numpy as np
 from scipy.signal.windows import blackmanharris, triang
-from scipy.fftpack import ifft
+from scipy.fft import ifft
 import math
 import dftModel as DFT
 import utilFunctions as UF
