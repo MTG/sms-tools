@@ -29,7 +29,41 @@ To execute the transformations GUI that calls various sound transformation funct
 
 <code>$ python transformations_GUI.py </code>
 
-To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>software/models_interface</code> or from <code>software/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files). 
+To modify the existing code, or to create your own using some of the functions, we recommend to use the <code>workspace</code> directory. Typically you would copy a file from <code>software/models_interface</code> or from <code>software/transformations_interface</code> to that directory, modify the code, and execute it from there (you will have to change some of the paths inside the files).
+
+### Alternative installation with [pipenv](https://pipenv.pypa.io/en/latest/)
+
+Pipenv is an environment management tool for python that makes it easier to
+keep programs running by locking the versions of the libraries used to write them.
+It uses a pipfile and a pipfile.lock to keep record of the dependencies used (mathplotlib, cython, ipython, numpy, etc) and their version
+
+Start by installing pipenv:
+
+```sh
+pip install pipenv
+```
+then install the environment by running the following command at the root of your
+project (where the pipfile is):
+
+```sh
+pipenv install
+```
+
+then you can use a shell with the environment like so:
+```sh
+pipenv shell
+cd ./software/transformations_interface
+python transformations_GUI.py
+```
+
+or use `pipenv run`
+
+```sh
+pipenv run python ./software/transformations_interface/transformations_GUI.py
+```
+
+
+
 
 Jupyter Notebooks
 -------
