@@ -3,8 +3,34 @@
 
 import numpy as np
 import math
-from scipy.fft import fft, ifft
+# from scipy.fft import fft, ifft
 import utilFunctions as UF
+
+def get_dft_basis(n):
+    time_ids = np.arange(0, n)
+    freq_ids = np.arange(0, n)
+    # DFT matrix
+    ids = (time_ids[:, None] * freq_ids[None, :] / n)
+    cmtx = np.exp(-2j * np.pi * ids)
+    return cmtx
+
+
+def get_idft_basis(n):
+    time_ids = np.arange(0, n)
+    freq_ids = np.arange(0, n)
+    # iDFT matrix
+    ids = (freq_ids[:, None] * time_ids[None, :] / n)
+    cmtx = np.exp(2j * np.pi * ids)
+    return cmtx / n
+
+
+def fft(x):
+    return x @ get_dft_basis(len(x))
+
+
+def ifft(Y):
+    return Y @ get_idft_basis(len(Y))
+
 
 tol = 1e-14  # threshold used to compute phase
 
