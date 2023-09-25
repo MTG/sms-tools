@@ -26,7 +26,7 @@ pX = np.unwrap(np.angle(X))
 
 plt.figure(1, figsize=(9.5, 7))
 plt.subplot(311)
-plt.plot(np.arange(-hM1, hM2), x1, lw=1.5)
+plt.plot(np.arange(-hM1, hM2), x1, 'b', marker='x', ms=4, lw=1.5)
 plt.axis([-hM1, hM2, min(x1), max(x1)])
 plt.ylabel('amplitude')
 plt.title('x (soprano-E4.wav)')
