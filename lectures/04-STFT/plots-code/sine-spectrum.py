@@ -19,7 +19,7 @@ plt.figure(1, figsize=(9.5, 7))
 w = np.hanning(M)
 plt.subplot(2,3,1)
 plt.title('w (hanning window)')
-plt.plot(np.arange(-hM+1, hM), w, 'b', lw=1.5)
+plt.plot(np.arange(-hM+1, hM), w, 'b-x', ms=4, lw=1.5)
 plt.axis([-hM+1, hM, 0, 1])
 
 fftbuffer[:hM] = w[hM-1:]
@@ -43,7 +43,7 @@ plt.axis([-hN,hN,min(np.unwrap(pX)),max(np.unwrap(pX))])
 plt.subplot(2,3,4)
 plt.title('xw (windowed sinewave)')
 xw = x*w
-plt.plot(np.arange(-hM+1, hM), xw, 'b', lw=1.5)
+plt.plot(np.arange(-hM+1, hM), xw, 'b-x', ms=4, lw=1.5)
 plt.axis([-hM+1, hM, -1, 1])
 
 fftbuffer = np.zeros(N)

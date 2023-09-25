@@ -13,7 +13,7 @@ w = signal.blackman(M)
 plt.figure(1, figsize=(9.5, 6))
 
 plt.subplot(3,2,1)
-plt.plot(np.arange(-hM+1, hM+1), w, 'b', lw=1.5)
+plt.plot(np.arange(-hM+1, hM+1), w, 'b-x', ms=4, lw=1.5)
 plt.axis([-hM+1, hM, 0, 1.05])
 plt.title('w1, M=32')
 
@@ -23,13 +23,13 @@ fftbuffer[N-hM:] = w[:hM]
 X = fft(fftbuffer)
 mX = 20*np.log10(abs(fftshift(X)))    
 plt.subplot(3,2,3)
-plt.plot(np.arange(-hN, hN), mX-max(mX), 'r', lw=1.5)
+plt.plot(np.arange(-hN, hN), mX-max(mX), 'r-x', ms=4, lw=1.5)
 plt.axis([-hN//2,hN//2,-80,1])
 plt.title('mW1')
 
 pX = np.angle(fftshift(X))
 plt.subplot(3,2,5)
-plt.plot(np.arange(-hN, hN), pX, 'c', lw=1.5)
+plt.plot(np.arange(-hN, hN), pX, 'c-x', ms=4, lw=1.5)
 plt.axis([-hN//2,hN//2,-np.pi,np.pi])
 plt.title('pW1')
 
@@ -41,7 +41,7 @@ fftbuffer = np.zeros(N)
 w = signal.blackman(M)
 
 plt.subplot(3,2,2)
-plt.plot(np.arange(-hM+1, hM), w, 'b', lw=1.5)
+plt.plot(np.arange(-hM+1, hM), w, 'b-x', ms=4, lw=1.5)
 plt.axis([-hM+1, hM-1, 0, 1.05])
 plt.title('w2, M=31')
 
@@ -51,13 +51,13 @@ fftbuffer[N-hM+1:] = w[:hM-1]
 X = fft(fftbuffer)
 mX = 20*np.log10(abs(fftshift(X)))    
 plt.subplot(3,2,4)
-plt.plot(np.arange(-hN, hN), mX-max(mX), 'r', lw=1.5)
+plt.plot(np.arange(-hN, hN), mX-max(mX), 'r-x',ms=4, lw=1.5)
 plt.axis([-hN/2,hN/2-1,-80,1])
 plt.title('mW2')
 
 pX = np.angle(fftshift(X))
 plt.subplot(3,2,6)
-plt.plot(np.arange(-hN, hN), pX, 'c', lw=1.5)
+plt.plot(np.arange(-hN, hN), pX, 'c-x', ms=4, lw=1.5)
 plt.axis([-hN//2,hN//2,-np.pi,np.pi])
 plt.title('pW2')
 
