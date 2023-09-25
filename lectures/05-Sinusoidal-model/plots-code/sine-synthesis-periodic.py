@@ -21,12 +21,12 @@ Y[hNs+1:] = Y[hNs-1:0:-1].conjugate()
 
 plt.figure(1, figsize=(9, 5))
 plt.subplot(3,1,1)
-plt.plot(np.arange(hNs), mY, color='r', lw=1.5)
+plt.plot(np.arange(hNs), mY, 'r-x', ms=4, lw=1.5)
 plt.axis([0,hNs-1,-1,Ns])
 plt.title('mY; k0 = 5, A0 = .8, N = 64')
 
 plt.subplot(3,1,2)
-plt.plot(np.arange(hNs), pY, color='c', lw=1.5)
+plt.plot(np.arange(hNs), pY, 'c-x', ms=4, lw=1.5)
 plt.axis([0,hNs-1,-.3, 2])
 plt.title('pY; k0 = 5, theta0 = .1.5, N = 64')
 
@@ -35,7 +35,7 @@ yw[:hNs-1] = y[hNs+1:]
 yw[hNs-1:] = y[:hNs+1] 
 
 plt.subplot(3,1,3)
-plt.plot(np.arange(Ns), yw, 'b', lw=1.5)
+plt.plot(np.arange(Ns), yw, 'b-x', ms=4, lw=1.5)
 plt.axis([0, Ns-1,-.9,.9])
 plt.title('y; N = 64')
 
