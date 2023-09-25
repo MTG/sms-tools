@@ -1,7 +1,8 @@
 # GUI frame for the sineModel_function.py
 
+import os
+import sys
 from tkinter import *
-import sys, os
 from tkinter import messagebox, filedialog
 
 import sineModel_function
