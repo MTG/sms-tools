@@ -4,6 +4,7 @@
 import numpy as np
 from scipy.signal import resample
 from scipy.signal.windows import hann
+from scipy.interpolate import splrep, splev
 from scipy.fft import fft, ifft
 import utilFunctions as UF
 
@@ -24,6 +25,8 @@ def stochasticModelAnal(x, H, N, stocf, fs=44100, melScale=1):
 	Stochastic analysis of a sound
 	x: input array sound, H: hop size, N: fftsize
 	stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
+	fs: sampling rate
+	melScale: choose between linear scale, 0, or mel scale, 1
 	returns stocEnv: stochastic envelope
 	"""
 
@@ -49,12 +52,15 @@ def stochasticModelAnal(x, H, N, stocf, fs=44100, melScale=1):
     if melScale == 1:
         binFreqsMel = hertz_to_mel(np.arange(hN)*fs/float(N))
         uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
-        finalMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], int(stocf * hN))
     while pin <= pend:
         xw = x[pin - No2:pin + No2] * w  # window the input sound
         X = fft(xw)  # compute FFT
         mX = 20 * np.log10(abs(X[:hN]))  # magnitude spectrum of positive frequencies
-        mY = resample(np.maximum(-200, mX), int(stocf * hN))  # decimate the mag spectrum
+        if melScale == 1:
+            spl = splrep(binFreqsMel, np.maximum(-200, mX))
+            mY = resample(splev(uniformMelFreq, spl), int(stocf * hN))  # decimate the mag spectrum
+        else:
+            mY = resample(np.maximum(-200, mX), int(stocf * hN))  # decimate the mag spectrum
         if pin == No2:  # first frame
             stocEnv = np.array([mY])
         else:  # rest of frames
@@ -63,10 +69,12 @@ def stochasticModelAnal(x, H, N, stocf, fs=44100, melScale=1):
     return stocEnv
 
 
-def stochasticModelSynth(stocEnv, H, N):
+def stochasticModelSynth(stocEnv, H, N, fs=44100, melScale=1):
     """
 	Stochastic synthesis of a sound
 	stocEnv: stochastic envelope; H: hop size; N: fft size
+	fs: sampling rate
+	melScale: choose between linear scale, 0, or mel scale, 1 (should match the analysis)
 	returns y: output sound
 	"""
 
@@ -80,8 +88,14 @@ def stochasticModelSynth(stocEnv, H, N):
     y = np.zeros(ysize)  # initialize output array
     ws = 2 * hann(N)  # synthesis window
     pout = 0  # output sound pointer
+    if melScale == 1:
+        binFreqsMel = hertz_to_mel(np.arange(hN)*fs/float(N))
+        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
     for l in range(L):
         mY = resample(stocEnv[l, :], hN)  # interpolate to original size
+        if melScale == 1:
+            spl = splrep(uniformMelFreq, mY)
+            mY = splev(binFreqsMel, spl)
         pY = 2 * np.pi * np.random.rand(hN)  # generate phase random values
         Y = np.zeros(N, dtype=complex)  # initialize synthesis spectrum
         Y[:hN] = 10 ** (mY / 20) * np.exp(1j * pY)  # generate positive freq.
@@ -94,11 +108,13 @@ def stochasticModelSynth(stocEnv, H, N):
     return y
 
 
-def stochasticModel(x, H, N, stocf):
+def stochasticModel(x, H, N, stocf, fs=44100, melScale=1):
     """
 	Stochastic analysis/synthesis of a sound, one frame at a time
 	x: input array sound, H: hop size, N: fft size 
 	stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
+	fs: sampling rate
+	melScale: choose between linear scale, 0, or mel scale, 1 (should match the analysis)
 	returns y: output sound
 	"""
     hN = N // 2 + 1  # positive size of fft
@@ -121,14 +137,24 @@ def stochasticModel(x, H, N, stocf):
     pin = No2  # initialize sound pointer in middle of analysis window
     pend = x.size - No2  # last sample to start a frame
     y = np.zeros(x.size)  # initialize output array
+    if melScale == 1:
+        binFreqsMel = hertz_to_mel(np.arange(hN)*fs/float(N))
+        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
     while pin <= pend:
         # -----analysis-----
         xw = x[pin - No2:pin + No2] * w  # window the input sound
         X = fft(xw)  # compute FFT
         mX = 20 * np.log10(abs(X[:hN]))  # magnitude spectrum of positive frequencies
-        stocEnv = resample(np.maximum(-200, mX), int(hN * stocf))  # decimate the mag spectrum
+        if melScale == 1:
+            spl = splrep(binFreqsMel, np.maximum(-200, mX))
+            stocEnv = resample(splev(uniformMelFreq, spl), int(stocf * hN))  # decimate the mag spectrum
+        else:
+            stocEnv = resample(np.maximum(-200, mX), int(stocf * hN))  # decimate the mag spectrum
         # -----synthesis-----
         mY = resample(stocEnv, hN)  # interpolate to original size
+        if melScale == 1:
+            spl = splrep(uniformMelFreq, mY)
+            mY = splev(binFreqsMel, spl)
         pY = 2 * np.pi * np.random.rand(hN)  # generate phase random values
         Y = np.zeros(N, dtype=complex)
         Y[:hN] = 10 ** (mY / 20) * np.exp(1j * pY)  # generate positive freq.
@@ -137,6 +163,5 @@ def stochasticModel(x, H, N, stocf):
         y[pin - No2:pin + No2] += w * fftbuffer  # overlap-add
         pin += H  # advance sound pointer
     y = np.delete(y, range(No2))  # delete half of first window which was added
-    y = np.delete(y, range(y.size - No2,
-                           y.size))  # delete half of last window which was added
+    y = np.delete(y, range(y.size - No2, y.size))  # delete half of last window which was added
     return y

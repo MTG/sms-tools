@@ -1,10 +1,13 @@
+import copy
+import os
+import subprocess
+import sys
+
 import numpy as np
+from scipy.fft import fft, ifft, fftshift
+from scipy.io.wavfile import write, read
 from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang
-from scipy.fft import fft, ifft, fftshift
-import copy, sys, os
-from scipy.io.wavfile import write, read
-import subprocess
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './utilFunctions_C/'))
 try:
@@ -143,7 +146,7 @@ def sinc(x, N):
 	"""
 
     y = np.sin(N * x / 2) / np.sin(x / 2)  # compute the sinc function
-    y[np.isnan(y)] = N                     # avoid NaN if x == 0
+    y[np.isnan(y)] = N  # avoid NaN if x == 0
     return y
 
 
@@ -154,14 +157,14 @@ def genBhLobe(x):
 	returns y: main lobe os spectrum of a Blackman-Harris window
 	"""
 
-    N = 512                 # size of fft to use
-    f = x * np.pi * 2 / N   # frequency sampling
+    N = 512  # size of fft to use
+    f = x * np.pi * 2 / N  # frequency sampling
     df = 2 * np.pi / N
-    y = np.zeros(x.size)    # initialize window
+    y = np.zeros(x.size)  # initialize window
     consts = [0.35875, 0.48829, 0.14128, 0.01168]  # window constants
-    for m in range(0, 4):                          # iterate over the four sincs to sum
+    for m in range(0, 4):  # iterate over the four sincs to sum
         y += consts[m] / 2 * (sinc(f - df * m, N) + sinc(f + df * m, N))  # sum of scaled sinc functions
-    y = y / N / consts[0]                          # normalize
+    y = y / N / consts[0]  # normalize
     return y
 
 
@@ -216,10 +219,10 @@ def sinewaveSynth(freqs, amp, H, fs):
 	"""
 
     t = np.arange(H) / float(fs)  # time array
-    lastphase = 0                 # initialize synthesis phase
-    lastfreq = freqs[0]           # initialize synthesis frequency
-    y = np.array([])              # initialize output array
-    for l in range(freqs.size):   # iterate over all frames
+    lastphase = 0  # initialize synthesis phase
+    lastfreq = freqs[0]  # initialize synthesis frequency
+    y = np.array([])  # initialize output array
+    for l in range(freqs.size):  # iterate over all frames
         if (lastfreq == 0) & (freqs[l] == 0):  # if 0 freq add zeros
             A = np.zeros(H)
             freq = np.zeros(H)
@@ -250,9 +253,9 @@ def cleaningTrack(track, minTrackLength=3):
 	returns cleanTrack: array of clean values
 	"""
 
-    nFrames = track.size                                # number of frames
-    cleanTrack = np.copy(track)                         # copy array
-    trackBegs = np.nonzero((track[:nFrames - 1] <= 0)   # beginning of track contours
+    nFrames = track.size  # number of frames
+    cleanTrack = np.copy(track)  # copy array
+    trackBegs = np.nonzero((track[:nFrames - 1] <= 0)  # beginning of track contours
                            & (track[1:] > 0))[0] + 1
     if track[0] > 0:
         trackBegs = np.insert(trackBegs, 0, 0)
@@ -367,26 +370,26 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
 	returns xr: residual sound
 	"""
 
-    hN = N // 2                     # half of fft size
+    hN = N // 2  # half of fft size
     x = np.append(np.zeros(hN), x)  # add zeros at beginning to center first window at sample 0
     x = np.append(x, np.zeros(hN))  # add zeros at the end to analyze last sample
-    bh = blackmanharris(N)          # blackman harris window
-    w = bh / sum(bh)                # normalize window
-    sw = np.zeros(N)                # initialize synthesis window
+    bh = blackmanharris(N)  # blackman harris window
+    w = bh / sum(bh)  # normalize window
+    sw = np.zeros(N)  # initialize synthesis window
     sw[hN - H:hN + H] = triang(2 * H) / w[hN - H:hN + H]  # synthesis window
-    L = sfreq.shape[0]              # number of frames, this works if no sines
-    xr = np.zeros(x.size)           # initialize output array
+    L = sfreq.shape[0]  # number of frames, this works if no sines
+    xr = np.zeros(x.size)  # initialize output array
     pin = 0
     for l in range(L):
-        xw = x[pin:pin + N] * w        # window the input sound
-        X = fft(fftshift(xw))          # compute FFT
+        xw = x[pin:pin + N] * w  # window the input sound
+        X = fft(fftshift(xw))  # compute FFT
         Yh = UF_C.genSpecSines(N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N)  # generate spec sines, cython version
         #		Yh = genSpecSines_p(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N, fs)   # generate spec sines, python version
         Xr = X - Yh  # subtract sines from original spectrum
         xrw = np.real(fftshift(ifft(Xr)))  # inverse FFT
-        xr[pin:pin + N] += xrw * sw        # overlap-add
-        pin += H                           # advance sound pointer
-    xr = np.delete(xr, range(hN))          # delete half of first window which was added in stftAnal
+        xr[pin:pin + N] += xrw * sw  # overlap-add
+        pin += H  # advance sound pointer
+    xr = np.delete(xr, range(hN))  # delete half of first window which was added in stftAnal
     xr = np.delete(xr, range(xr.size - hN, xr.size))  # delete half of last window which was added in stftAnal
     return xr
 
