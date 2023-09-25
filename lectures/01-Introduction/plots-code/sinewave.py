@@ -9,9 +9,9 @@ t = np.arange(-.002, .002, 1.0/fs)
 x = A * np.cos(2*np.pi*f0*t+phi)
 
 plt.figure(1, figsize=(9.5, 3.5))
-plt.plot(t, x, linewidth=2)
+plt.plot(t, x, 'b+', linewidth=2)
 plt.axis([-.002,.002,-0.8,0.8])
-plt.xlabel('time')
+plt.xlabel('time (seconds)')
 plt.ylabel('amplitude')
 
 plt.tight_layout()
