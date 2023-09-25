@@ -65,15 +65,33 @@ class StochasticModel_frame:
         self.stocf.delete(0, END)
         self.stocf.insert(0, "0.1")
 
+        #MEl SCALE
+        melScale_label = "Approximation scale (0: linear, 1: mel):"
+        Label(self.parent, text=melScale_label).grid(row=5, column=0, sticky=W, padx=5, pady=(10,2))
+        self.melScale = Entry(self.parent, justify=CENTER)
+        self.melScale["width"] = 5
+        self.melScale.grid(row=5, column=0, sticky=W, padx=(285,5), pady=(10,2))
+        self.melScale.delete(0, END)
+        self.melScale.insert(0, "1")
+
+        #NORMALIZATION
+        normalization_label = "Amplitude normalization (0: no, 1: yes):"
+        Label(self.parent, text=normalization_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,2))
+        self.normalization = Entry(self.parent, justify=CENTER)
+        self.normalization["width"] = 5
+        self.normalization.grid(row=6, column=0, sticky=W, padx=(285,5), pady=(10,2))
+        self.normalization.delete(0, END)
+        self.normalization.insert(0, "1")
+
         #BUTTON TO COMPUTE EVERYTHING
         self.compute = Button(self.parent, text="Compute", command=self.compute_model)
-        self.compute.grid(row=5, column=0, padx=5, pady=(10,2), sticky=W)
+        self.compute.grid(row=7, column=0, padx=5, pady=(10,2), sticky=W)
 
         #BUTTON TO PLAY OUTPUT
         output_label = "Stochastic:"
-        Label(self.parent, text=output_label).grid(row=6, column=0, sticky=W, padx=5, pady=(10,15))
+        Label(self.parent, text=output_label).grid(row=8, column=0, sticky=W, padx=5, pady=(10,15))
         self.output = Button(self.parent, text=">", command=lambda:UF.wavplay('output_sounds/' + os.path.basename(self.filelocation.get())[:-4] + '_stochasticModel.wav'))
-        self.output.grid(row=6, column=0, padx=(80,5), pady=(10,15), sticky=W)
+        self.output.grid(row=8, column=0, padx=(80,5), pady=(10,15), sticky=W)
 
         # define options for opening file
         self.file_opt = options = {}
@@ -97,8 +115,10 @@ class StochasticModel_frame:
             H = int(self.H.get())
             N = int(self.N.get())
             stocf = float(self.stocf.get())
+            melScale = int(self.melScale.get())
+            normalization = int(self.normalization.get())
 
-            stochasticModel_function.main(inputFile, H, N, stocf)
+            stochasticModel_function.main(inputFile, H, N, stocf, melScale, normalization)
 
         except ValueError as errorMessage:
             messagebox.showerror("Input values error", errorMessage)
