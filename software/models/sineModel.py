@@ -22,9 +22,9 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
     tfreqn = np.zeros(tfreq.size)  # initialize array for output frequencies
     tmagn = np.zeros(tfreq.size)  # initialize array for output magnitudes
     tphasen = np.zeros(tfreq.size)  # initialize array for output phases
-    pindexes = np.array(np.nonzero(pfreq), dtype=np.int)[0]  # indexes of current peaks
-    incomingTracks = np.array(np.nonzero(tfreq), dtype=np.int)[0]  # indexes of incoming tracks
-    newTracks = np.zeros(tfreq.size, dtype=np.int) - 1  # initialize to -1 new tracks
+    pindexes = np.array(np.nonzero(pfreq), dtype=int)[0]  # indexes of current peaks
+    incomingTracks = np.array(np.nonzero(tfreq), dtype=int)[0]  # indexes of incoming tracks
+    newTracks = np.zeros(tfreq.size, dtype=int) - 1  # initialize to -1 new tracks
     magOrder = np.argsort(-pmag[pindexes])  # order current peaks by magnitude
     pfreqt = np.copy(pfreq)  # copy current peaks to temporary array
     pmagt = np.copy(pmag)  # copy current peaks to temporary array
@@ -40,7 +40,7 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
             if freqDistance < (freqDevOffset + freqDevSlope * pfreq[i]):  # choose track if distance is small
                 newTracks[incomingTracks[track]] = i  # assign peak index to track index
                 incomingTracks = np.delete(incomingTracks, track)  # delete index of track in incomming tracks
-    indext = np.array(np.nonzero(newTracks != -1), dtype=np.int)[0]  # indexes of assigned tracks
+    indext = np.array(np.nonzero(newTracks != -1), dtype=int)[0]  # indexes of assigned tracks
     if indext.size > 0:
         indexp = newTracks[indext]  # indexes of assigned peaks
         tfreqn[indext] = pfreqt[indexp]  # output freq tracks
@@ -51,7 +51,7 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
         pphaset = np.delete(pphaset, indexp)  # delete used peaks
 
     # create new tracks from non used peaks
-    emptyt = np.array(np.nonzero(tfreq == 0), dtype=np.int)[0]  # indexes of empty incoming tracks
+    emptyt = np.array(np.nonzero(tfreq == 0), dtype=int)[0]  # indexes of empty incoming tracks
     peaksleft = np.argsort(-pmagt)  # sort left peaks by magnitude
     if ((peaksleft.size > 0) & (emptyt.size >= peaksleft.size)):  # fill empty tracks
         tfreqn[emptyt[:peaksleft.size]] = pfreqt[peaksleft]
