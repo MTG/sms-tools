@@ -75,7 +75,7 @@ def harmonicDetection(pfreq, pmag, pphase, f0, nH, hfreqp, fs, harmDevSlope=0.01
     hphase = np.zeros(nH)  # initialize harmonic phases
     hf = f0 * np.arange(1, nH + 1)  # initialize harmonic frequencies
     hi = 0  # initialize harmonic index
-    if hfreqp == []:  # if no incomming harmonic tracks initialize to harmonic series
+    if len(hfreqp) == 0:  # if no incomming harmonic tracks initialize to harmonic series
         hfreqp = hf
     while (f0 > 0) and (hi < nH) and (hf[hi] < fs / 2):  # find harmonic peaks
         pei = np.argmin(abs(pfreq - hf[hi]))  # closest peak
