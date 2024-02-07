@@ -14,8 +14,8 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
 	Tracking sinusoids from one frame to the next
 	pfreq, pmag, pphase: frequencies and magnitude of current frame
 	tfreq: frequencies of incoming tracks from previous frame
-	freqDevOffset: minimum frequency deviation at 0Hz 
-	freqDevSlope: slope increase of minimum frequency deviation
+	freqDevOffset: maximum frequency deviation at 0Hz
+	freqDevSlope: slope increase of maximum frequency deviation
 	returns tfreqn, tmagn, tphasen: frequency, magnitude and phase of tracks
 	"""
 
@@ -69,7 +69,7 @@ def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01
 
 def cleaningSineTracks(tfreq, minTrackLength=3):
     """
-	Delete short fragments of a collection of sinusoidal tracks 
+	Delete short fragments of a collection of sinusoidal tracks
 	tfreq: frequency of tracks
 	minTrackLength: minimum duration of tracks in number of frames
 	returns tfreqn: output frequency of tracks
@@ -99,7 +99,7 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
 def sineModel(x, fs, w, N, t):
     """
 	Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
-	x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB 
+	x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB
 	returns y: output array sound
 	"""
 
