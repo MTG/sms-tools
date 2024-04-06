@@ -7,7 +7,7 @@
           <value>
             <JupyterConnectionParameters>
               <option name="managed" value="true" />
-              <option name="sdkHomePath" value="$USER_HOME$/anaconda3/envs/audio_course_py36/bin/python" />
+              <option name="sdkHomePath" value="$USER_HOME$/anaconda3/envs/audio_course_py27/bin/python" />
             </JupyterConnectionParameters>
           </value>
         </entry>
