@@ -6,7 +6,7 @@ from scipy.signal import resample
 from scipy.signal.windows import hann
 from scipy.interpolate import splrep, splev
 from scipy.fft import fft, ifft
-import utilFunctions as UF
+from smstools.models import utilFunctions as UF
 
 def hertz_to_mel(f):
     """

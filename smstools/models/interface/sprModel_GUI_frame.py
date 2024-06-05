@@ -4,7 +4,7 @@ from tkinter import *
 import sys, os
 from tkinter import messagebox, filedialog
 
-import sprModel_function
+from smstools.models.interface import sprModel_function
 from smstools.models import utilFunctions as UF
 
 class SprModel_frame:

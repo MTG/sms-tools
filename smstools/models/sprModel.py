@@ -5,9 +5,9 @@ import numpy as np
 from scipy.signal.windows import blackmanharris, triang
 from scipy.fft import fft, ifft
 import math
-import dftModel as DFT
-import sineModel as SM
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import sineModel as SM
+from smstools.models import utilFunctions as UF
 
 def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope):
     """

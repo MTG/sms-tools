@@ -5,7 +5,7 @@ import sys
 from tkinter import *
 from tkinter import filedialog, messagebox
 
-import stftMorph_function as sT
+from smstools.transformations.interface import stftMorph_function as sT
 from smstools.models import utilFunctions as UF
 
 class StftMorph_frame:

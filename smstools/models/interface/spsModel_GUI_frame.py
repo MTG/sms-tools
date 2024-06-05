@@ -4,7 +4,7 @@ from tkinter import *
 import sys, os
 from tkinter import filedialog, messagebox
 
-import spsModel_function
+from smstools.models.interface import spsModel_function
 from smstools.models import utilFunctions as UF
 
 class SpsModel_frame:

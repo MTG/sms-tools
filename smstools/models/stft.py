@@ -2,7 +2,7 @@
 # (for example usage check stft_function.py in the interface directory)
 
 import numpy as np
-import dftModel as DFT
+from smstools.models import dftModel as DFT
 
 
 def stft(x, w, N, H):

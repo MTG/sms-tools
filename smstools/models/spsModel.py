@@ -6,10 +6,10 @@ from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang, hann
 from scipy.fft import fft, ifft
 import math
-import utilFunctions as UF
-import dftModel as DFT
-import sineModel as SM
-import stochasticModel as STM
+from smstools.models import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import sineModel as SM
+from smstools.models import stochasticModel as STM
 
 def spsModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope, stocf):
 	"""

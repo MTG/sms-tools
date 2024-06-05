@@ -1,16 +1,16 @@
 import matplotlib
 matplotlib.use('TkAgg')
 
-from notebook import *  # window with tabs
-from dftModel_GUI_frame import *
-from stft_GUI_frame import *
-from sineModel_GUI_frame import *
-from harmonicModel_GUI_frame import *
-from stochasticModel_GUI_frame import *
-from sprModel_GUI_frame import *
-from spsModel_GUI_frame import *
-from hprModel_GUI_frame import *
-from hpsModel_GUI_frame import *
+from .notebook import *  # window with tabs
+from .dftModel_GUI_frame import *
+from .stft_GUI_frame import *
+from .sineModel_GUI_frame import *
+from .harmonicModel_GUI_frame import *
+from .stochasticModel_GUI_frame import *
+from .sprModel_GUI_frame import *
+from .spsModel_GUI_frame import *
+from .hprModel_GUI_frame import *
+from .hpsModel_GUI_frame import *
 
 root = Tk()
 root.title('sms-tools models GUI')

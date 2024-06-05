@@ -4,7 +4,7 @@ from tkinter import *
 import sys, os
 from tkinter import filedialog, messagebox
 
-import stochasticModel_function
+from smstools.models.interface import stochasticModel_function
 from smstools.models import utilFunctions as UF
 
 class StochasticModel_frame:

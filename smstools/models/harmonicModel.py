@@ -5,9 +5,9 @@ import numpy as np
 from scipy.signal.windows import blackmanharris, triang
 from scipy.fft import ifft
 import math
-import dftModel as DFT
-import utilFunctions as UF
-import sineModel as SM
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
+from smstools.models import sineModel as SM
 
 
 def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):

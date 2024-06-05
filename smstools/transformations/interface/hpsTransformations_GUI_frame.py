@@ -5,7 +5,7 @@ import sys, os
 from tkinter import filedialog, messagebox
 
 import numpy as np
-import hpsTransformations_function as hT
+from smstools.transformations.interface import hpsTransformations_function as hT
 from smstools.models import utilFunctions as UF
 
 class HpsTransformations_frame:

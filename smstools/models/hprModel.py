@@ -5,10 +5,10 @@ import numpy as np
 import math
 from scipy.signal.windows import blackmanharris, triang
 from scipy.fft import fft, ifft
-import harmonicModel as HM
-import dftModel as DFT
-import utilFunctions as UF
-import sineModel as SM
+from smstools.models import harmonicModel as HM
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
+from smstools.models import sineModel as SM
 
 def hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope):
 	"""Analysis of a sound using the harmonic plus residual model

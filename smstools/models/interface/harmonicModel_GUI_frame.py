@@ -4,7 +4,7 @@ from tkinter import *
 import os
 from tkinter import messagebox, filedialog
 
-import harmonicModel_function
+from smstools.models.interface import harmonicModel_function
 from smstools.models import utilFunctions as UF
 
 

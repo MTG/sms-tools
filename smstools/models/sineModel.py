@@ -5,8 +5,8 @@ import numpy as np
 from scipy.signal.windows import blackmanharris, triang
 from scipy.fft import ifft, fftshift
 import math
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 
 def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01):

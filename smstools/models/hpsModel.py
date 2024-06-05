@@ -6,11 +6,11 @@ from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang, hann
 from scipy.fft import fft, ifft
 import math
-import harmonicModel as HM
-import sineModel as SM
-import dftModel as DFT
-import stochasticModel as STM
-import utilFunctions as UF
+from smstools.models import harmonicModel as HM
+from smstools.models import sineModel as SM
+from smstools.models import dftModel as DFT
+from smstools.models import stochasticModel as STM
+from smstools.models import utilFunctions as UF
 
 
 def hpsModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf):

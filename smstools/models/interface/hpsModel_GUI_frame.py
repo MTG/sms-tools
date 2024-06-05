@@ -5,7 +5,7 @@ import os
 import sys
 from tkinter import messagebox, filedialog
 
-import hpsModel_function
+from smstools.models.interface import hpsModel_function
 from smstools.models import utilFunctions as UF
 
 

@@ -4,7 +4,7 @@
 import numpy as np
 import math
 from scipy.fft import fft, ifft
-import utilFunctions as UF
+from smstools.models import utilFunctions as UF
 
 tol = 1e-14  # threshold used to compute phase
 
