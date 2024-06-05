@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 from scipy.signal import sawtooth
-sys.path.append('../../../software/models/')
-import dftModel as DF
+from smstools.models import dftModel as DF
 
 N = 32
 n = np.arange(-N//2+1, N//2+1)
@@ -26,22 +24,22 @@ plt.axis([-N//2+3, N//2, -1, 1])
 plt.subplot(323)
 plt.title('mX1')
 plt.plot(np.arange(0, mX1.size, 1.0), mX1, 'r-x', lw=1.5)
-plt.axis([0,mX1.size-1,min(mX1),max(mX1)])      
+plt.axis([0,mX1.size-1,min(mX1),max(mX1)])
 
 plt.subplot(324)
 plt.title('mX2')
 plt.plot(np.arange(0, mX2.size, 1.0), mX2, 'r-x', lw=1.5)
-plt.axis([0,mX2.size-1,min(mX2),max(mX2)])  
+plt.axis([0,mX2.size-1,min(mX2),max(mX2)])
 
 plt.subplot(325)
 plt.title('pX1')
 plt.plot(np.arange(0, pX1.size, 1.0), pX1, 'c-x', lw=1.5)
-plt.axis([0,pX1.size-1,min(pX1),max(pX1)])  
+plt.axis([0,pX1.size-1,min(pX1),max(pX1)])
 
 plt.subplot(326)
 plt.title('pX2')
 plt.plot(np.arange(0, pX2.size, 1.0), pX2, 'c-x', lw=1.5)
-plt.axis([0,pX2.size-1,min(pX2),max(pX2)]) 
+plt.axis([0,pX2.size-1,min(pX2),max(pX2)])
 
 plt.tight_layout()
 plt.savefig('shift.png')

@@ -2,11 +2,8 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 
 (fs, x) = UF.wavread('../../../sounds/orchestra.wav')

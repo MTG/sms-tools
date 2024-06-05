@@ -3,12 +3,9 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, hanning, triang, blackmanharris, resample
 import math
 import sys, os, time
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import stft as STFT
-import utilFunctions as UF
-import harmonicModel as HM
+from smstools.models import stft as STFT
+from smstools.models import utilFunctions as UF
+from smstools.models import harmonicModel as HM
 
 
 (fs, x) = UF.wavread(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sounds/flute-A4.wav'))
@@ -35,46 +32,46 @@ plt.figure(1, figsize=(9, 7))
 
 plt.subplot(221)
 numFrames = int(mX[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(N*maxplotfreq/fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(N*maxplotfreq/fs+1)]))
 plt.autoscale(tight=True)
 
 harms = hfreq*np.less(hfreq,maxplotfreq)
 harms[harms==0] = np.nan
 numFrames = int(harms[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs) 
+frmTime = H*np.arange(numFrames)/float(fs)
 plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
 plt.autoscale(tight=True)
 plt.title('mX + harmonics (flute-A4.wav)')
 
 plt.subplot(222)
 numFrames = int(mX[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(N*maxplotfreq/fs)/N                        
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(N*maxplotfreq/fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pX[:,:int(N*maxplotfreq/fs+1)],axis=1)))
 plt.autoscale(tight=True)
 
 harms = hfreq*np.less(hfreq,maxplotfreq)
 harms[harms==0] = np.nan
 numFrames = int(harms[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs) 
+frmTime = H*np.arange(numFrames)/float(fs)
 plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
 plt.autoscale(tight=True)
 plt.title('pX + harmonics')
 
 plt.subplot(223)
 numFrames = int(mXr[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(Ns*maxplotfreq/fs)/Ns                       
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(Ns*maxplotfreq/fs)/Ns
 plt.pcolormesh(frmTime, binFreq, np.transpose(mXr[:,:int(Ns*maxplotfreq/fs+1)]))
 plt.autoscale(tight=True)
 plt.title('mXr')
 
 plt.subplot(224)
 numFrames = int(pXr[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(Ns*maxplotfreq/fs)/Ns                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(Ns*maxplotfreq/fs)/Ns
 plt.pcolormesh(frmTime, binFreq, np.transpose(np.diff(pXr[:,:int(Ns*maxplotfreq/fs+1)],axis=1)))
 plt.autoscale(tight=True)
 plt.title('pXr')

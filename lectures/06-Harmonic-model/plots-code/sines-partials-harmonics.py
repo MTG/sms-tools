@@ -2,9 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 import sys, os, functools, time
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 
 
@@ -17,13 +16,13 @@ pin = 4850
 x1 = x[pin:pin+w.size]
 mX1, pX1 = DFT.dftAnal(x1, w, N)
 ploc = UF.peakDetection(mX1, t)
-pmag = mX1[ploc] 
+pmag = mX1[ploc]
 iploc, ipmag, ipphase = UF.peakInterp(mX1, pX1, ploc)
 
 plt.figure(1, figsize=(9, 6))
 plt.subplot(311)
 plt.plot(fs*np.arange(mX1.size)/float(N), mX1-max(mX1), 'r', lw=1.5)
-plt.plot(fs * iploc/N, ipmag-max(mX1), marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5) 
+plt.plot(fs * iploc/N, ipmag-max(mX1), marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5)
 plt.axis([200, 1000, -80, 4])
 plt.title('mX + peaks (sine-440-490.wav)')
 
@@ -36,12 +35,12 @@ pin = 200
 x2 = x[pin:pin+w.size]
 mX2, pX2 = DFT.dftAnal(x2, w, N)
 ploc = UF.peakDetection(mX2, t)
-pmag = mX2[ploc] 
+pmag = mX2[ploc]
 iploc, ipmag, ipphase = UF.peakInterp(mX2, pX2, ploc)
 
 plt.subplot(3,1,2)
 plt.plot(fs*np.arange(mX2.size)/float(N), mX2-max(mX2), 'r', lw=1.5)
-plt.plot(fs * iploc/N, ipmag-max(mX2), marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5) 
+plt.plot(fs * iploc/N, ipmag-max(mX2), marker='x', color='b', alpha=1, linestyle='', markeredgewidth=1.5)
 plt.axis([500,10000,-100,4])
 plt.title('mX + peaks (vibraphone-C6.wav)')
 
@@ -54,7 +53,7 @@ pin = 10000
 x3 = x[pin:pin+w.size]
 mX3, pX3 = DFT.dftAnal(x3, w, N)
 ploc = UF.peakDetection(mX3, t)
-pmag = mX3[ploc] 
+pmag = mX3[ploc]
 iploc, ipmag, ipphase = UF.peakInterp(mX3, pX3, ploc)
 
 plt.subplot(3,1,3)

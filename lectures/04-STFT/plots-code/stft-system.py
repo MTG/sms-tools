@@ -1,10 +1,8 @@
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import stft as STFT
-import utilFunctions as UF
+from smstools.models import stft as STFT
+from smstools.models import utilFunctions as UF
 import matplotlib.pyplot as plt
 from scipy.signal import hamming
 
@@ -25,8 +23,8 @@ plt.axis([0,x.size/float(fs),min(x),max(x)])
 plt.subplot(412)
 # Size of X and Y must be 1 larger than the size of mX for flat shading
 numFrames = int(mX[:,0].size) + 1
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX[0,:].size + 1)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mX[0,:].size + 1)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX), shading = 'flat')
 plt.title('mX, Hamming window, M=1024, N=1024, H=512')
 plt.autoscale(tight=True)
@@ -35,8 +33,8 @@ plt.subplot(413)
 # Size of X must be 1 larger than the size of np.diff(pX) (which has the Y axis size
 # reduced by 1) for flat shading
 numFrames = int(pX[:,0].size) + 1
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(pX[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(pX[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0), shading = 'flat')
 plt.title('pX derivative, Hamming window, M=1024, N=1024, H=512')
 plt.autoscale(tight=True)
@@ -50,6 +48,6 @@ plt.tight_layout()
 plt.savefig('stft-system.png')
 UF.wavwrite(y, fs, 'piano-stft.wav')
 plt.show()
-  
-  
-  
+
+
+

@@ -4,13 +4,11 @@ import math
 import time, os, sys
 import essentia.standard as ess
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import utilFunctions as UF
+from smstools.models import utilFunctions as UF
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 
 M = 500
-start = int(.8*fs)   
+start = int(.8*fs)
 xp = x[start:start+M]/float(max(x[start:start+M]))
 r = ess.AutoCorrelation(normalization = 'standard')(xp)
 r = r / max(r)

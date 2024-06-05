@@ -1,10 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftshift
-import sys
 
-sys.path.append('../../../software/models/')
-import utilFunctions as UF
+from smstools.models import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 N = 1024

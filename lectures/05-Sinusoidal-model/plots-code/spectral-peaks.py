@@ -4,10 +4,9 @@ from scipy.signal import hamming, triang, blackmanharris
 from scipy.fftpack import fft, ifft
 import math
 import sys, os, functools, time
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/trumpet-A4.wav')
 N = 512
@@ -28,14 +27,14 @@ plt.figure(1, figsize=(9.5, 5.5))
 plt.subplot (2,1,1)
 plt.plot(freqaxis, mX, 'r', lw=1.5)
 plt.axis([300,2500,-70,max(mX)+2])
-plt.plot(fs * ploc / N, pmag, marker='x', color='b', linestyle='', markeredgewidth=1.5) 
-plt.title('mX + spectral peaks (trumpet-A4.wav)')      
+plt.plot(fs * ploc / N, pmag, marker='x', color='b', linestyle='', markeredgewidth=1.5)
+plt.title('mX + spectral peaks (trumpet-A4.wav)')
 
 plt.subplot (2,1,2)
 plt.plot(freqaxis,pX,'c', lw=1.5)
 plt.axis([300,2500,-2,7])
-plt.plot(fs * ploc / N, pX[ploc], marker='x', color='b', linestyle='', markeredgewidth=1.5)   
-plt.title('pX + spectral peaks') 
+plt.plot(fs * ploc / N, pX[ploc], marker='x', color='b', linestyle='', markeredgewidth=1.5)
+plt.title('pX + spectral peaks')
 
 plt.tight_layout()
 plt.savefig('spectral-peaks.png')

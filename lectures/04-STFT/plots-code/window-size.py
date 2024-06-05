@@ -3,16 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import dftModel as DF
-import utilFunctions as UF
+from smstools.models import dftModel as DF
+from smstools.models import utilFunctions as UF
 
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 N = 128
 start = int(.81*fs)
-x1 = x[start:start+N] 
+x1 = x[start:start+N]
 plt.figure(1, figsize=(9.5, 6))
 plt.subplot(321)
 plt.plot(np.arange(start, (start+N), 1.0)/fs, x1*np.hamming(N), 'b', lw=1.5)

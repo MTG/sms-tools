@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import time, os, sys
 from scipy.fftpack import fft, ifft, fftshift
-import math
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import utilFunctions as UF
-import dftModel as DF
+from smstools.models import utilFunctions as UF
+from smstools.models import dftModel as DF
 (fs, x) = UF.wavread('../../../sounds/ocean.wav')
 (fs, x2) = UF.wavread('../../../sounds/impulse-response.wav')
 x1 = x[40000:44096]

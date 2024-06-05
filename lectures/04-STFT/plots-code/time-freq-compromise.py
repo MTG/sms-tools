@@ -1,10 +1,8 @@
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import stft as STFT
-import utilFunctions as UF
+from smstools.models import stft as STFT
+from smstools.models import utilFunctions as UF
 import matplotlib.pyplot as plt
 from scipy.signal import hamming
 from scipy.fftpack import fft
@@ -20,8 +18,8 @@ H = 128
 mX1, pX1 = STFT.stftAnal(2*x, w, N, H)
 plt.subplot(211)
 numFrames = int(mX1[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX1[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mX1[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX1), shading='nearest', snap='true')
 plt.title('mX (piano.wav), Hamming window, M=256, N=256, H=128')
 plt.autoscale(tight=True)
@@ -33,8 +31,8 @@ mX2, pX2 = STFT.stftAnal(2*x, w, N, H)
 
 plt.subplot(212)
 numFrames = int(mX2[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX2[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mX2[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX2), shading='nearest', snap='true')
 plt.title('mX (piano.wav), Hamming window, M=1024, N=1024, H=128')
 plt.autoscale(tight=True)

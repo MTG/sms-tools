@@ -2,16 +2,10 @@ import numpy as np
 import time, os, sys
 from scipy.signal import hamming, resample
 import matplotlib.pyplot as plt
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
-
-import dftModel as DFT
-import utilFunctions as UF
-import stftTransformations as STFTT
-import stochasticModel as STOC
-import math
-import stft as STFT
+from smstools.models import utilFunctions as UF
+from smstools.transformations import stftTransformations as STFTT
+from smstools.models import stochasticModel as STOC
+from smstools.models import stft as STFT
 
 (fs, x1) = UF.wavread('../../../sounds/orchestra.wav')
 (fs, x2) = UF.wavread('../../../sounds/speech-male.wav')
@@ -31,27 +25,27 @@ maxplotfreq = 10000.0
 plt.figure(1, figsize=(12, 9))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
-frmTime = H1*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1                       
-plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(N1*maxplotfreq/fs+1)])) 
+frmTime = H1*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1
+plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(N1*maxplotfreq/fs+1)]))
 plt.title('mX (orchestra.wav)')
 plt.autoscale(tight=True)
 
 plt.subplot(312)
 numFrames = int(mX2[:,0].size)
-frmTime = H1*np.arange(numFrames)/float(fs)  
-                 
-N = 2*mX2[0,:].size         
-binFreq = fs*np.arange(N*maxplotfreq/fs)/N                       
+frmTime = H1*np.arange(numFrames)/float(fs)
+
+N = 2*mX2[0,:].size
+binFreq = fs*np.arange(N*maxplotfreq/fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX2[:,:int(N*maxplotfreq/fs+1)]))
 plt.title('mX2 (speech-male.wav)')
 plt.autoscale(tight=True)
 
 plt.subplot(313)
 numFrames = int(mY[:,0].size)
-frmTime = H1*np.arange(numFrames)/float(fs)                             
-binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1                       
-plt.pcolormesh(frmTime, binFreq, np.transpose(mY[:,:int(N1*maxplotfreq/fs+1)])) 
+frmTime = H1*np.arange(numFrames)/float(fs)
+binFreq = fs*np.arange(N1*maxplotfreq/fs)/N1
+plt.pcolormesh(frmTime, binFreq, np.transpose(mY[:,:int(N1*maxplotfreq/fs+1)]))
 plt.title('mY')
 plt.autoscale(tight=True)
 

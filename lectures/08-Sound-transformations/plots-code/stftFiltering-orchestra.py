@@ -1,11 +1,9 @@
 import numpy as np
 import time, os, sys
 import matplotlib.pyplot as plt
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
-import utilFunctions as UF
-import stftTransformations as STFTT
-import stft as STFT
+from smstools.models import utilFunctions as UF
+from smstools.transformations import stftTransformations as STFTT
+from smstools.models import stft as STFT
 
 (fs, x) = UF.wavread('../../../sounds/orchestra.wav')
 w = np.hamming(2048)
@@ -24,8 +22,8 @@ mY,pY = STFT.stftAnal(y, w, N, H)
 plt.figure(1, figsize=(12, 9))
 plt.subplot(311)
 numFrames = int(mX[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mX[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
 plt.title('mX (orchestra.wav)')
 plt.autoscale(tight=True)
@@ -37,8 +35,8 @@ plt.title('filter shape')
 
 plt.subplot(313)
 numFrames = int(mY[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mY[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mY[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mY))
 plt.title('mY')
 plt.autoscale(tight=True)

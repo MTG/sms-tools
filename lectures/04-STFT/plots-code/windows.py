@@ -2,10 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import dftModel as DF
-import utilFunctions as UF
+from smstools.models import dftModel as DF
+from smstools.models import utilFunctions as UF
 from scipy.fftpack import fft, ifft
 import math
 
@@ -13,8 +11,8 @@ import math
 N = 512
 pin = 5000
 w = np.ones(501)
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2))  
+hM1 = int(math.floor((w.size+1)/2))
+hM2 = int(math.floor(w.size/2))
 x1 = x[pin-hM1:pin+hM2]
 
 

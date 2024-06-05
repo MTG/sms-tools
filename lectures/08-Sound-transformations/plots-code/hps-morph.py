@@ -4,12 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import get_window
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
-import hpsModel as HPS
-import hpsTransformations as HPST
-import harmonicTransformations as HT
-import utilFunctions as UF
+from smstools.models import hpsModel as HPS
+from smstools.transformations import hpsTransformations as HPST
+from smstools.models import utilFunctions as UF
 
 inputFile1='../../../sounds/violin-B3.wav'
 window1='blackman'

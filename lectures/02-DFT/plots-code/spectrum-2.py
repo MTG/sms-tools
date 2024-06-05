@@ -3,16 +3,15 @@ import numpy as np
 import sys
 import math
 
-sys.path.append('../../../software/models/')
-import utilFunctions as UF
-import dftModel as DFT
+from smstools.models import utilFunctions as UF
+from smstools.models import dftModel as DFT
 
 (fs, x) = UF.wavread('../../../sounds/violin-B3.wav')
 w = np.hamming(1024)
 N = 1024
 pin = 5000
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2))  
+hM1 = int(math.floor((w.size+1)/2))
+hM2 = int(math.floor(w.size/2))
 x1 = x[pin-hM1:pin+hM2]
 mX, pX = DFT.dftAnal(x1, w, N)
 

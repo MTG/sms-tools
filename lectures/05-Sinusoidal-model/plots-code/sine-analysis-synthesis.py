@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 import sys, os, functools, time
 from scipy.fftpack import fft, ifft, fftshift
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 eps = np.finfo(float).eps
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
@@ -21,7 +20,7 @@ x1 = x[pin:pin+w.size]
 mX, pX = DFT.dftAnal(x1, w, N)
 ploc = UF.peakDetection(mX, t)
 iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
-freqs = iploc*fs/N 
+freqs = iploc*fs/N
 Y = UF.genSpecSines(freqs, ipmag, ipphase, Ns, fs)
 absY = abs(Y[:hNs])
 absY[absY < eps] = eps
@@ -37,7 +36,7 @@ plt.title("x (oboe-A4.wav), M = 601")
 
 plt.subplot(4,1,2)
 plt.plot(np.arange(mX.size), mX, 'r', lw=1.5)
-plt.plot(iploc, ipmag, marker='x', color='b', linestyle='', markeredgewidth=1.5) 
+plt.plot(iploc, ipmag, marker='x', color='b', linestyle='', markeredgewidth=1.5)
 plt.axis([0, hN,-90,max(mX)+2])
 plt.title("mX + spectral peaks; Blackman, N = 1024")
 

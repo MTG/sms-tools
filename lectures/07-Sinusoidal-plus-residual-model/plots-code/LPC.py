@@ -5,25 +5,23 @@ import math
 import sys, os, time
 from scipy.fftpack import fft, ifft
 import essentia.standard as ess
+from smstools.models import utilFunctions as UF
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import utilFunctions as UF
 
-    
 lpc = ess.LPC(order=14)
 N= 512
 (fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 first = 20000
 last = first+N
 x1 = x[first:last]
-X = fft(hamming(N)*x1) 
+X = fft(hamming(N)*x1)
 mX = 20 * np.log10(abs(X[:N//2]))
 
 coeff = lpc(x1)
-Y = fft(coeff[0], N) 
+Y = fft(coeff[0], N)
 mY = 20 * np.log10(abs(Y[:N//2]))
 
-  
+
 plt.figure(1, figsize=(9, 5))
 plt.subplot(2,1,1)
 plt.plot(np.arange(first, last)/float(fs), x[first:last], 'b', lw=1.5)

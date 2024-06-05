@@ -2,10 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time, os, sys
 import math
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
 
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/sine-440.wav')
 M = 400
@@ -15,7 +14,7 @@ hM = int(M/2.0)
 w = np.hamming(M)
 mX, pX = DFT.dftAnal(x1, w, N)
 freqaxis = fs*np.arange(0,mX.size)/float(N)
-taxis = np.arange(N)/float(fs) 
+taxis = np.arange(N)/float(fs)
 
 plt.figure(1, figsize=(9.5, 7))
 

@@ -2,10 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 import sys, os, functools, time
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import harmonicModel as HM
-import sineModel as SM
-import utilFunctions as UF
+from smstools.models import harmonicModel as HM
+from smstools.models import sineModel as SM
+from smstools.models import utilFunctions as UF
 
 
 (fs, x) = UF.wavread('../../../sounds/vignesh.wav')
@@ -31,7 +30,7 @@ plt.figure(1, figsize=(9, 7))
 plt.subplot(3,1,1)
 plt.plot(np.arange(x.size)/float(fs), x, 'b')
 plt.axis([0,x.size/float(fs),min(x),max(x)])
-plt.title('x (vignesh.wav)')                        
+plt.title('x (vignesh.wav)')
 
 plt.subplot(3,1,2)
 yhfreq = hfreq
@@ -43,7 +42,7 @@ plt.title('f_h, harmonic frequencies')
 plt.subplot(3,1,3)
 plt.plot(np.arange(y.size)/float(fs), y, 'b')
 plt.axis([0,y.size/float(fs),min(y),max(y)])
-plt.title('yh')    
+plt.title('yh')
 
 plt.tight_layout()
 UF.wavwrite(y, fs, 'vignesh-harmonic-synthesis.wav')

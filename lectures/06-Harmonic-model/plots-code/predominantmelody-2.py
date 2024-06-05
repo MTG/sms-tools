@@ -3,9 +3,8 @@ from essentia import *
 from essentia.standard import *
 from pylab import *
 from numpy import *
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import stft as STFT
-import utilFunctions as UF
+from smstools.models import stft as STFT
+from smstools.models import utilFunctions as UF
 
 filename = '../../../sounds/carnatic.wav'
 hopSize = 128
@@ -36,10 +35,10 @@ for frame in FrameGenerator(audio, frameSize=frameSize, hopSize=hopSize):
     frame = run_windowing(frame)
     spectrum = run_spectrum(frame)
     peak_frequencies, peak_magnitudes = run_spectral_peaks(spectrum)
-    
+
     salience = run_pitch_salience_function(peak_frequencies, peak_magnitudes)
     salience_peaks_bins, salience_peaks_saliences = run_pitch_salience_function_peaks(salience)
-    
+
     pool.add('allframes_salience_peaks_bins', salience_peaks_bins)
     pool.add('allframes_salience_peaks_saliences', salience_peaks_saliences)
 
@@ -58,8 +57,8 @@ figure(1, figsize=(9, 6))
 mX, pX = STFT.stftAnal(audio, hamming(frameSize), frameSize, hopSize)
 maxplotfreq = 3000.0
 numFrames = int(mX[:,0].size)
-frmTime = hopSize*arange(numFrames)/float(sampleRate)                             
-binFreq = sampleRate*arange(frameSize*maxplotfreq/sampleRate)/frameSize                       
+frmTime = hopSize*arange(numFrames)/float(sampleRate)
+binFreq = sampleRate*arange(frameSize*maxplotfreq/sampleRate)/frameSize
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX[:,:int(frameSize*maxplotfreq/sampleRate+1)]))
 plt.autoscale(tight=True)
 

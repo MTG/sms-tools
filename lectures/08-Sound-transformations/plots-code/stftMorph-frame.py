@@ -2,9 +2,8 @@ import numpy as np
 import time, os, sys
 import matplotlib.pyplot as plt
 from scipy.signal import hamming, resample
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 import math
 
 (fs, x1) = UF.wavread('../../../sounds/orchestra.wav')
@@ -32,7 +31,7 @@ mX1, pX1 = DFT.dftAnal(x1, w1, N1)           # compute dft
 mX2, pX2 = DFT.dftAnal(x2, w2, N2)           # compute dft
 # morph
 mX2smooth = resample(np.maximum(-200, mX2), int(mX2.size*smoothf))  # smooth spectrum of second sound
-mX2 = resample(mX2smooth, mX2.size) 
+mX2 = resample(mX2smooth, mX2.size)
 mY = balancef * mX2 + (1-balancef) * mX1                            # generate output spectrum
 #-----synthesis-----
 y = DFT.dftSynth(mY, pX1, M1) * sum(w1)  # overlap-add to generate output sound

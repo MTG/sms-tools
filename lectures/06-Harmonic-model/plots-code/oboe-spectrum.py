@@ -3,17 +3,15 @@ import matplotlib.pyplot as plt
 from scipy.signal import hamming, triang, blackmanharris
 import math
 import sys, os, functools, time
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import dftModel as DFT
-import utilFunctions as UF
+from smstools.models import dftModel as DFT
+from smstools.models import utilFunctions as UF
 
 (fs, x) = UF.wavread('../../../sounds/oboe-A4.wav')
 w = np.blackman(651)
 N = 1024
 pin = 5000
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2))  
+hM1 = int(math.floor((w.size+1)/2))
+hM2 = int(math.floor(w.size/2))
 x1 = x[pin-hM1:pin+hM2]
 mX, pX = DFT.dftAnal(x1, w, N)
 

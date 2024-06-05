@@ -4,12 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import get_window
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/transformations/'))
-import hpsModel as HPS
-import hpsTransformations as HPST
-import harmonicTransformations as HT
-import utilFunctions as UF
+from smstools.models import hpsModel as HPS
+from smstools.transformations import hpsTransformations as HPST
+from smstools.models import utilFunctions as UF
 
 inputFile='../../../sounds/sax-phrase-short.wav'
 window='blackman'
@@ -53,7 +50,7 @@ plt.subplot(4,1,2)
 numFrames = int(mYst[:,0].size)
 sizeEnv = int(mYst[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs)
-binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
+binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv
 plt.pcolormesh(frmTime, binFreq, np.transpose(mYst[:,:int(sizeEnv*maxplotfreq/(.5*fs)+1)]))
 plt.autoscale(tight=True)
 
@@ -61,7 +58,7 @@ plt.autoscale(tight=True)
 harms = hfreq*np.less(hfreq,maxplotfreq)
 harms[harms==0] = np.nan
 numFrames = int(harms[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs) 
+frmTime = H*np.arange(numFrames)/float(fs)
 plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
 plt.autoscale(tight=True)
 plt.title('harmonics + stochastic residual')
@@ -72,7 +69,7 @@ plt.subplot(4,1,3)
 numFrames = int(ystocEnv[:,0].size)
 sizeEnv = int(ystocEnv[0,:].size)
 frmTime = H*np.arange(numFrames)/float(fs)
-binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv                      
+binFreq = (.5*fs)*np.arange(sizeEnv*maxplotfreq/(.5*fs))/sizeEnv
 plt.pcolormesh(frmTime, binFreq, np.transpose(ystocEnv[:,:int(sizeEnv*maxplotfreq/(.5*fs)+1)]))
 plt.autoscale(tight=True)
 
@@ -80,7 +77,7 @@ plt.autoscale(tight=True)
 harms = yhfreq*np.less(yhfreq,maxplotfreq)
 harms[harms==0] = np.nan
 numFrames = int(harms[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs) 
+frmTime = H*np.arange(numFrames)/float(fs)
 plt.plot(frmTime, harms, color='k', ms=3, alpha=1)
 plt.autoscale(tight=True)
 plt.title('timescaled harmonics + stochastic residual')

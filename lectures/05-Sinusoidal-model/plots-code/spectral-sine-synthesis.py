@@ -6,12 +6,8 @@ import math
 import sys, os, functools, time
 eps = np.finfo(float).eps
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
+from smstools.models import utilFunctions as UF
 
-import stft as STFT
-import sineModel as SM
-import utilFunctions as UF
-  
 Ns = 256
 hNs = Ns//2
 yw = np.zeros(Ns)
@@ -23,13 +19,13 @@ yploc = Ns*freqs/fs
 ypmag = 20*np.log10(amps/2.0)
 ypphase = phases
 
-Y = UF.genSpecSines(freqs, ypmag, ypphase, Ns, fs)       
+Y = UF.genSpecSines(freqs, ypmag, ypphase, Ns, fs)
 absmY = abs(Y[:hNs])
 absmY[absmY < eps] = eps
 mY = 20*np.log10(absmY)
 pY = np.unwrap(np.angle(Y[:hNs]))
 y= fftshift(ifft(Y))*sum(blackmanharris(Ns))
- 
+
 plt.figure(1, figsize=(9, 5))
 plt.subplot(3,1,1)
 plt.plot(fs*np.arange(Ns/2)/Ns, mY, 'r', lw=1.5)

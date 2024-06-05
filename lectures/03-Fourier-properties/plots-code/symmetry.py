@@ -1,27 +1,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 from scipy.fftpack import fft, ifft, fftshift
 import math
 
-sys.path.append('../../../software/models/')
-
-import utilFunctions as UF
-import dftModel as DF
+from smstools.models import utilFunctions as UF
+from smstools.models import dftModel as DF
 (fs, x) = UF.wavread('../../../sounds/soprano-E4.wav')
 w = np.hamming(511)
-w = w / sum(w)  
+w = w / sum(w)
 N = 512
 pin = 5000
-hM1 = int(math.floor((w.size+1)/2)) 
-hM2 = int(math.floor(w.size/2)) 
-fftbuffer = np.zeros(N)  
+hM1 = int(math.floor((w.size+1)/2))
+hM2 = int(math.floor(w.size/2))
+fftbuffer = np.zeros(N)
 x1 = x[pin-hM1:pin+hM2]
 xw = x1*w
 fftbuffer[:hM1] = xw[hM2:]
-fftbuffer[N-hM2:] = xw[:hM2]        
+fftbuffer[N-hM2:] = xw[:hM2]
 X = fftshift(fft(fftbuffer))
-mX = 20 * np.log10(abs(X))       
+mX = 20 * np.log10(abs(X))
 pX = np.unwrap(np.angle(X))
 
 plt.figure(1, figsize=(9.5, 7))

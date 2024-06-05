@@ -4,13 +4,10 @@ from scipy.signal import hamming, hanning, resample
 from scipy.fftpack import fft, ifft
 import time
 import sys, os
+from smstools.models import utilFunctions as UF
+from smstools.models import stochasticModel as STM
+from smstools.models import stft as STFT
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../software/models/'))
-
-import utilFunctions as UF
-import stochasticModel as STM
-import stft as STFT
-  
 (fs, x) = UF.wavread('../../../sounds/ocean.wav')
 w = np.hamming(512)
 N = 512
@@ -28,16 +25,16 @@ plt.axis([0,x.size/float(fs),min(x),max(x)])
 
 plt.subplot(412)
 numFrames = int(mX[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(mX[0,:].size)*float(fs)/N                         
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(mX[0,:].size)*float(fs)/N
 plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
 plt.title('mX; M=512, N=512, H=256')
 plt.autoscale(tight=True)
 
 plt.subplot(413)
 numFrames = int(mYst[:,0].size)
-frmTime = H*np.arange(numFrames)/float(fs)                             
-binFreq = np.arange(stocf*mX[0,:].size)*float(fs)/(stocf*N)                       
+frmTime = H*np.arange(numFrames)/float(fs)
+binFreq = np.arange(stocf*mX[0,:].size)*float(fs)/(stocf*N)
 plt.pcolormesh(frmTime, binFreq, np.transpose(mYst))
 plt.title('mY (stochastic approximation); stocf=.1')
 plt.autoscale(tight=True)

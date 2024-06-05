@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-sys.path.append('../../../software/models/')
-import dftModel as DFT
+from smstools.models import dftModel as DFT
 import math
 
 k0 = 8.5
