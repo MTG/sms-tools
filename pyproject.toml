@@ -1,0 +1,15 @@
+[project]
+name = "SMSTools"
+version = "0.99"
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "scipy"
+]
+
+[tool.setuptools.packages]
+find = {}  # Scan the project directory with the default parameters
+
+[build-system]
+requires = ["setuptools", "wheel", "oldest-supported-numpy", "Cython"]
+build-backend = "setuptools.build_meta"
