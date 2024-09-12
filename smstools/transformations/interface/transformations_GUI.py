@@ -1,7 +1,7 @@
 import sys
 import matplotlib
 
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
 from tkinter import *
 from .notebook import *  # window with tabs
 from .stftMorph_GUI_frame import *
@@ -12,8 +12,10 @@ from .hpsTransformations_GUI_frame import *
 from .hpsMorph_GUI_frame import *
 
 root = Tk()
-root.title('sms-tools transformations GUI')
-nb = notebook(root, TOP)  # make a few diverse frames (panels), each using the NB as 'master':
+root.title("sms-tools transformations GUI")
+nb = notebook(
+    root, TOP
+)  # make a few diverse frames (panels), each using the NB as 'master':
 
 # uses the notebook's frame
 f1 = Frame(nb())
@@ -43,5 +45,5 @@ nb.add_screen(f6, "HPS Morph")
 
 nb.display(f1)
 
-root.geometry('+0+0')
+root.geometry("+0+0")
 root.mainloop()

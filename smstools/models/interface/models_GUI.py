@@ -1,5 +1,6 @@
 import matplotlib
-matplotlib.use('TkAgg')
+
+matplotlib.use("TkAgg")
 
 from .notebook import *  # window with tabs
 from .dftModel_GUI_frame import *
@@ -13,8 +14,10 @@ from .hprModel_GUI_frame import *
 from .hpsModel_GUI_frame import *
 
 root = Tk()
-root.title('sms-tools models GUI')
-nb = notebook(root, TOP)  # make a few diverse frames (panels), each using the NB as 'master':
+root.title("sms-tools models GUI")
+nb = notebook(
+    root, TOP
+)  # make a few diverse frames (panels), each using the NB as 'master':
 
 # uses the notebook's frame
 f1 = Frame(nb())
@@ -56,5 +59,5 @@ nb.add_screen(f9, "HPS")
 
 nb.display(f1)
 
-root.geometry('+0+0')
+root.geometry("+0+0")
 root.mainloop()

@@ -11,15 +11,15 @@ tol = 1e-14  # threshold used to compute phase
 
 def dftModel(x, w, N):
     """
-	Analysis/synthesis of a signal using the discrete Fourier transform
-	x: input signal, w: analysis window, N: FFT size
-	returns y: output signal
-	"""
+    Analysis/synthesis of a signal using the discrete Fourier transform
+    x: input signal, w: analysis window, N: FFT size
+    returns y: output signal
+    """
 
     if not (UF.isPower2(N)):  # raise error if N not a power of two
         raise ValueError("FFT size (N) is not a power of 2")
 
-    if (w.size > N):  # raise error if window size bigger than fft size
+    if w.size > N:  # raise error if window size bigger than fft size
         raise ValueError("Window size (M) is bigger than FFT size")
 
     if all(x == 0):  # if input array is zeros return empty output
@@ -35,13 +35,17 @@ def dftModel(x, w, N):
     fftbuffer[-hM2:] = xw[:hM2]
     X = fft(fftbuffer)  # compute FFT
     absX = abs(X[:hN])  # compute ansolute value of positive side
-    absX[absX < np.finfo(float).eps] = np.finfo(float).eps  # if zeros add epsilon to handle log
+    absX[absX < np.finfo(float).eps] = np.finfo(
+        float
+    ).eps  # if zeros add epsilon to handle log
     mX = 20 * np.log10(absX)  # magnitude spectrum of positive frequencies in dB
     pX = np.unwrap(np.angle(X[:hN]))  # unwrapped phase spectrum of positive frequencies
     # -----synthesis-----
     Y = np.zeros(N, dtype=complex)  # clean output spectrum
     Y[:hN] = 10 ** (mX / 20) * np.exp(1j * pX)  # generate positive frequencies
-    Y[hN:] = 10 ** (mX[-2:0:-1] / 20) * np.exp(-1j * pX[-2:0:-1])  # generate negative frequencies
+    Y[hN:] = 10 ** (mX[-2:0:-1] / 20) * np.exp(
+        -1j * pX[-2:0:-1]
+    )  # generate negative frequencies
     fftbuffer = np.real(ifft(Y))  # compute inverse FFT
     y[:hM2] = fftbuffer[-hM2:]  # undo zero-phase window
     y[hM2:] = fftbuffer[:hM1]
@@ -50,10 +54,10 @@ def dftModel(x, w, N):
 
 def dftAnal(x, w, N):
     """
-	Analysis of a signal using the discrete Fourier transform
-	x: input signal, w: analysis window, N: FFT size
-	returns mX, pX: magnitude and phase spectrum
-	"""
+    Analysis of a signal using the discrete Fourier transform
+    x: input signal, w: analysis window, N: FFT size
+    returns mX, pX: magnitude and phase spectrum
+    """
 
     if not (UF.isPower2(N)):  # raise error if N not a power of two
         raise ValueError("FFT size (N) is not a power of 2")
@@ -71,20 +75,26 @@ def dftAnal(x, w, N):
     fftbuffer[-hM2:] = xw[:hM2]
     X = fft(fftbuffer)  # compute FFT
     absX = abs(X[:hN])  # compute ansolute value of positive side
-    absX[absX < np.finfo(float).eps] = np.finfo(float).eps  # if zeros add epsilon to handle log
+    absX[absX < np.finfo(float).eps] = np.finfo(
+        float
+    ).eps  # if zeros add epsilon to handle log
     mX = 20 * np.log10(absX)  # magnitude spectrum of positive frequencies in dB
-    X[:hN].real[np.abs(X[:hN].real) < tol] = 0.0  # for phase calculation set to 0 the small values
-    X[:hN].imag[np.abs(X[:hN].imag) < tol] = 0.0  # for phase calculation set to 0 the small values
+    X[:hN].real[
+        np.abs(X[:hN].real) < tol
+    ] = 0.0  # for phase calculation set to 0 the small values
+    X[:hN].imag[
+        np.abs(X[:hN].imag) < tol
+    ] = 0.0  # for phase calculation set to 0 the small values
     pX = np.unwrap(np.angle(X[:hN]))  # unwrapped phase spectrum of positive frequencies
     return mX, pX
 
 
 def dftSynth(mX, pX, M):
     """
-	Synthesis of a signal using the discrete Fourier transform
-	mX: magnitude spectrum, pX: phase spectrum, M: window size
-	returns y: output signal
-	"""
+    Synthesis of a signal using the discrete Fourier transform
+    mX: magnitude spectrum, pX: phase spectrum, M: window size
+    returns y: output signal
+    """
 
     hN = mX.size  # size of positive spectrum, it includes sample 0
     N = (hN - 1) * 2  # FFT size
@@ -96,7 +106,9 @@ def dftSynth(mX, pX, M):
     y = np.zeros(M)  # initialize output array
     Y = np.zeros(N, dtype=complex)  # clean output spectrum
     Y[:hN] = 10 ** (mX / 20) * np.exp(1j * pX)  # generate positive frequencies
-    Y[hN:] = 10 ** (mX[-2:0:-1] / 20) * np.exp(-1j * pX[-2:0:-1])  # generate negative frequencies
+    Y[hN:] = 10 ** (mX[-2:0:-1] / 20) * np.exp(
+        -1j * pX[-2:0:-1]
+    )  # generate negative frequencies
     fftbuffer = np.real(ifft(Y))  # compute inverse FFT
     y[:hM2] = fftbuffer[-hM2:]  # undo zero-phase window
     y[hM2:] = fftbuffer[:hM1]
