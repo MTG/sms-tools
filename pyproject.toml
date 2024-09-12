@@ -1,14 +1,33 @@
 [project]
 name = "SMSTools"
-version = "0.99"
+authors = [
+  { name="Music Technology Group, Universitat Pompeu Fabra", email="mtg-info@upf.edu" },
+]
+version = "0.99.1"
+description = "Sound analysis/synthesis tools for music applications"
+readme = "README.md"
+requires-python = ">=3.9"
 dependencies = [
     "matplotlib",
     "numpy",
     "scipy"
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)"
+]
 
-[tool.setuptools.packages]
-find = {}  # Scan the project directory with the default parameters
+[project.urls]
+Homepage = "https://github.com/mtg/sms-tools"
+Issues = "https://github.com/mtg/sms-tools/issues"
+
+[tool.setuptools.packages.find]
+include = ["smstools.models", "smstools.transformations"]
+exclude = ["smstools.models.interface", "smstools.transformations.interface"]
+
 
 [build-system]
 requires = ["setuptools", "wheel", "oldest-supported-numpy", "Cython"]
