@@ -1,1 +1,0 @@
-Directory with the interfaces to call the transformation functions. The main graphical interface is transformations_GUI.py, from which all the other functions are called.
