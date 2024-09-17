@@ -5,19 +5,19 @@ import numpy
 
 sourcefiles = [
     "smstools/models/utilFunctions_C/utilFunctions.c",
-    "smstools/models/utilFunctions_C/cutilFunctions.pyx"
+    "smstools/models/utilFunctions_C/cutilFunctions.pyx",
 ]
-if sys.platform == 'win32':
-    library = 'msvcrt'
+if sys.platform == "win32":
+    library = "msvcrt"
 else:
-    library = 'm'
+    library = "m"
 
 extensions = [
     Extension(
         "smstools.models.utilFunctions_C.utilFunctions_C",
         sourcefiles,
         include_dirs=[numpy.get_include()],
-        libraries=[library]
+        libraries=[library],
     ),
 ]
 setup(
