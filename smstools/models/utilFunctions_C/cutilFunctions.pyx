@@ -1,9 +1,10 @@
 #this is a cython wrapper on C functions to call them in python
 
 import numpy as np
+
 cimport numpy as np
-from libc.stdlib cimport *
 from cutilFunctions cimport *
+from libc.stdlib cimport *
 
 np.import_array()
 

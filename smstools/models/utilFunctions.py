@@ -4,8 +4,8 @@ import subprocess
 import sys
 
 import numpy as np
-from scipy.fft import fft, ifft, fftshift
-from scipy.io.wavfile import write, read
+from scipy.fft import fft, fftshift, ifft
+from scipy.io.wavfile import read, write
 from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang
 

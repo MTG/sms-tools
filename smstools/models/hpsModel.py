@@ -1,14 +1,16 @@
 # functions that implement analysis and synthesis of sounds using the Harmonic plus Stochastic Model
 # (for example usage check the examples interface)
 
-import numpy as np
-from scipy.signal import resample
-from scipy.signal.windows import blackmanharris, triang, hann
-from scipy.fft import fft, ifft
 import math
+
+import numpy as np
+from scipy.fft import fft, ifft
+from scipy.signal import resample
+from scipy.signal.windows import blackmanharris, hann, triang
+
+from smstools.models import dftModel as DFT
 from smstools.models import harmonicModel as HM
 from smstools.models import sineModel as SM
-from smstools.models import dftModel as DFT
 from smstools.models import stochasticModel as STM
 from smstools.models import utilFunctions as UF
 

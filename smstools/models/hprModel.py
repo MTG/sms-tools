@@ -1,14 +1,16 @@
 # functions that implement analysis and synthesis of sounds using the Harmonic plus Residual Model
 # (for example usage check the interface directory)
 
-import numpy as np
 import math
-from scipy.signal.windows import blackmanharris, triang
+
+import numpy as np
 from scipy.fft import fft, ifft
-from smstools.models import harmonicModel as HM
+from scipy.signal.windows import blackmanharris, triang
+
 from smstools.models import dftModel as DFT
-from smstools.models import utilFunctions as UF
+from smstools.models import harmonicModel as HM
 from smstools.models import sineModel as SM
+from smstools.models import utilFunctions as UF
 
 
 def hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope):

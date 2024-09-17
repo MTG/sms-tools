@@ -2,6 +2,7 @@
 # (for example usage check stft_function.py in the interface directory)
 
 import numpy as np
+
 from smstools.models import dftModel as DFT
 
 

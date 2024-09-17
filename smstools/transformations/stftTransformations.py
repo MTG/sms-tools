@@ -1,8 +1,12 @@
 # functions that implement transformations using the stft
 
+import math
+import os
+import sys
+
 import numpy as np
-import sys, os, math
 from scipy.signal import resample
+
 from smstools.models import dftModel as DFT
 
 

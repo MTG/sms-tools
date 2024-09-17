@@ -1,10 +1,12 @@
 # functions that implement analysis and synthesis of sounds using the Sinusoidal Model
 # (for example usage check the examples in interface)
 
-import numpy as np
-from scipy.signal.windows import blackmanharris, triang
-from scipy.fft import ifft, fftshift
 import math
+
+import numpy as np
+from scipy.fft import fftshift, ifft
+from scipy.signal.windows import blackmanharris, triang
+
 from smstools.models import dftModel as DFT
 from smstools.models import utilFunctions as UF
 

@@ -1,13 +1,15 @@
 # functions that implement analysis and synthesis of sounds using the Harmonic Model
 # (for example usage check the interface directory)
 
-import numpy as np
-from scipy.signal.windows import blackmanharris, triang
-from scipy.fft import ifft
 import math
+
+import numpy as np
+from scipy.fft import ifft
+from scipy.signal.windows import blackmanharris, triang
+
 from smstools.models import dftModel as DFT
-from smstools.models import utilFunctions as UF
 from smstools.models import sineModel as SM
+from smstools.models import utilFunctions as UF
 
 
 def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):

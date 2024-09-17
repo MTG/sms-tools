@@ -1,7 +1,8 @@
-from setuptools import Extension, setup
-from Cython.Build import cythonize
 import sys
+
 import numpy
+from Cython.Build import cythonize
+from setuptools import Extension, setup
 
 sourcefiles = [
     "smstools/models/utilFunctions_C/utilFunctions.c",

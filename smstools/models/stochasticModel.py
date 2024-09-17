@@ -2,10 +2,11 @@
 # (for example usage check stochasticModel_function.py in the interface directory)
 
 import numpy as np
+from scipy.fft import fft, ifft
+from scipy.interpolate import splev, splrep
 from scipy.signal import resample
 from scipy.signal.windows import hann
-from scipy.interpolate import splrep, splev
-from scipy.fft import fft, ifft
+
 from smstools.models import utilFunctions as UF
 
 
