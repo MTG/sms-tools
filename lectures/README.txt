@@ -1,1 +1,0 @@
-This directory includes the slides for the lectures with which I teach all this material. Within the lectures there is quite a bit of code used to make the plots for the slides.

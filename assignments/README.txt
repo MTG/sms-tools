@@ -1,1 +1,0 @@
-This directory includes the assignments used in the Coursera course https://www.coursera.org/learn/audio-signal-processing/
