@@ -3,7 +3,7 @@ name = "sms-tools"
 authors = [
   { name="Music Technology Group, Universitat Pompeu Fabra", email="mtg-info@upf.edu" },
 ]
-version = "0.99.2"
+version = "1.0"
 description = "Sound analysis/synthesis tools for music applications"
 readme = "README.md"
 requires-python = ">=3.9"
