@@ -14,7 +14,7 @@ else:
 
 extensions = [
     Extension(
-        "utilFunctions_C",
+        "smstools.models.utilFunctions_C.utilFunctions_C",
         sourcefiles,
         include_dirs=[numpy.get_include()],
         libraries=[library]

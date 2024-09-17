@@ -1,5 +1,5 @@
 [project]
-name = "SMSTools"
+name = "sms-tools"
 authors = [
   { name="Music Technology Group, Universitat Pompeu Fabra", email="mtg-info@upf.edu" },
 ]
@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "matplotlib",
-    "numpy",
+    "numpy<2.0.0",
     "scipy"
 ]
 classifiers = [
@@ -24,9 +24,8 @@ classifiers = [
 Homepage = "https://github.com/mtg/sms-tools"
 Issues = "https://github.com/mtg/sms-tools/issues"
 
-[tool.setuptools.packages.find]
-include = ["smstools.models", "smstools.transformations"]
-exclude = ["smstools.models.interface", "smstools.transformations.interface"]
+[tool.setuptools.packages]
+find = {}
 
 
 [build-system]

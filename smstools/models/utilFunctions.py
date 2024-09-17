@@ -10,7 +10,7 @@ from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, triang
 
 try:
-    from smstools.models import utilFunctions_C as UF_C
+    from smstools.models.utilFunctions_C import utilFunctions_C as UF_C
 except ImportError:
     print("\n")
     print("-------------------------------------------------------------------------------")
