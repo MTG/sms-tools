@@ -33,5 +33,5 @@ requires = ["setuptools", "wheel", "oldest-supported-numpy", "Cython"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-# Skip unneeded wheels: PyPy, python 3.6-3.8, musl, linux 32 bit, PPC, s390
-skip = ["pp*", "cp36*", "cp37*", "cp38", "*i686*", "*musllinux*", "*ppc64le*", "*s390x*"]
+# Skip unneeded wheels: PyPy, python 3.6-3.8, musl, linux 32 bit, PPC, s390, windows 32bit
+skip = ["pp*", "cp36*", "cp37*", "cp38", "*i686*", "*musllinux*", "*ppc64le*", "*s390x*", "*win32"]
