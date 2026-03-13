@@ -58,6 +58,15 @@ Run only smoke tests:
 
     python -m pytest -k smoke
 
+Test case summary:
+
+* `tests/test_api_contracts.py`: API/signature and output-shape contract checks for core model entry points.
+* `tests/test_errors.py`: error-handling contracts (invalid parameters and invalid I/O paths).
+* `tests/test_models_smoke.py`: fast smoke coverage for all analysis/synthesis model modules.
+* `tests/test_transformations_smoke.py`: fast smoke coverage for all transformation modules.
+* `tests/test_models_ground_truth.py`: algorithmic/ground-truth model tests on synthetic signals (frequency accuracy, additivity, and quality invariants).
+* `tests/test_transformations_ground_truth.py`: algorithmic/ground-truth transformation tests (scaling/morphing identity behavior and expected interpolation/attenuation trends).
+
 
 Jupyter Notebooks
 -------
