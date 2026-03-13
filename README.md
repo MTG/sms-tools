@@ -49,6 +49,15 @@ To run a single test function by name:
 
     python -m pytest tests/test_errors.py -k wavread
 
+Main smoke test files:
+
+    tests/test_models_smoke.py
+    tests/test_transformations_smoke.py
+
+Run only smoke tests:
+
+    python -m pytest -k smoke
+
 
 Jupyter Notebooks
 -------

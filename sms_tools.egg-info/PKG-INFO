@@ -55,6 +55,34 @@ To build and install the package locally you can use the python packaging tools:
     python -m build
 
 
+Running tests
+-------------
+
+To run the unit test suite locally:
+
+    python3 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -e ".[test]"
+    python -m pytest
+
+To run a single test file:
+
+    python -m pytest tests/test_errors.py
+
+To run a single test function by name:
+
+    python -m pytest tests/test_errors.py -k wavread
+
+Main smoke test files:
+
+    tests/test_models_smoke.py
+    tests/test_transformations_smoke.py
+
+Run only smoke tests:
+
+    python -m pytest -k smoke
+
+
 Jupyter Notebooks
 -------
 We provide a separate repository of examples and teaching materials in the form of Jupyter notebooks.
