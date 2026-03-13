@@ -1,3 +1,27 @@
+Metadata-Version: 2.4
+Name: sms-tools
+Version: 1.0.1
+Summary: Sound analysis/synthesis tools for music applications
+Author-email: "Music Technology Group, Universitat Pompeu Fabra" <mtg-info@upf.edu>
+Project-URL: Homepage, https://github.com/mtg/sms-tools
+Project-URL: Issues, https://github.com/mtg/sms-tools/issues
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Multimedia :: Sound/Audio :: Analysis
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: AUTHORS
+Requires-Dist: matplotlib
+Requires-Dist: numpy<2.0.0
+Requires-Dist: scipy
+Provides-Extra: test
+Requires-Dist: pytest>=8.0; extra == "test"
+Requires-Dist: pytest-cov>=5.0; extra == "test"
+Dynamic: license-file
+
 sms-tools
 ========= 
 
@@ -29,25 +53,6 @@ To build and install the package locally you can use the python packaging tools:
 
     pip install build
     python -m build
-
-
-Running tests
--------------
-
-To run the unit test suite locally:
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install -e ".[test]"
-    python -m pytest
-
-To run a single test file:
-
-    python -m pytest tests/test_errors.py
-
-To run a single test function by name:
-
-    python -m pytest tests/test_errors.py -k wavread
 
 
 Jupyter Notebooks

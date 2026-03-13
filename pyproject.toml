@@ -24,6 +24,12 @@ classifiers = [
 Homepage = "https://github.com/mtg/sms-tools"
 Issues = "https://github.com/mtg/sms-tools/issues"
 
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0"
+]
+
 [tool.setuptools.packages]
 find = {}
 
@@ -35,3 +41,8 @@ build-backend = "setuptools.build_meta"
 [tool.cibuildwheel]
 # Skip unneeded wheels: PyPy, python 3.6-3.8, musl, linux 32 bit, PPC, s390, windows 32bit
 skip = ["pp*", "cp36*", "cp37*", "cp38", "*i686*", "*musllinux*", "*ppc64le*", "*s390x*", "*win32"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra"
