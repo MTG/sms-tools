@@ -2,6 +2,7 @@ import copy
 import os
 import subprocess
 import sys
+import warnings
 
 import numpy as np
 from scipy.fft import fft, fftshift, ifft
@@ -12,20 +13,12 @@ from scipy.signal.windows import blackmanharris, triang
 try:
     from smstools.models.utilFunctions_C import utilFunctions_C as UF_C
 except ImportError:
-    print("\n")
-    print(
-        "-------------------------------------------------------------------------------"
+    UF_C = None
+    warnings.warn(
+        "Cython core functions were not imported. Falling back to pure-Python "
+        "implementations; this may be slower. See README.md for build instructions.",
+        RuntimeWarning,
     )
-    print("Warning:")
-    print("Cython modules for some of the core functions were not imported.")
-    print("Please refer to the README.md file in the 'sms-tools' directory,")
-    print("for the instructions to compile the cython modules.")
-    print("Exiting the code!!")
-    print(
-        "-------------------------------------------------------------------------------"
-    )
-    print("\n")
-    sys.exit(0)
 
 winsound_imported = False
 if sys.platform == "win32":
@@ -61,6 +54,8 @@ def wavread(filename):
     Read a sound file and convert it to a normalized floating point array
     filename: name of file to read
     returns fs: sampling rate of file, x: floating point array
+
+    Note: this function accepts any sampling rate and returns it as fs.
     """
 
     if os.path.isfile(filename) == False:  # raise error if wrong input file
@@ -70,9 +65,6 @@ def wavread(filename):
 
     if len(x.shape) != 1:  # raise error if more than one channel
         raise ValueError("Audio file should be mono")
-
-    if fs != 44100:  # raise error if more than one channel
-        raise ValueError("Sampling rate of input sound should be 44100")
 
     # scale down and convert audio into floating point number in range of -1 to 1
     x = np.float32(x) / norm_fact[x.dtype.name]
@@ -195,7 +187,10 @@ def genSpecSines(ipfreq, ipmag, ipphase, N, fs):
     returns Y: generated complex spectrum of sines
     """
 
-    Y = UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N)
+    if UF_C is not None:
+        Y = UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N)
+    else:
+        Y = genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
     return Y
 
 
@@ -225,16 +220,16 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
             if b[m] < 0:  # peak lobe crosses DC bin
                 Y[-b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
             elif b[m] > hN:  # peak lobe croses Nyquist bin
-                Y[b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
+                Y[2 * hN - b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
             elif b[m] == 0 or b[m] == hN:  # peak lobe in the limits of the spectrum
                 Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i]) + lmag[m] * np.exp(
                     -1j * ipphase[i]
                 )
             else:  # peak lobe in positive freq. range
                 Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i])
-        Y[hN + 1 :] = Y[
-            hN - 1 : 0 : -1
-        ].conjugate()  # fill the negative part of the spectrum
+    Y[hN + 1 :] = Y[
+        hN - 1 : 0 : -1
+    ].conjugate()  # fill the negative part of the spectrum
     return Y
 
 
@@ -251,19 +246,19 @@ def sinewaveSynth(freqs, amp, H, fs):
     lastfreq = freqs[0]  # initialize synthesis frequency
     y = np.array([])  # initialize output array
     for l in range(freqs.size):  # iterate over all frames
-        if (lastfreq == 0) & (freqs[l] == 0):  # if 0 freq add zeros
+        if (lastfreq == 0) and (freqs[l] == 0):  # if 0 freq add zeros
             A = np.zeros(H)
             freq = np.zeros(H)
-        elif (lastfreq == 0) & (freqs[l] > 0):  # if starting freq ramp up the amplitude
+        elif (lastfreq == 0) and (freqs[l] > 0):  # if starting freq ramp up the amplitude
             A = np.arange(0, amp, amp / H)
             freq = np.ones(H) * freqs[l]
-        elif (lastfreq > 0) & (freqs[l] > 0):  # if freqs in boundaries use both
+        elif (lastfreq > 0) and (freqs[l] > 0):  # if freqs in boundaries use both
             A = np.ones(H) * amp
             if lastfreq == freqs[l]:
                 freq = np.ones(H) * lastfreq
             else:
                 freq = np.arange(lastfreq, freqs[l], (freqs[l] - lastfreq) / H)
-        elif (lastfreq > 0) & (freqs[l] == 0):  # if ending freq ramp down the amplitude
+        elif (lastfreq > 0) and (freqs[l] == 0):  # if ending freq ramp down the amplitude
             A = np.arange(amp, 0, -amp / H)
             freq = np.ones(H) * lastfreq
         phase = 2 * np.pi * freq * t + lastphase  # generate phase values
@@ -303,22 +298,30 @@ def cleaningTrack(track, minTrackLength=3):
     return cleanTrack
 
 
-def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
+def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0, fs=None):
     """
     Function that wraps the f0 detection function TWM, selecting the possible f0 candidates
     and calling the function TWM with them
     pfreq, pmag: peak frequencies and magnitudes,
     ef0max: maximum error allowed, minf0, maxf0: minimum  and maximum f0
     f0t: f0 of previous frame if stable
+    fs: optional sampling rate in Hz. If provided, maxf0 must be below fs/2.
     returns f0: fundamental frequency in Hz
     """
     if minf0 < 0:  # raise exception if minf0 is smaller than 0
         raise ValueError("Minimum fundamental frequency (minf0) smaller than 0")
 
-    if maxf0 >= 10000:  # raise exception if maxf0 is bigger than 10000Hz
-        raise ValueError("Maximum fundamental frequency (maxf0) bigger than 10000Hz")
+    if maxf0 <= minf0:
+        raise ValueError(
+            "Maximum fundamental frequency (maxf0) must be bigger than minf0"
+        )
 
-    if (pfreq.size < 3) & (
+    if (fs is not None) and (maxf0 >= fs / 2.0):
+        raise ValueError(
+            "Maximum fundamental frequency (maxf0) bigger than Nyquist frequency"
+        )
+
+    if (pfreq.size < 3) and (
         f0t == 0
     ):  # return 0 if less than 3 peaks and not previous f0
         return 0
@@ -348,10 +351,14 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0):
     if f0cf.size == 0:  # return 0 if no peak candidates
         return 0
 
-    f0, f0error = UF_C.twm(
-        pfreq, pmag, f0cf
-    )  # call the TWM function with peak candidates, cython version
-    # 	f0, f0error = TWM_p(pfreq, pmag, f0cf)        # call the TWM function with peak candidates, python version
+    if UF_C is not None:
+        f0, f0error = UF_C.twm(
+            pfreq, pmag, f0cf
+        )  # call the TWM function with peak candidates, cython version
+    else:
+        f0, f0error = TWM_p(
+            pfreq, pmag, f0cf
+        )  # call the TWM function with peak candidates, python version
 
     if (f0 > 0) and (
         f0error < ef0max
@@ -376,18 +383,17 @@ def TWM_p(pfreq, pmag, f0c):
     rho = 0.33  # weighting of MP error
     Amax = max(pmag)  # maximum peak magnitude
     maxnpeaks = 10  # maximum number of peaks used
-    harmonic = np.matrix(f0c)
+    harmonic = np.asarray(f0c, dtype=float)
     ErrorPM = np.zeros(harmonic.size)  # initialize PM errors
     MaxNPM = min(maxnpeaks, pfreq.size)
     for i in range(0, MaxNPM):  # predicted to measured mismatch error
-        difmatrixPM = harmonic.T * np.ones(pfreq.size)
-        difmatrixPM = abs(difmatrixPM - np.ones((harmonic.size, 1)) * pfreq)
+        difmatrixPM = abs(harmonic[:, None] - pfreq[None, :])
         FreqDistance = np.amin(difmatrixPM, axis=1)  # minimum along rows
         peakloc = np.argmin(difmatrixPM, axis=1)
-        Ponddif = np.array(FreqDistance) * (np.array(harmonic.T) ** (-p))
+        Ponddif = FreqDistance * (harmonic ** (-p))
         PeakMag = pmag[peakloc]
         MagFactor = 10 ** ((PeakMag - Amax) / 20)
-        ErrorPM = ErrorPM + (Ponddif + MagFactor * (q * Ponddif - r)).T
+        ErrorPM = ErrorPM + (Ponddif + MagFactor * (q * Ponddif - r))
         harmonic = harmonic + f0c
 
     ErrorMP = np.zeros(harmonic.size)  # initialize MP errors
@@ -401,7 +407,7 @@ def TWM_p(pfreq, pmag, f0c):
         MagFactor = 10 ** ((PeakMag - Amax) / 20)
         ErrorMP[i] = sum(MagFactor * (Ponddif + MagFactor * (q * Ponddif - r)))
 
-    Error = (ErrorPM[0] / MaxNPM) + (rho * ErrorMP / MaxNMP)  # total error
+    Error = (ErrorPM / MaxNPM) + (rho * ErrorMP / MaxNMP)  # total error
     f0index = np.argmin(Error)  # get the smallest error
     f0 = f0c[f0index]  # f0 with the smallest error
 
@@ -476,7 +482,7 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
         Xr = X - Yh  # subtract sines from original spectrum
         mXr = 20 * np.log10(abs(Xr[:hN]))  # magnitude spectrum of residual
         mXrenv = resample(
-            np.maximum(-200, mXr), mXr.size * stocf
+            np.maximum(-200, mXr), int(mXr.size * stocf)
         )  # decimate the mag spectrum
         if l == 0:  # if first frame
             stocEnv = np.array([mXrenv])

@@ -59,6 +59,9 @@ def dftAnal(x, w, N):
     Analysis of a signal using the discrete Fourier transform
     x: input signal, w: analysis window, N: FFT size
     returns mX, pX: magnitude and phase spectrum
+
+    The analysis window is internally normalized by sum(w), so the resulting
+    spectra correspond to x * (w / sum(w)).
     """
 
     if not (UF.isPower2(N)):  # raise error if N not a power of two
@@ -96,6 +99,9 @@ def dftSynth(mX, pX, M):
     Synthesis of a signal using the discrete Fourier transform
     mX: magnitude spectrum, pX: phase spectrum, M: window size
     returns y: output signal
+
+    If mX/pX come from dftAnal(), the output corresponds to the normalized
+    windowed signal used there (x * (w / sum(w))).
     """
 
     hN = mX.size  # size of positive spectrum, it includes sample 0

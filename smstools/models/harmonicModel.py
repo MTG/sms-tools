@@ -24,8 +24,10 @@ def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):
     if minf0 < 0:  # raise exception if minf0 is smaller than 0
         raise ValueError("Minumum fundamental frequency (minf0) smaller than 0")
 
-    if maxf0 >= 10000:  # raise exception if maxf0 is bigger than fs/2
-        raise ValueError("Maximum fundamental frequency (maxf0) bigger than 10000Hz")
+    if maxf0 >= fs / 2.0:  # raise exception if maxf0 is bigger than Nyquist
+        raise ValueError(
+            "Maximum fundamental frequency (maxf0) bigger than Nyquist frequency"
+        )
 
     if H <= 0:  # raise error if hop size 0 or negative
         raise ValueError("Hop size (H) smaller or equal to 0")
@@ -44,19 +46,31 @@ def f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et):
     f0 = []  # initialize f0 output
     f0t = 0  # initialize f0 track
     f0stable = 0  # initialize f0 stable
+    f0candidate = 0  # initialize one-frame candidate for stability confirmation
     while pin < pend:
         x1 = x[pin - hM1 : pin + hM2]  # select frame
         mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
         ploc = UF.peakDetection(mX, t)  # detect peak locations
         iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
         ipfreq = fs * iploc / N  # convert locations to Hez
-        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
-        if ((f0stable == 0) & (f0t > 0)) or (
-            (f0stable > 0) & (np.abs(f0stable - f0t) < f0stable / 5.0)
-        ):
-            f0stable = f0t  # consider a stable f0 if it is close to the previous one
-        else:
+        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
+        if f0t <= 0:
             f0stable = 0
+            f0candidate = 0
+        elif f0stable > 0:
+            if np.abs(f0stable - f0t) < f0stable / 5.0:
+                f0stable = f0t
+            else:
+                f0stable = 0
+                f0candidate = f0t
+        else:
+            if (f0candidate > 0) and (
+                np.abs(f0candidate - f0t) < max(f0candidate, f0t) / 5.0
+            ):
+                f0stable = f0t
+                f0candidate = 0
+            else:
+                f0candidate = f0t
         f0 = np.append(f0, f0t)  # add f0 to output array
         pin += H  # advance sound pointer
     return f0
@@ -146,7 +160,7 @@ def harmonicModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
         ploc = UF.peakDetection(mX, t)  # detect peak locations
         iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
         ipfreq = fs * iploc / N
-        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
         if ((f0stable == 0) & (f0t > 0)) or (
             (f0stable > 0) & (np.abs(f0stable - f0t) < f0stable / 5.0)
         ):
@@ -208,7 +222,7 @@ def harmonicModelAnal(
         ploc = UF.peakDetection(mX, t)  # detect peak locations
         iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
         ipfreq = fs * iploc / N  # convert locations to Hz
-        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable)  # find f0
+        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
         if ((f0stable == 0) & (f0t > 0)) or (
             (f0stable > 0) & (np.abs(f0stable - f0t) < f0stable / 5.0)
         ):

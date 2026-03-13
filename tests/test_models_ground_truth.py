@@ -217,3 +217,65 @@ def test_hps_component_additivity():
     assert yh.shape == x.shape
     assert yst.shape == x.shape
     assert np.allclose(y, yh + yst, atol=1e-10)
+
+
+def test_gen_spec_sines_python_is_conjugate_symmetric_near_nyquist():
+    N = 1024
+    fs = FS
+    hN = N // 2
+    ipfreq = np.array([fs * (hN - 1.2) / N])
+    ipmag = np.array([-3.0])
+    ipphase = np.array([0.75])
+
+    Y = utilFunctions.genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
+
+    assert Y.shape == (N,)
+    assert np.isfinite(Y.real).all()
+    assert np.isfinite(Y.imag).all()
+    np.testing.assert_allclose(Y[hN + 1 :], np.conj(Y[hN - 1 : 0 : -1]), atol=1e-10)
+
+
+def test_f0_detection_requires_two_consistent_frames_to_set_stability(monkeypatch):
+    x = np.zeros(2048)
+    w = np.hanning(513)
+    N = 1024
+    H = 256
+
+    f0_sequence = [110.0, 220.0, 220.0, 220.0]
+    received_stable = []
+
+    def fake_dft_anal(x1, w_in, N_in):
+        hN = N_in // 2 + 1
+        return np.zeros(hN), np.zeros(hN)
+
+    def fake_peak_detection(mX, t):
+        return np.array([10, 20, 30])
+
+    def fake_peak_interp(mX, pX, ploc):
+        return ploc.astype(float), np.array([0.0, -3.0, -6.0]), np.zeros(ploc.size)
+
+    def fake_f0_twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=None):
+        received_stable.append(f0stable)
+        idx = len(received_stable) - 1
+        if idx < len(f0_sequence):
+            return f0_sequence[idx]
+        return 220.0
+
+    monkeypatch.setattr(harmonicModel.DFT, "dftAnal", fake_dft_anal)
+    monkeypatch.setattr(harmonicModel.UF, "peakDetection", fake_peak_detection)
+    monkeypatch.setattr(harmonicModel.UF, "peakInterp", fake_peak_interp)
+    monkeypatch.setattr(harmonicModel.UF, "f0Twm", fake_f0_twm)
+
+    _ = harmonicModel.f0Detection(
+        x=x,
+        fs=FS,
+        w=w,
+        N=N,
+        H=H,
+        t=-80,
+        minf0=50,
+        maxf0=500,
+        f0et=5,
+    )
+
+    assert received_stable[:4] == [0, 0, 0, 220.0]
