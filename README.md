@@ -58,6 +58,23 @@ Run only smoke tests:
 
     python -m pytest -k smoke
 
+
+Cython backend
+--------------
+
+sms-tools includes a compiled Cython extension for selected core routines.
+When available, it is used automatically for better performance.
+If it cannot be imported, sms-tools falls back to pure-Python implementations
+with the same public behavior (typically slower).
+
+You can verify which backend is active at runtime:
+
+    python - <<'PY'
+    from smstools.models import utilFunctions as UF
+    print("Using Cython backend:", UF.UF_C is not None)
+    print("Backend module:", getattr(UF.UF_C, "__file__", None))
+    PY
+
 Test case summary:
 
 * `tests/test_api_contracts.py`: API/signature and output-shape contract checks for core model entry points.

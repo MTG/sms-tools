@@ -437,10 +437,12 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
     for l in range(L):
         xw = x[pin : pin + N] * w  # window the input sound
         X = fft(fftshift(xw))  # compute FFT
-        Yh = UF_C.genSpecSines(
-            N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N
-        )  # generate spec sines, cython version
-        # 		Yh = genSpecSines_p(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N, fs)   # generate spec sines, python version
+        if UF_C is not None:
+            Yh = UF_C.genSpecSines(
+                N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N
+            )  # generate spec sines, cython version
+        else:
+            Yh = genSpecSines_p(sfreq[l, :], smag[l, :], sphase[l, :], N, fs)  # python fallback
         Xr = X - Yh  # subtract sines from original spectrum
         xrw = np.real(fftshift(ifft(Xr)))  # inverse FFT
         xr[pin : pin + N] += xrw * sw  # overlap-add
@@ -475,10 +477,12 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
     for l in range(L):
         xw = x[pin : pin + N] * w  # window the input sound
         X = fft(fftshift(xw))  # compute FFT
-        Yh = UF_C.genSpecSines(
-            N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N
-        )  # generate spec sines, cython version
-        # 		Yh = genSpecSines_p(N*sfreq[l,:]/fs, smag[l,:], sphase[l,:], N, fs)   # generate spec sines, python version
+        if UF_C is not None:
+            Yh = UF_C.genSpecSines(
+                N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N
+            )  # generate spec sines, cython version
+        else:
+            Yh = genSpecSines_p(sfreq[l, :], smag[l, :], sphase[l, :], N, fs)  # python fallback
         Xr = X - Yh  # subtract sines from original spectrum
         mXr = 20 * np.log10(abs(Xr[:hN]))  # magnitude spectrum of residual
         mXrenv = resample(
