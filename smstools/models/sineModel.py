@@ -1,5 +1,16 @@
-# functions that implement analysis and synthesis of sounds using the Sinusoidal Model
-# (for example usage check the examples in interface)
+"""Sinusoidal model for sound analysis and synthesis.
+
+Provides frame-by-frame and streaming analysis/synthesis using a sinusoidal model
+with peak-based spectral representation. Includes sinusoid tracking across frames
+and track-cleaning utilities for robust long-term sinusoidal modeling.
+
+Key functions:
+  - sineModel: One-pass analysis/synthesis without tracking
+  - sineModelAnal: Multi-frame analysis with automatic track continuity
+  - sineModelSynth: Reconstruct audio from sinusoidal tracks
+  - sineTracking: Assign current peaks to previous tracks
+  - cleaningSineTracks: Remove short track fragments
+"""
 
 import math
 
@@ -13,84 +24,95 @@ from smstools.models import utilFunctions as UF
 
 def sineTracking(pfreq, pmag, pphase, tfreq, freqDevOffset=20, freqDevSlope=0.01):
     """
-    Tracking sinusoids from one frame to the next
-    pfreq, pmag, pphase: frequencies and magnitude of current frame
-    tfreq: frequencies of incoming tracks from previous frame
-    freqDevOffset: maximum frequency deviation at 0Hz
-    freqDevSlope: slope increase of maximum frequency deviation
-    returns tfreqn, tmagn, tphasen: frequency, magnitude and phase of tracks
+    Assign spectral peaks to existing sinusoidal tracks from previous frame.
+    
+    Uses frequency proximity and magnitude ordering to maintain track continuity
+    across analysis frames.
+    
+    Args:
+        pfreq: Peak frequencies in current frame
+        pmag: Peak magnitudes in current frame
+        pphase: Peak phases in current frame
+        tfreq: Track frequencies from previous frame
+        freqDevOffset: Frequency deviation tolerance at 0 Hz (Hz)
+        freqDevSlope: Frequency deviation slope (frequency-dependent tolerance)
+    
+    Returns:
+        tfreqn, tmagn, tphasen: Updated track frequencies, magnitudes, phases
     """
 
-    tfreqn = np.zeros(tfreq.size)  # initialize array for output frequencies
-    tmagn = np.zeros(tfreq.size)  # initialize array for output magnitudes
-    tphasen = np.zeros(tfreq.size)  # initialize array for output phases
-    pindexes = np.array(np.nonzero(pfreq), dtype=int)[0]  # indexes of current peaks
-    incomingTracks = np.array(np.nonzero(tfreq), dtype=int)[
-        0
-    ]  # indexes of incoming tracks
-    newTracks = np.zeros(tfreq.size, dtype=int) - 1  # initialize to -1 new tracks
-    magOrder = np.argsort(-pmag[pindexes])  # order current peaks by magnitude
-    pfreqt = np.copy(pfreq)  # copy current peaks to temporary array
-    pmagt = np.copy(pmag)  # copy current peaks to temporary array
-    pphaset = np.copy(pphase)  # copy current peaks to temporary array
+    tfreqn = np.zeros(tfreq.size)
+    tmagn = np.zeros(tfreq.size)
+    tphasen = np.zeros(tfreq.size)
+    
+    pindexes = np.nonzero(pfreq)[0]
+    incomingTracks = np.nonzero(tfreq)[0]
+    newTracks = np.full(tfreq.size, -1, dtype=int)
+    magOrder = np.argsort(-pmag[pindexes])
+    
+    pfreqt = np.copy(pfreq)
+    pmagt = np.copy(pmag)
+    pphaset = np.copy(pphase)
+    used_peak_mask = np.zeros(pfreq.size, dtype=bool)
+    available_tracks = list(incomingTracks)
 
-    # continue incoming tracks
-    if incomingTracks.size > 0:  # if incoming tracks exist
-        for i in magOrder:  # iterate over current peaks
-            if incomingTracks.size == 0:  # break when no more incoming tracks
-                break
-            track = np.argmin(
-                abs(pfreqt[i] - tfreq[incomingTracks])
-            )  # closest incoming track to peak
-            freqDistance = abs(
-                pfreq[i] - tfreq[incomingTracks[track]]
-            )  # measure freq distance
-            if freqDistance < (
-                freqDevOffset + freqDevSlope * pfreq[i]
-            ):  # choose track if distance is small
-                newTracks[incomingTracks[track]] = i  # assign peak index to track index
-                incomingTracks = np.delete(
-                    incomingTracks, track
-                )  # delete index of track in incomming tracks
-    indext = np.array(np.nonzero(newTracks != -1), dtype=int)[
-        0
-    ]  # indexes of assigned tracks
-    if indext.size > 0:
-        indexp = newTracks[indext]  # indexes of assigned peaks
-        tfreqn[indext] = pfreqt[indexp]  # output freq tracks
-        tmagn[indext] = pmagt[indexp]  # output mag tracks
-        tphasen[indext] = pphaset[indexp]  # output phase tracks
-        pfreqt = np.delete(pfreqt, indexp)  # delete used peaks
-        pmagt = np.delete(pmagt, indexp)  # delete used peaks
-        pphaset = np.delete(pphaset, indexp)  # delete used peaks
-
-    # create new tracks from non used peaks
-    emptyt = np.array(np.nonzero(tfreq == 0), dtype=int)[
-        0
-    ]  # indexes of empty incoming tracks
-    peaksleft = np.argsort(-pmagt)  # sort left peaks by magnitude
-    if (peaksleft.size > 0) & (emptyt.size >= peaksleft.size):  # fill empty tracks
-        tfreqn[emptyt[: peaksleft.size]] = pfreqt[peaksleft]
-        tmagn[emptyt[: peaksleft.size]] = pmagt[peaksleft]
-        tphasen[emptyt[: peaksleft.size]] = pphaset[peaksleft]
-    elif (peaksleft.size > 0) & (
-        emptyt.size < peaksleft.size
-    ):  # add more tracks if necessary
-        tfreqn[emptyt] = pfreqt[peaksleft[: emptyt.size]]
-        tmagn[emptyt] = pmagt[peaksleft[: emptyt.size]]
-        tphasen[emptyt] = pphaset[peaksleft[: emptyt.size]]
-        tfreqn = np.append(tfreqn, pfreqt[peaksleft[emptyt.size :]])
-        tmagn = np.append(tmagn, pmagt[peaksleft[emptyt.size :]])
-        tphasen = np.append(tphasen, pphaset[peaksleft[emptyt.size :]])
+    # Assign peaks to incoming tracks (sorted by magnitude)
+    for i in magOrder:
+        if not available_tracks:
+            break
+        peak_idx = pindexes[i]
+        track_distances = np.abs(pfreqt[peak_idx] - tfreq[available_tracks])
+        closest_pos = np.argmin(track_distances)
+        track_idx = available_tracks[closest_pos]
+        freqDistance = abs(pfreq[peak_idx] - tfreq[track_idx])
+        if freqDistance < (freqDevOffset + freqDevSlope * pfreq[peak_idx]):
+            newTracks[track_idx] = peak_idx
+            used_peak_mask[peak_idx] = True
+            available_tracks.pop(closest_pos)
+    
+    # Transfer assigned tracks
+    assigned_idx = np.nonzero(newTracks != -1)[0]
+    tfreqn[assigned_idx] = pfreqt[newTracks[assigned_idx]]
+    tmagn[assigned_idx] = pmagt[newTracks[assigned_idx]]
+    tphasen[assigned_idx] = pphaset[newTracks[assigned_idx]]
+    
+    # Get unassigned peaks, sorted by magnitude
+    peaksleft_idx = np.nonzero((~used_peak_mask) & (pfreq > 0))[0]
+    if peaksleft_idx.size > 0:
+        peaksleft = peaksleft_idx[np.argsort(-pmagt[peaksleft_idx])]
+    else:
+        peaksleft = np.array([], dtype=int)
+    
+    # Fill empty tracks with remaining peaks
+    emptyt = np.nonzero(tfreq == 0)[0]
+    if peaksleft.size > 0 and emptyt.size >= peaksleft.size:
+        tfreqn[emptyt[:peaksleft.size]] = pfreqt[peaksleft]
+        tmagn[emptyt[:peaksleft.size]] = pmagt[peaksleft]
+        tphasen[emptyt[:peaksleft.size]] = pphaset[peaksleft]
+    elif peaksleft.size > 0 and emptyt.size < peaksleft.size:
+        tfreqn[emptyt] = pfreqt[peaksleft[:emptyt.size]]
+        tmagn[emptyt] = pmagt[peaksleft[:emptyt.size]]
+        tphasen[emptyt] = pphaset[peaksleft[:emptyt.size]]
+        tfreqn = np.append(tfreqn, pfreqt[peaksleft[emptyt.size:]])
+        tmagn = np.append(tmagn, pmagt[peaksleft[emptyt.size:]])
+        tphasen = np.append(tphasen, pphaset[peaksleft[emptyt.size:]])
+    
     return tfreqn, tmagn, tphasen
 
 
 def cleaningSineTracks(tfreq, minTrackLength=3):
     """
-    Delete short fragments of a collection of sinusoidal tracks
-    tfreq: frequency of tracks
-    minTrackLength: minimum duration of tracks in number of frames
-    returns tfreqn: output frequency of tracks
+    Remove sinusoidal track fragments below minimum duration threshold.
+    
+    Zeros out track segments (contiguous non-zero regions) shorter than the
+    specified minimum track length.
+    
+    Args:
+        tfreq: 2D array of track frequencies (frames x tracks)
+        minTrackLength: Minimum number of consecutive frames for track retention
+    
+    Returns:
+        tfreq: Modified track array with short fragments removed
     """
 
     if tfreq.shape[1] == 0:  # if no tracks return input
@@ -124,165 +146,196 @@ def cleaningSineTracks(tfreq, minTrackLength=3):
     return tfreq
 
 
+def _build_synthesis_window(N, H):
+    """
+    Construct normalized synthesis window for overlap-add processing.
+    
+    Combines triangular and Blackman-Harris windows for smooth spectral
+    reconstruction and minimal spectral artifacts.
+    
+    Args:
+        N: FFT size
+        H: Hop size
+    
+    Returns:
+        sw: Normalized synthesis window of length N
+    """
+    hN = N // 2
+    sw = np.zeros(N)
+    ow = triang(2 * H)
+    sw[hN - H : hN + H] = ow
+    bh = blackmanharris(N)
+    bh = bh / np.sum(bh)
+    sw[hN - H : hN + H] = sw[hN - H : hN + H] / bh[hN - H : hN + H]
+    return sw
+
+
 def sineModel(x, fs, w, N, t):
     """
-    Analysis/synthesis of a sound using the sinusoidal model, without sine tracking
-    x: input array sound, w: analysis window, N: size of complex spectrum, t: threshold in negative dB
-    returns y: output array sound
+    Single-pass sinusoidal analysis/synthesis without frame tracking.
+    
+    Analyzes overlapping frames to extract peaks, synthesizes spectral sines,
+    and reconstructs via overlap-add. Best for real-time or one-pass processing.
+    
+    Args:
+        x: Input audio signal
+        fs: Sampling rate (Hz)
+        w: Analysis window
+        N: FFT size
+        t: Peak detection threshold (negative dB)
+    
+    Returns:
+        y: Resynthesized audio signal
     """
 
-    hM1 = int(math.floor((w.size + 1) / 2))  # half analysis window size by rounding
-    hM2 = int(math.floor(w.size / 2))  # half analysis window size by floor
-    Ns = 512  # FFT size for synthesis (even)
-    H = Ns // 4  # Hop size used for analysis and synthesis
-    hNs = Ns // 2  # half of synthesis FFT size
-    pin = max(hNs, hM1)  # init sound pointer in middle of anal window
-    pend = x.size - max(hNs, hM1)  # last sample to start a frame
-    yw = np.zeros(Ns)  # initialize output sound frame
-    y = np.zeros(x.size)  # initialize output array
-    w = w / sum(w)  # normalize analysis window
-    sw = np.zeros(Ns)  # initialize synthesis window
-    ow = triang(2 * H)  # triangular window
-    sw[hNs - H : hNs + H] = ow  # add triangular window
-    bh = blackmanharris(Ns)  # blackmanharris window
-    bh = bh / sum(bh)  # normalized blackmanharris window
-    sw[hNs - H : hNs + H] = (
-        sw[hNs - H : hNs + H] / bh[hNs - H : hNs + H]
-    )  # normalized synthesis window
-    while pin < pend:  # while input sound pointer is within sound
-        # -----analysis-----
-        x1 = x[pin - hM1 : pin + hM2]  # select frame
-        mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        ploc = UF.peakDetection(mX, t)  # detect locations of peaks
-        iploc, ipmag, ipphase = UF.peakInterp(
-            mX, pX, ploc
-        )  # refine peak values by interpolation
-        ipfreq = fs * iploc / float(N)  # convert peak locations to Hertz
-        # -----synthesis-----
-        Y = UF.genSpecSines(
-            ipfreq, ipmag, ipphase, Ns, fs
-        )  # generate sines in the spectrum
-        fftbuffer = np.real(ifft(Y))  # compute inverse FFT
-        yw[: hNs - 1] = fftbuffer[hNs + 1 :]  # undo zero-phase window
+    hM1 = (w.size + 1) // 2
+    hM2 = w.size // 2
+    Ns = 512
+    H = Ns // 4
+    hNs = Ns // 2
+    pin = max(hNs, hM1)
+    pend = x.size - max(hNs, hM1)
+    yw = np.zeros(Ns)
+    y = np.zeros(x.size)
+    w = w / np.sum(w)
+    sw = _build_synthesis_window(Ns, H)
+    while pin < pend:
+        # Analysis: extract peaks from frame
+        x1 = x[pin - hM1 : pin + hM2]
+        mX, pX = DFT.dftAnal(x1, w, N)
+        ploc = UF.peakDetection(mX, t)
+        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
+        ipfreq = fs * iploc / float(N)
+        
+        # Synthesis: generate spectral sines and overlap-add
+        Y = UF.genSpecSines(ipfreq, ipmag, ipphase, Ns, fs)
+        fftbuffer = np.real(ifft(Y))
+        yw[: hNs - 1] = fftbuffer[hNs + 1 :]
         yw[hNs - 1 :] = fftbuffer[: hNs + 1]
-        y[pin - hNs : pin + hNs] += sw * yw  # overlap-add and apply a synthesis window
-        pin += H  # advance sound pointer
+        y[pin - hNs : pin + hNs] += sw * yw
+        pin += H
     return y
 
 
-def sineModelAnal(
-    x,
-    fs,
-    w,
-    N,
-    H,
-    t,
-    maxnSines=100,
-    minSineDur=0.01,
-    freqDevOffset=20,
-    freqDevSlope=0.01,
-):
+def sineModelAnal(x, fs, w, N, H, t, maxnSines=100, minSineDur=0.01, freqDevOffset=20, freqDevSlope=0.01):
     """
-    Analysis of a sound using the sinusoidal model with sine tracking
-    x: input array sound, w: analysis window, N: size of complex spectrum, H: hop-size, t: threshold in negative dB
-    maxnSines: maximum number of sines per frame, minSineDur: minimum duration of sines in seconds
-    freqDevOffset: minimum frequency deviation at 0Hz, freqDevSlope: slope increase of minimum frequency deviation
-    returns xtfreq, xtmag, xtphase: frequencies, magnitudes and phases of sinusoidal tracks
+    Multi-frame sinusoidal analysis with automatic track continuity.
+    
+    Extracts spectral peaks from successive frames and maintains sinusoidal
+    tracks across frames using proximity-based matching. Short track fragments
+    are removed based on minimum duration.
+    
+    Args:
+        x: Input audio signal
+        fs: Sampling rate (Hz)
+        w: Analysis window
+        N: FFT size
+        H: Hop size (samples)
+        t: Peak detection threshold (negative dB)
+        maxnSines: Maximum tracks per frame
+        minSineDur: Minimum track duration (seconds)
+        freqDevOffset: Frequency deviation tolerance at 0 Hz (Hz)
+        freqDevSlope: Frequency-dependent deviation slope
+    
+    Returns:
+        xtfreq, xtmag, xtphase: 2D arrays of track parameters (frames x tracks)
     """
 
-    if minSineDur < 0:  # raise error if minSineDur is smaller than 0
+    if minSineDur < 0:
         raise ValueError("Minimum duration of sine tracks smaller than 0")
 
-    hM1 = int(math.floor((w.size + 1) / 2))  # half analysis window size by rounding
-    hM2 = int(math.floor(w.size / 2))  # half analysis window size by floor
-    x = np.append(
-        np.zeros(hM2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hM2))  # add zeros at the end to analyze last sample
-    pin = hM1  # initialize sound pointer in middle of analysis window
-    pend = x.size - hM1  # last sample to start a frame
-    w = w / sum(w)  # normalize analysis window
+    hM1 = (w.size + 1) // 2
+    hM2 = w.size // 2
+    x = np.concatenate([np.zeros(hM2), x, np.zeros(hM2)])
+    pin = hM1
+    pend = x.size - hM1
+    w = w / np.sum(w)
     tfreq = np.array([])
-    while pin < pend:  # while input sound pointer is within sound
-        x1 = x[pin - hM1 : pin + hM2]  # select frame
-        mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        ploc = UF.peakDetection(mX, t)  # detect locations of peaks
-        iploc, ipmag, ipphase = UF.peakInterp(
-            mX, pX, ploc
-        )  # refine peak values by interpolation
-        ipfreq = fs * iploc / float(N)  # convert peak locations to Hertz
-        # perform sinusoidal tracking by adding peaks to trajectories
+    frames_list = []
+    
+    while pin < pend:
+        # Extract and interpolate spectral peaks
+        x1 = x[pin - hM1 : pin + hM2]
+        mX, pX = DFT.dftAnal(x1, w, N)
+        ploc = UF.peakDetection(mX, t)
+        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
+        ipfreq = fs * iploc / float(N)
+        
+        # Track sinusoid continuity across frames
         tfreq, tmag, tphase = sineTracking(
             ipfreq, ipmag, ipphase, tfreq, freqDevOffset, freqDevSlope
         )
-        tfreq = np.resize(
-            tfreq, min(maxnSines, tfreq.size)
-        )  # limit number of tracks to maxnSines
-        tmag = np.resize(
-            tmag, min(maxnSines, tmag.size)
-        )  # limit number of tracks to maxnSines
-        tphase = np.resize(
-            tphase, min(maxnSines, tphase.size)
-        )  # limit number of tracks to maxnSines
-        jtfreq = np.zeros(maxnSines)  # temporary output array
-        jtmag = np.zeros(maxnSines)  # temporary output array
-        jtphase = np.zeros(maxnSines)  # temporary output array
-        jtfreq[: tfreq.size] = tfreq  # save track frequencies to temporary array
-        jtmag[: tmag.size] = tmag  # save track magnitudes to temporary array
-        jtphase[: tphase.size] = tphase  # save track magnitudes to temporary array
-        if pin == hM1:  # if first frame initialize output sine tracks
-            xtfreq = jtfreq
-            xtmag = jtmag
-            xtphase = jtphase
-        else:  # rest of frames append values to sine tracks
-            xtfreq = np.vstack((xtfreq, jtfreq))
-            xtmag = np.vstack((xtmag, jtmag))
-            xtphase = np.vstack((xtphase, jtphase))
+        
+        # Limit to maximum number of sines and pad to fixed size
+        n_sines = min(maxnSines, tfreq.size)
+        jtfreq = np.zeros(maxnSines)
+        jtmag = np.zeros(maxnSines)
+        jtphase = np.zeros(maxnSines)
+        jtfreq[:n_sines] = tfreq[:n_sines]
+        jtmag[:n_sines] = tmag[:n_sines]
+        jtphase[:n_sines] = tphase[:n_sines]
+        
+        frames_list.append((jtfreq, jtmag, jtphase))
         pin += H
-    # delete sine tracks shorter than minSineDur
-    xtfreq = cleaningSineTracks(xtfreq, round(fs * minSineDur / H))
+    
+    # Stack frames into 2D arrays
+    if frames_list:
+        xtfreq = np.array([f[0] for f in frames_list])
+        xtmag = np.array([f[1] for f in frames_list])
+        xtphase = np.array([f[2] for f in frames_list])
+    else:
+        xtfreq = np.array([]).reshape(0, maxnSines)
+        xtmag = np.array([]).reshape(0, maxnSines)
+        xtphase = np.array([]).reshape(0, maxnSines)
+    # Remove tracks shorter than minimum duration
+    minTrackFrames = round(fs * minSineDur / H)
+    xtfreq = cleaningSineTracks(xtfreq, minTrackFrames)
     return xtfreq, xtmag, xtphase
 
 
 def sineModelSynth(tfreq, tmag, tphase, N, H, fs):
     """
-    Synthesis of a sound using the sinusoidal model
-    tfreq,tmag,tphase: frequencies, magnitudes and phases of sinusoids
-    N: synthesis FFT size, H: hop size, fs: sampling rate
-    returns y: output array sound
+    Reconstruct audio from sinusoidal track parameters.
+    
+    Generates spectral sine components for each track and synthesis frame,
+    then reconstructs via overlap-add with spectral phase propagation between
+    frames for coherent reconstruction.
+    
+    Args:
+        tfreq: 2D array of track frequencies (frames x tracks)
+        tmag: 2D array of track magnitudes (frames x tracks)
+        tphase: 2D array of track phases (frames x tracks)
+        N: Synthesis FFT size
+        H: Hop size (samples)
+        fs: Sampling rate (Hz)
+    
+    Returns:
+        y: Reconstructed audio signal
     """
 
-    hN = N // 2  # half of FFT size for synthesis
-    L = tfreq.shape[0]  # number of frames
-    pout = 0  # initialize output sound pointer
-    ysize = H * (L + 3)  # output sound size
-    y = np.zeros(ysize)  # initialize output array
-    sw = np.zeros(N)  # initialize synthesis window
-    ow = triang(2 * H)  # triangular window
-    sw[hN - H : hN + H] = ow  # add triangular window
-    bh = blackmanharris(N)  # blackmanharris window
-    bh = bh / sum(bh)  # normalized blackmanharris window
-    sw[hN - H : hN + H] = (
-        sw[hN - H : hN + H] / bh[hN - H : hN + H]
-    )  # normalized synthesis window
-    lastytfreq = tfreq[0, :]  # initialize synthesis frequencies
-    ytphase = (
-        2 * np.pi * np.random.rand(tfreq[0, :].size)
-    )  # initialize synthesis phases
-    for l in range(L):  # iterate over all frames
-        if tphase.size > 0:  # if no phases generate them
+    hN = N // 2
+    L = tfreq.shape[0]
+    pout = 0
+    ysize = H * (L + 3)
+    y = np.zeros(ysize)
+    sw = _build_synthesis_window(N, H)
+    lastytfreq = tfreq[0, :]
+    ytphase = 2 * np.pi * np.random.rand(tfreq[0, :].size)
+    for l in range(L):
+        # Use provided phases or propagate from previous frame
+        if tphase.size > 0:
             ytphase = tphase[l, :]
         else:
-            ytphase += (np.pi * (lastytfreq + tfreq[l, :]) / fs) * H  # propagate phases
-        # 	Y = UF.genSpecSines_p(tfreq[l,:], tmag[l,:], ytphase, N, fs)  # generate sines in the spectrum (python version)
-        Y = UF.genSpecSines(
-            tfreq[l, :], tmag[l, :], ytphase, N, fs
-        )  # generate sines in the spectrum
-        lastytfreq = tfreq[l, :]  # save frequency for phase propagation
-        ytphase = ytphase % (2 * np.pi)  # make phase inside 2*pi
-        yw = np.real(fftshift(ifft(Y)))  # compute inverse FFT
-        y[pout : pout + N] += sw * yw  # overlap-add and apply a synthesis window
-        pout += H  # advance sound pointer
-    y = np.delete(y, range(hN))  # delete half of first window
-    y = np.delete(y, range(y.size - hN, y.size))  # delete half of the last window
+            ytphase += (np.pi * (lastytfreq + tfreq[l, :]) / fs) * H
+        
+        # Generate spectral sines and synthesize frame
+        Y = UF.genSpecSines(tfreq[l, :], tmag[l, :], ytphase, N, fs)
+        lastytfreq = tfreq[l, :]
+        ytphase = ytphase % (2 * np.pi)
+        yw = np.real(fftshift(ifft(Y)))
+        y[pout : pout + N] += sw * yw
+        pout += H
+    
+    # Trim half-window padding from start and end
+    y = y[hN : y.size - hN]
     return y

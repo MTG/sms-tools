@@ -1,8 +1,11 @@
-# functions that implement analysis and synthesis of sounds using the Short-Time Fourier Transform
-# (for example usage check stft_function.py in the interface directory)
+# Short-Time Fourier Transform (STFT) utilities used by sms-tools.
+#
+# This module provides:
+# - `stftAnal`: frame-wise STFT analysis (magnitude/phase)
+# - `stftSynth`: overlap-add synthesis from STFT spectra
+# - `stft`: convenience analysis+synthesis round-trip
 
 import numpy as np
-
 from smstools.models import dftModel as DFT
 
 
@@ -19,13 +22,12 @@ def stft(x, w, N, H):
     M = w.size  # size of analysis window
     hM1 = (M + 1) // 2  # half analysis window size by rounding
     hM2 = M // 2  # half analysis window size by floor
-    x = np.append(
-        np.zeros(hM2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hM1))  # add zeros at the end to analyze last sample
+    x = np.concatenate(
+        (np.zeros(hM2), x, np.zeros(hM1))
+    )  # add zeros at beginning/end for centered analysis
     pin = hM1  # initialize sound pointer in middle of analysis window
     pend = x.size - hM1  # last sample to start a frame
-    w = w / sum(w)  # normalize analysis window
+    w = w / np.sum(w)  # normalize analysis window
     y = np.zeros(x.size)  # initialize output array
     while pin <= pend:  # while sound pointer is smaller than last sample
         # -----analysis-----
@@ -35,13 +37,7 @@ def stft(x, w, N, H):
         y1 = DFT.dftSynth(mX, pX, M)  # compute idft
         y[pin - hM1 : pin + hM2] += H * y1  # overlap-add to generate output sound
         pin += H  # advance sound pointer
-    y = np.delete(
-        y, range(hM2)
-    )  # delete half of first window which was added in stftAnal
-    y = np.delete(
-        y, range(y.size - hM1, y.size)
-    )  # delete half of the last window which as added in stftAnal
-    return y
+    return y[hM2 : y.size - hM1]  # remove padding
 
 
 def stftAnal(x, w, N, H):
@@ -56,23 +52,30 @@ def stftAnal(x, w, N, H):
     M = w.size  # size of analysis window
     hM1 = (M + 1) // 2  # half analysis window size by rounding
     hM2 = M // 2  # half analysis window size by floor
-    x = np.append(
-        np.zeros(hM2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hM2))  # add zeros at the end to analyze last sample
+    x = np.concatenate(
+        (np.zeros(hM2), x, np.zeros(hM2))
+    )  # add zeros at beginning/end for centered analysis
     pin = hM1  # initialize sound pointer in middle of analysis window
     pend = x.size - hM1  # last sample to start a frame
-    w = w / sum(w)  # normalize analysis window
-    xmX = []  # Initialise empty list for mX
-    xpX = []  # Initialise empty list for pX
+    w = w / np.sum(w)  # normalize analysis window
+
+    if pin > pend:
+        hN = (N // 2) + 1
+        return np.empty((0, hN)), np.empty((0, hN))
+
+    nFrames = 1 + (pend - pin) // H
+    hN = (N // 2) + 1
+    xmX = np.empty((nFrames, hN))
+    xpX = np.empty((nFrames, hN))
+
+    frame = 0
     while pin <= pend:  # while sound pointer is smaller than last sample
         x1 = x[pin - hM1 : pin + hM2]  # select one frame of input sound
         mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        xmX.append(np.array(mX))  # Append output to list
-        xpX.append(np.array(pX))
+        xmX[frame, :] = mX
+        xpX[frame, :] = pX
+        frame += 1
         pin += H  # advance sound pointer
-    xmX = np.array(xmX)  # Convert to numpy array
-    xpX = np.array(xpX)
     return xmX, xpX
 
 
@@ -84,17 +87,11 @@ def stftSynth(mY, pY, M, H):
     """
     hM1 = (M + 1) // 2  # half analysis window size by rounding
     hM2 = M // 2  # half analysis window size by floor
-    nFrames = mY[:, 0].size  # number of frames
+    nFrames = mY.shape[0]  # number of frames
     y = np.zeros(nFrames * H + hM1 + hM2)  # initialize output array
     pin = hM1
     for i in range(nFrames):  # iterate over all frames
         y1 = DFT.dftSynth(mY[i, :], pY[i, :], M)  # compute idft
         y[pin - hM1 : pin + hM2] += H * y1  # overlap-add to generate output sound
         pin += H  # advance sound pointer
-    y = np.delete(
-        y, range(hM2)
-    )  # delete half of first window which was added in stftAnal
-    y = np.delete(
-        y, range(y.size - hM1, y.size)
-    )  # delete the end of the sound that was added in stftAnal
-    return y
+    return y[hM2 : y.size - hM1]  # remove padding

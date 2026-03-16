@@ -1,5 +1,10 @@
-# functions that implement analysis and synthesis of sounds using the Harmonic Model
-# (for example usage check the interface directory)
+# Harmonic Model analysis/synthesis utilities used by sms-tools.
+#
+# This module includes:
+# - `f0Detection`: frame-wise fundamental frequency estimation
+# - `harmonicDetection`: harmonic peak selection from spectral peaks
+# - `harmonicModel`: analysis+synthesis round-trip
+# - `harmonicModelAnal` / `harmonicModelSynth`: separated analysis/synthesis APIs
 
 import math
 

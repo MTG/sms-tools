@@ -1,9 +1,12 @@
-# functions that implement analysis and synthesis of sounds using the Harmonic plus Residual Model
-# (for example usage check the interface directory)
+
+"""
+Harmonic plus Residual (HPR) Model analysis and synthesis functions.
+Implements analysis, synthesis, and full model for HPR.
+"""
 
 import math
-
 import numpy as np
+from typing import Tuple
 from scipy.fft import fft, ifft
 from scipy.signal.windows import blackmanharris, triang
 
@@ -13,112 +16,124 @@ from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF
 
 
-def hprModelAnal(x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope):
-    """Analysis of a sound using the harmonic plus residual model
-    x: input sound, fs: sampling rate, w: analysis window; N: FFT size, t: threshold in negative dB,
-    minSineDur: minimum duration of sinusoidal tracks
-    nH: maximum number of harmonics; minf0: minimum fundamental frequency in sound
-    maxf0: maximum fundamental frequency in sound; f0et: maximum error accepted in f0 detection algorithm
-    harmDevSlope: allowed deviation of harmonic tracks, higher harmonics have higher allowed deviation
-    returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; xr: residual signal
+def hprModelAnal(
+    x: np.ndarray,
+    fs: float,
+    w: np.ndarray,
+    N: int,
+    H: int,
+    t: float,
+    minSineDur: float,
+    nH: int,
+    minf0: float,
+    maxf0: float,
+    f0et: float,
+    harmDevSlope: float,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
-
-    # perform harmonic analysis
+    Analyze a sound using the harmonic plus residual model.
+    Returns: hfreq, hmag, hphase (harmonic tracks), xr (residual signal)
+    """
     hfreq, hmag, hphase = HM.harmonicModelAnal(
         x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur
     )
     Ns = 512
-    xr = UF.sineSubtraction(
-        x, Ns, H, hfreq, hmag, hphase, fs
-    )  # subtract sinusoids from original sound
+    xr = UF.sineSubtraction(x, Ns, H, hfreq, hmag, hphase, fs)
     return hfreq, hmag, hphase, xr
 
 
-def hprModelSynth(hfreq, hmag, hphase, xr, N, H, fs):
+def hprModelSynth(
+    hfreq: np.ndarray,
+    hmag: np.ndarray,
+    hphase: np.ndarray,
+    xr: np.ndarray,
+    N: int,
+    H: int,
+    fs: float,
+) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Synthesis of a sound using the sinusoidal plus residual model
-    tfreq, tmag, tphase: sinusoidal frequencies, amplitudes and phases; stocEnv: stochastic envelope
-    N: synthesis FFT size; H: hop size, fs: sampling rate
-    returns y: output sound, yh: harmonic component
+    Synthesize a sound using the harmonic plus residual model.
+    Returns: y (output), yh (harmonic component)
     """
-
-    yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)  # synthesize sinusoids
-    y = (
-        yh[: min(yh.size, xr.size)] + xr[: min(yh.size, xr.size)]
-    )  # sum sinusoids and residual components
+    yh = SM.sineModelSynth(hfreq, hmag, hphase, N, H, fs)
+    n = min(yh.size, xr.size)
+    y = yh[:n] + xr[:n]
     return y, yh
 
 
-def hprModel(x, fs, w, N, t, nH, minf0, maxf0, f0et):
+def hprModel(
+    x: np.ndarray,
+    fs: float,
+    w: np.ndarray,
+    N: int,
+    t: float,
+    nH: int,
+    minf0: float,
+    maxf0: float,
+    f0et: float,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Analysis/synthesis of a sound using the harmonic plus residual model
-    x: input sound, fs: sampling rate, w: analysis window,
-    N: FFT size (minimum 512), t: threshold in negative dB,
-    nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz,
-    maxf0: maximim f0 frequency in Hz,
-    f0et: error threshold in the f0 detection (ex: 5),
-    maxhd: max. relative deviation in harmonic detection (ex: .2)
-    returns y: output sound, yh: harmonic component, xr: residual component
+    Full analysis/synthesis of a sound using the harmonic plus residual model.
+    Returns: y (output), yh (harmonic), xr (residual)
     """
-
-    hN = N // 2  # size of positive spectrum
-    hM1 = int(math.floor((w.size + 1) / 2))  # half analysis window size by rounding
-    hM2 = int(math.floor(w.size / 2))  # half analysis window size by floor
-    Ns = 512  # FFT size for synthesis (even)
-    H = Ns // 4  # Hop size used for analysis and synthesis
+    hN = N // 2
+    hM1 = int(math.floor((w.size + 1) / 2))
+    hM2 = int(math.floor(w.size / 2))
+    Ns = 512
+    H = Ns // 4
     hNs = Ns // 2
-    pin = max(hNs, hM1)  # initialize sound pointer in middle of analysis window
-    pend = x.size - max(hNs, hM1)  # last sample to start a frame
-    yhw = np.zeros(Ns)  # initialize output sound frame
-    xrw = np.zeros(Ns)  # initialize output sound frame
-    yh = np.zeros(x.size)  # initialize output array
-    xr = np.zeros(x.size)  # initialize output array
-    w = w / sum(w)  # normalize analysis window
+    pin = max(hNs, hM1)
+    pend = x.size - max(hNs, hM1)
+    yhw = np.zeros(Ns)
+    xrw = np.zeros(Ns)
+    yh = np.zeros(x.size)
+    xr = np.zeros(x.size)
+    w = w / sum(w)
     sw = np.zeros(Ns)
-    ow = triang(2 * H)  # overlapping window
+    ow = triang(2 * H)
     sw[hNs - H : hNs + H] = ow
-    bh = blackmanharris(Ns)  # synthesis window
-    bh = bh / sum(bh)  # normalize synthesis window
-    wr = bh  # window for residual
+    bh = blackmanharris(Ns)
+    bh = bh / sum(bh)
+    wr = bh
     sw[hNs - H : hNs + H] = sw[hNs - H : hNs + H] / bh[hNs - H : hNs + H]
     hfreqp = []
     f0t = 0
     f0stable = 0
     while pin < pend:
-        # -----analysis-----
-        x1 = x[pin - hM1 : pin + hM2]  # select frame
-        mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        ploc = UF.peakDetection(mX, t)  # find peaks
-        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)  # refine peak values
-        ipfreq = fs * iploc / N  # convert locations to Hz
-        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
-        if ((f0stable == 0) & (f0t > 0)) or (
-            (f0stable > 0) & (np.abs(f0stable - f0t) < f0stable / 5.0)
+        # Analysis
+        x1 = x[pin - hM1 : pin + hM2]
+        mX, pX = DFT.dftAnal(x1, w, N)
+        ploc = UF.peakDetection(mX, t)
+        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
+        ipfreq = fs * iploc / N
+        f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)
+        if ((f0stable == 0) and (f0t > 0)) or (
+            (f0stable > 0) and (np.abs(f0stable - f0t) < f0stable / 5.0)
         ):
-            f0stable = f0t  # consider a stable f0 if it is close to the previous one
+            f0stable = f0t
         else:
             f0stable = 0
         hfreq, hmag, hphase = HM.harmonicDetection(
             ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs
-        )  # find harmonics
+        )
         hfreqp = hfreq
-        ri = pin - hNs - 1  # input sound pointer for residual analysis
-        xw2 = x[ri : ri + Ns] * wr  # window the input sound
-        fftbuffer = np.zeros(Ns)  # reset buffer
-        fftbuffer[:hNs] = xw2[hNs:]  # zero-phase window in fftbuffer
+        ri = pin - hNs - 1
+        xw2 = x[ri : ri + Ns] * wr
+        fftbuffer = np.zeros(Ns)
+        fftbuffer[:hNs] = xw2[hNs:]
         fftbuffer[hNs:] = xw2[:hNs]
-        X2 = fft(fftbuffer)  # compute FFT of input signal for residual analysis
-        # -----synthesis-----
-        Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs)  # generate sines
-        Xr = X2 - Yh  # get the residual complex spectrum
-        fftbuffer = np.real(ifft(Yh))  # inverse FFT of harmonic spectrum
-        yhw[: hNs - 1] = fftbuffer[hNs + 1 :]  # undo zero-phase window
+        X2 = fft(fftbuffer)
+        # Synthesis
+        Yh = UF.genSpecSines(hfreq, hmag, hphase, Ns, fs)
+        Xr = X2 - Yh
+        fftbuffer = np.real(ifft(Yh))
+        yhw[: hNs - 1] = fftbuffer[hNs + 1 :]
         yhw[hNs - 1 :] = fftbuffer[: hNs + 1]
-        fftbuffer = np.real(ifft(Xr))  # inverse FFT of residual spectrum
-        xrw[: hNs - 1] = fftbuffer[hNs + 1 :]  # undo zero-phase window
+        fftbuffer = np.real(ifft(Xr))
+        xrw[: hNs - 1] = fftbuffer[hNs + 1 :]
         xrw[hNs - 1 :] = fftbuffer[: hNs + 1]
-        yh[ri : ri + Ns] += sw * yhw  # overlap-add for sines
-        xr[ri : ri + Ns] += sw * xrw  # overlap-add for residual
-        pin += H  # advance sound pointer
-    y = yh + xr  # sum of harmonic and residual components
+        yh[ri : ri + Ns] += sw * yhw
+        xr[ri : ri + Ns] += sw * xrw
+        pin += H
+    y = yh + xr
     return y, yh, xr
