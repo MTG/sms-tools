@@ -3,14 +3,8 @@ Harmonic plus Residual (HPR) Model analysis and synthesis functions.
 Implements analysis, synthesis, and full model for HPR.
 """
 
-import math
-from typing import Tuple
-
 import numpy as np
-from scipy.fft import fft, ifft
-from scipy.signal.windows import blackmanharris, triang
-
-from smstools.models import dftModel as DFT
+from typing import Tuple
 from smstools.models import harmonicModel as HM
 from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF

@@ -23,5 +23,6 @@ extensions = [
 ]
 setup(
     name="SMS Tools",
+    version="1.2",
     ext_modules=cythonize(extensions),
 )

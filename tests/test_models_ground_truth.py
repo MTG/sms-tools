@@ -1,6 +1,6 @@
 
-import pytest
 import numpy as np
+import pytest
 
 from smstools.models import dftModel as DFT
 from smstools.models import harmonicModel, hprModel, hpsModel

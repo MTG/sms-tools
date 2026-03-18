@@ -7,11 +7,7 @@
 # - `harmonicModelAnal` / `harmonicModelSynth`: separated analysis/synthesis APIs
 
 import math
-
 import numpy as np
-from scipy.fft import ifft
-from scipy.signal.windows import blackmanharris, triang
-
 from smstools.models import dftModel as DFT
 from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF
@@ -70,7 +66,7 @@ def f0Detection(
     f0 = []  # initialize f0 output
     f0t = 0  # initialize f0 track
     f0stable = 0  # initialize f0 stable
-    f0candidate = 0  # initialize one-frame candidate for stability confirmation
+    # f0candidate = 0  # unused variable
     while pin < pend:
         x1 = x[pin - hM1 : pin + hM2]  # select frame
         mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
@@ -121,9 +117,7 @@ def harmonicDetection(
     hphase = np.zeros(nH)  # initialize harmonic phases
     hf = f0 * np.arange(1, nH + 1)  # initialize harmonic frequencies
     hi = 0  # initialize harmonic index
-    if (
-        len(hfreqp) == 0
-    ):  # if no incomming harmonic tracks initialize to harmonic series
+    if len(hfreqp) == 0:
         hfreqp = hf
     while (f0 > 0) and (hi < nH) and (hf[hi] < fs / 2):  # find harmonic peaks
         pei = np.argmin(abs(pfreq - hf[hi]))  # closest peak
@@ -132,12 +126,10 @@ def harmonicDetection(
             abs(pfreq[pei] - hfreqp[hi]) if hfreqp[hi] > 0 else fs
         )  # deviation from previous frame
         threshold = f0 / 3 + harmDevSlope * pfreq[pei]
-        if (dev1 < threshold) or (
-            dev2 < threshold
-        ):  # accept peak if deviation is small
-            hfreq[hi] = pfreq[pei]  # harmonic frequencies
-            hmag[hi] = pmag[pei]  # harmonic magnitudes
-            hphase[hi] = pphase[pei]  # harmonic phases
+        if (dev1 < threshold) or (dev2 < threshold):
+            hfreq[hi] = pfreq[pei]
+            hmag[hi] = pmag[pei]
+            hphase[hi] = pphase[pei]
         hi += 1  # increase harmonic index
     return hfreq, hmag, hphase
 
@@ -198,9 +190,9 @@ def harmonicModelAnal(
     f0t = 0  # initialize f0 track
     f0stable = 0  # initialize f0 stable
     xhfreq = []  # initialize output list for harmonic frequencies
-    xhmag = []   # initialize output list for harmonic magnitudes
-    xhphase = [] # initialize output list for harmonic phases
-    f0 = []      # initialize output list for f0 values
+    xhmag = []
+    xhphase = []
+    f0 = []
     while pin <= pend:
         x1 = x[pin - hM1 : pin + hM2]  # select frame
         mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
@@ -209,7 +201,7 @@ def harmonicModelAnal(
         ipfreq = fs * iploc / N  # convert locations to Hz
         f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
         f0stable = f0t if f0t > 0 and abs(f0t - f0stable) < f0et else 0
-        f0candidate = f0t
+        # f0candidate = f0t  # unused variable
         f0.append(f0t)  # add f0 to output list
         # Harmonic detection
         hfreq, hmag, hphase = harmonicDetection(ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs, harmDevSlope)

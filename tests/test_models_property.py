@@ -1,7 +1,12 @@
 import numpy as np
 import pytest
-from hypothesis import given, strategies as st
-from smstools.models import dftModel, harmonicModel, hprModel, hpsModel, sineModel, sprModel, spsModel, stft, stochasticModel
+from hypothesis import given
+from hypothesis import strategies as st
+
+from smstools.models import (dftModel, harmonicModel, hprModel, hpsModel,
+                             sineModel, sprModel, spsModel, stft,
+                             stochasticModel)
+
 
 # Utility for generating valid FFT sizes (powers of 2)
 def valid_fft_size():

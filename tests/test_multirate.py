@@ -4,8 +4,8 @@ Covers fs=48000 (professional audio) and fs=22050 (half-rate).
 """
 
 
-import pytest
 import numpy as np
+import pytest
 
 from smstools.models import dftModel as DFT
 from smstools.models import hprModel

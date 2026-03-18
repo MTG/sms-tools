@@ -41,7 +41,7 @@ if sys.platform == "win32":
 
         winsound_imported = True
     except ImportError:
-        print("You won't be able to play sounds, winsound could not be imported")
+        warnings.warn("You won't be able to play sounds, winsound could not be imported", RuntimeWarning)
 
 
 def isPower2(num: int) -> bool:
@@ -102,8 +102,9 @@ def wavplay(filename: str) -> None:
         filename: Path to input audio file.
     """
     if not os.path.isfile(filename):
-        print(
-            "Input file does not exist. Make sure you computed the analysis/synthesis"
+        warnings.warn(
+            "Input file does not exist. Make sure you computed the analysis/synthesis",
+            RuntimeWarning,
         )
     elif sys.platform in ("linux", "linux2"):
         # linux
@@ -118,11 +119,11 @@ def wavplay(filename: str) -> None:
         if winsound_imported:
             winsound.PlaySound(filename, winsound.SND_FILENAME)
         else:
-            print("Cannot play sound, winsound could not be imported")
+            warnings.warn("Cannot play sound, winsound could not be imported", RuntimeWarning)
         return
 
     else:
-        print("Platform not recognized")
+        warnings.warn("Platform not recognized", RuntimeWarning)
 
 
 def wavwrite(y: np.ndarray, fs: int, filename: str) -> None:
@@ -276,12 +277,10 @@ def genSpecSines_p(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N
         for m in range(9):
             if b[m] < 0:  # peak lobe crosses DC bin
                 Y[-b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
-            elif b[m] > hN:  # peak lobe croses Nyquist bin
+            elif b[m] > hN:  # peak lobe crosses Nyquist bin
                 Y[2 * hN - b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
-            elif b[m] == 0 or b[m] == hN:  # peak lobe in the limits of the spectrum
-                Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i]) + lmag[m] * np.exp(
-                    -1j * ipphase[i]
-                )
+            elif b[m] in (0, hN):  # peak lobe in the limits of the spectrum
+                Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i]) + lmag[m] * np.exp(-1j * ipphase[i])
             else:  # peak lobe in positive freq. range
                 Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i])
     Y[hN + 1 :] = Y[

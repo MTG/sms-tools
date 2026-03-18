@@ -94,17 +94,15 @@ def sineTracking(
 
     # Fill empty tracks with remaining peaks
     emptyt = np.nonzero(tfreq == 0)[0]
-    if peaksleft.size > 0 and emptyt.size >= peaksleft.size:
-        tfreqn[emptyt[:peaksleft.size]] = pfreqt[peaksleft]
-        tmagn[emptyt[:peaksleft.size]] = pmagt[peaksleft]
-        tphasen[emptyt[:peaksleft.size]] = pphaset[peaksleft]
-    elif peaksleft.size > 0 and emptyt.size < peaksleft.size:
-        tfreqn[emptyt] = pfreqt[peaksleft[:emptyt.size]]
-        tmagn[emptyt] = pmagt[peaksleft[:emptyt.size]]
-        tphasen[emptyt] = pphaset[peaksleft[:emptyt.size]]
-        tfreqn = np.append(tfreqn, pfreqt[peaksleft[emptyt.size:]])
-        tmagn = np.append(tmagn, pmagt[peaksleft[emptyt.size:]])
-        tphasen = np.append(tphasen, pphaset[peaksleft[emptyt.size:]])
+    if peaksleft.size > 0:
+        n_assign = min(emptyt.size, peaksleft.size)
+        tfreqn[emptyt[:n_assign]] = pfreqt[peaksleft[:n_assign]]
+        tmagn[emptyt[:n_assign]] = pmagt[peaksleft[:n_assign]]
+        tphasen[emptyt[:n_assign]] = pphaset[peaksleft[:n_assign]]
+        if peaksleft.size > emptyt.size:
+            tfreqn = np.append(tfreqn, pfreqt[peaksleft[n_assign:]])
+            tmagn = np.append(tmagn, pmagt[peaksleft[n_assign:]])
+            tphasen = np.append(tphasen, pphaset[peaksleft[n_assign:]])
 
     return tfreqn, tmagn, tphasen
 
