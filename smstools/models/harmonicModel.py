@@ -6,6 +6,7 @@
 # - `harmonicModel`: analysis+synthesis round-trip
 # - `harmonicModelAnal` / `harmonicModelSynth`: separated analysis/synthesis APIs
 
+
 import math
 
 import numpy as np
@@ -77,7 +78,7 @@ def f0Detection(
         ipfreq = fs * iploc / N  # convert locations to Hz
         f0t = UF.f0Twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=fs)  # find f0
         f0stable = f0t if f0t > 0 and abs(f0t - f0stable) < f0et else 0
-        f0candidate = f0t
+        # f0candidate = f0t  # unused variable
         f0 = np.append(f0, f0t)  # add f0 to output array
         pin += H  # advance sound pointer
     return f0
@@ -206,7 +207,9 @@ def harmonicModelAnal(
         # f0candidate = f0t  # unused variable
         f0.append(f0t)  # add f0 to output list
         # Harmonic detection
-        hfreq, hmag, hphase = harmonicDetection(ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs, harmDevSlope)
+        hfreq, hmag, hphase = harmonicDetection(
+            ipfreq, ipmag, ipphase, f0t, nH, hfreqp, fs, harmDevSlope
+        )
         xhfreq.append(hfreq)
         xhmag.append(hmag)
         xhphase.append(hphase)
@@ -256,7 +259,9 @@ def harmonicModel(
     # User can specify N for analysis
     H = 128
     Ns = 512
-    hfreq, hmag, hphase = harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et)
+    hfreq, hmag, hphase = harmonicModelAnal(
+        x, fs, w, N, H, t, nH, minf0, maxf0, f0et
+    )
     # Synthesize using fixed synthesis parameters
     y = SM.sineModelSynth(hfreq, hmag, hphase, Ns, H, fs)
     # Ensure output length matches input

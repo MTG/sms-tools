@@ -6,7 +6,12 @@
 # - `dftSynth`: synthesis of a time-domain frame from magnitude/phase
 # - `dftModel`: convenience analysis+synthesis round-trip for one frame
 
-__all__ = ["dftAnal", "dftSynth", "dftModel"]
+
+__all__ = [
+    "dftAnal",
+    "dftSynth",
+    "dftModel",
+]
 
 
 import numpy as np
@@ -29,9 +34,13 @@ def _validate_window_fft_size(w: np.ndarray, N: int) -> None:
         ValueError: If N is not a power of 2 or w is larger than N.
     """
     if not UF.isPower2(N):
-        raise ValueError(f"FFT size (N={N}) is not a power of 2. Provided window size: {w.size}.")
+        raise ValueError(
+            f"FFT size (N={N}) is not a power of 2. Provided window size: {w.size}."
+        )
     if w.size > N:
-        raise ValueError(f"Window size (M={w.size}) is bigger than FFT size (N={N}).")
+        raise ValueError(
+            f"Window size (M={w.size}) is bigger than FFT size (N={N})."
+        )
 
 def _positive_spectrum_from_fft(X: np.ndarray, hN: int) -> np.ndarray:
     """
@@ -107,7 +116,9 @@ def dftSynth(mX: np.ndarray, pX: np.ndarray, M: int) -> np.ndarray:
     hN = mX.size
     N = (hN - 1) * 2
     if not UF.isPower2(N):
-        raise ValueError(f"size of mX ({mX.size}) is not (N/2)+1 for N={N}. Check input spectrum size.")
+        raise ValueError(
+            f"size of mX ({mX.size}) is not (N/2)+1 for N={N}. Check input spectrum size."
+        )
     hM1 = (M + 1) // 2
     hM2 = M // 2
     y = np.zeros(M)
