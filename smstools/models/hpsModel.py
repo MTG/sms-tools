@@ -3,8 +3,10 @@ Harmonic plus Stochastic (HPS) Model analysis and synthesis functions.
 Implements analysis, synthesis, and full model for HPS.
 """
 
-import numpy as np
 from typing import Tuple
+
+import numpy as np
+
 from smstools.models import harmonicModel as HM
 from smstools.models import sineModel as SM
 from smstools.models import stochasticModel as STM

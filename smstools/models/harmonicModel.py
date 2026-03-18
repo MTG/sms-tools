@@ -7,7 +7,9 @@
 # - `harmonicModelAnal` / `harmonicModelSynth`: separated analysis/synthesis APIs
 
 import math
+
 import numpy as np
+
 from smstools.models import dftModel as DFT
 from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF
