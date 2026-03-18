@@ -44,9 +44,15 @@ if sys.platform == "win32":
         print("You won't be able to play sounds, winsound could not be imported")
 
 
-def isPower2(num):
+def isPower2(num: int) -> bool:
     """
     Check whether an integer is a power of two.
+
+    Args:
+        num: Integer to check.
+
+    Returns:
+        True if num is a power of two, False otherwise.
     """
     return ((num & (num - 1)) == 0) and num > 0
 
@@ -63,7 +69,7 @@ norm_fact = {
 }
 
 
-def wavread(filename):
+def wavread(filename: str) -> tuple[int, np.ndarray]:
     """
     Read a mono audio file and return normalized floating-point samples.
 
@@ -73,9 +79,6 @@ def wavread(filename):
     Returns:
         fs: Sampling rate of file.
         x: Floating-point mono signal in [-1, 1].
-
-    Note:
-        This function accepts any sampling rate and returns it as `fs`.
     """
 
     if not os.path.isfile(filename):
@@ -91,7 +94,7 @@ def wavread(filename):
     return fs, x
 
 
-def wavplay(filename):
+def wavplay(filename: str) -> None:
     """
     Play a WAV file using OS-specific system calls.
 
@@ -102,24 +105,27 @@ def wavplay(filename):
         print(
             "Input file does not exist. Make sure you computed the analysis/synthesis"
         )
-    else:
-        if sys.platform == "linux" or sys.platform == "linux2":
-            # linux
-            subprocess.call(["aplay", filename])
+    elif sys.platform in ("linux", "linux2"):
+        # linux
+        subprocess.call(["aplay", filename])
 
-        elif sys.platform == "darwin":
-            # OS X
-            subprocess.call(["afplay", filename])
-        elif sys.platform == "win32":
-            if winsound_imported:
-                winsound.PlaySound(filename, winsound.SND_FILENAME)
-            else:
-                print("Cannot play sound, winsound could not be imported")
+    elif sys.platform == "darwin":
+        # mac
+        subprocess.call(["afplay", filename])
+
+    elif sys.platform == "win32":
+        # windows
+        if winsound_imported:
+            winsound.PlaySound(filename, winsound.SND_FILENAME)
         else:
-            print("Platform not recognized")
+            print("Cannot play sound, winsound could not be imported")
+        return
+
+    else:
+        print("Platform not recognized")
 
 
-def wavwrite(y, fs, filename):
+def wavwrite(y: np.ndarray, fs: int, filename: str) -> None:
     """
     Write a mono floating-point signal to a WAV file.
 
@@ -129,18 +135,15 @@ def wavwrite(y, fs, filename):
         filename: Output file path.
     """
 
-    x = copy.deepcopy(y)
+    x = np.copy(y)
     x *= INT16_FAC
     x = np.int16(x)
     write(filename, fs, x)
 
 
-def peakDetection(mX, t):
+def peakDetection(mX: np.ndarray, t: float) -> np.ndarray:
     """
     Detect spectral peak locations above threshold with local maxima constraint.
-
-    Finds bins where magnitude is above threshold and higher than both neighbors,
-    using efficient vectorized boolean operations.
 
     Args:
         mX: Magnitude spectrum (dB values)
@@ -154,12 +157,9 @@ def peakDetection(mX, t):
     return np.where(peaks)[0] + 1  # Add 1 to compensate for [1:-1] slicing
 
 
-def peakInterp(mX, pX, ploc):
+def peakInterp(mX: np.ndarray, pX: np.ndarray, ploc: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Refine peak location and magnitude using parabolic interpolation.
-
-    Fits a parabola through peak and its neighbors to estimate sub-bin peak
-    location and magnitude. Uses linear interpolation for phase values.
 
     Args:
         mX: Magnitude spectrum (dB)
@@ -187,7 +187,7 @@ def peakInterp(mX, pX, ploc):
     return iploc, ipmag, ipphase
 
 
-def sinc(x, N):
+def sinc(x: np.ndarray, N: int) -> np.ndarray:
     """
     Generate samples of the Dirichlet-kernel sinc main lobe.
 
@@ -204,7 +204,7 @@ def sinc(x, N):
     return y
 
 
-def genBhLobe(x):
+def genBhLobe(x: np.ndarray) -> np.ndarray:
     """
     Generate the main lobe of a Blackman-Harris window spectrum.
 
@@ -226,34 +226,34 @@ def genBhLobe(x):
     return y
 
 
-def genSpecSines(ipfreq, ipmag, ipphase, N, fs):
+def genSpecSines(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int) -> np.ndarray:
     """
     Generate sinusoidal spectrum, using C backend when available.
 
     Args:
-        ipfreq, ipmag, ipphase: Peak frequencies, magnitudes, and phases.
-        N: Complex spectrum size.
-        fs: Sampling rate.
+        ipfreq: Peak frequencies
+        ipmag: Peak magnitudes
+        ipphase: Peak phases
+        N: Complex spectrum size
+        fs: Sampling rate
 
     Returns:
         Y: Generated complex sinusoidal spectrum.
     """
 
-    if UF_C is not None:
-        Y = UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N)
-    else:
-        Y = genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
-    return Y
+    return UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N) if UF_C is not None else genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
 
 
-def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
+def genSpecSines_p(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int) -> np.ndarray:
     """
     Pure-Python sinusoidal spectrum generation.
 
     Args:
-        ipfreq, ipmag, ipphase: Peak frequencies, magnitudes, and phases.
-        N: Complex spectrum size.
-        fs: Sampling rate.
+        ipfreq: Peak frequencies
+        ipmag: Peak magnitudes
+        ipphase: Peak phases
+        N: Complex spectrum size
+        fs: Sampling rate
 
     Returns:
         Y: Generated complex sinusoidal spectrum.
@@ -261,7 +261,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
 
     Y = np.zeros(N, dtype=complex)  # initialize output complex spectrum
     hN = N // 2  # size of positive freq. spectrum
-    for i in range(0, ipfreq.size):  # generate all sine spectral lobes
+    for i in range(ipfreq.size):  # generate all sine spectral lobes
         loc = N * ipfreq[i] / fs  # it should be in range ]0,hN-1[
         if loc == 0 or loc > hN - 1:
             continue
@@ -273,7 +273,7 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
             ipmag[i] / 20
         )  # lobe magnitudes of the complex exponential
         b = np.arange(round(loc) - 4, round(loc) + 5, dtype="int")
-        for m in range(0, 9):
+        for m in range(9):
             if b[m] < 0:  # peak lobe crosses DC bin
                 Y[-b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
             elif b[m] > hN:  # peak lobe croses Nyquist bin
@@ -290,12 +290,9 @@ def genSpecSines_p(ipfreq, ipmag, ipphase, N, fs):
     return Y
 
 
-def sinewaveSynth(freqs, amp, H, fs):
+def sinewaveSynth(freqs: np.ndarray, amp: float, H: int, fs: int) -> np.ndarray:
     """
     Synthesize a sinusoid with time-varying frequency and amplitude.
-
-    Generates smooth ramps for frequency and amplitude changes between frames,
-    with automatic amplitude ramping at start/end to avoid clicks.
 
     Args:
         freqs: Array of frequencies (Hz), one per frame
@@ -307,39 +304,38 @@ def sinewaveSynth(freqs, amp, H, fs):
         y: Output sinusoid samples
     """
     t = np.arange(H) / float(fs)  # Time array
+    n_frames = freqs.size
     lastphase = 0  # Phase accumulation
     lastfreq = freqs[0]
     frames = []
 
-    for l in range(freqs.size):
+    for l in range(n_frames):
         if (lastfreq == 0) and (freqs[l] == 0):  # Silent to silent
             A = np.zeros(H)
             freq = np.zeros(H)
         elif (lastfreq == 0) and (freqs[l] > 0):  # Silent to tone (ramp up)
-            A = np.arange(0, amp, amp / H)
-            freq = np.ones(H) * freqs[l]
+            A = np.linspace(0, amp, H, endpoint=False)
+            freq = np.full(H, freqs[l])
         elif (lastfreq > 0) and (freqs[l] > 0):  # Tone to tone
-            A = np.ones(H) * amp
-            if lastfreq == freqs[l]:
-                freq = np.ones(H) * lastfreq
-            else:
-                freq = np.arange(lastfreq, freqs[l], (freqs[l] - lastfreq) / H)
+            A = np.full(H, amp)
+            freq = np.full(H, lastfreq) if lastfreq == freqs[l] else np.linspace(
+                lastfreq, freqs[l], H, endpoint=False
+            )
         elif (lastfreq > 0) and (freqs[l] == 0):  # Tone to silent (ramp down)
-            A = np.arange(amp, 0, -amp / H)
-            freq = np.ones(H) * lastfreq
+            A = np.linspace(amp, 0, H, endpoint=False)
+            freq = np.full(H, lastfreq)
 
         # Generate phase and waveform
         phase = 2 * np.pi * freq * t + lastphase
         yh = A * np.cos(phase)
         lastfreq = freqs[l]
-        lastphase = phase[H - 1] % (2 * np.pi)  # Wrap phase for continuity
+        lastphase = phase[-1] % (2 * np.pi)  # Wrap phase for continuity
         frames.append(yh)
 
-    # Concatenate all frames efficiently
     return np.concatenate(frames)
 
 
-def cleaningTrack(track, minTrackLength=3):
+def cleaningTrack(track: np.ndarray, minTrackLength: int = 3) -> np.ndarray:
     """
     Remove short active fragments from a single track.
 
@@ -371,7 +367,7 @@ def cleaningTrack(track, minTrackLength=3):
     return cleanTrack
 
 
-def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0, fs=None):
+def f0Twm(pfreq: np.ndarray, pmag: np.ndarray, ef0max: float, minf0: float, maxf0: float, f0t: float = 0, fs: int | None = None) -> float:
     """
     Wrapper around TWM f0 detection that selects candidate peaks and validates result.
 
@@ -432,11 +428,9 @@ def f0Twm(pfreq, pmag, ef0max, minf0, maxf0, f0t=0, fs=None):
     return f0 if (f0 > 0) and (f0error < ef0max) else 0
 
 
-def TWM_p(pfreq, pmag, f0c):
+def TWM_p(pfreq: np.ndarray, pmag: np.ndarray, f0c: np.ndarray) -> tuple[float, float]:
     """
     Two-way mismatch algorithm for f0 detection (Beauchamp & Maher).
-
-    Better performance is available via the C implementation: UF_C.twm.
 
     Args:
         pfreq: Peak frequencies (Hz)
@@ -492,12 +486,9 @@ def TWM_p(pfreq, pmag, f0c):
     return f0, total_error[f0index]
 
 
-def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
+def sineSubtraction(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.ndarray, sphase: np.ndarray, fs: int) -> np.ndarray:
     """
     Subtract sinusoids from audio signal to extract residual.
-
-    Removes spectral sines at given frequencies/magnitudes/phases,
-    returning the residual sound component.
 
     Args:
         x: Input audio signal
@@ -537,7 +528,7 @@ def sineSubtraction(x, N, H, sfreq, smag, sphase, fs):
     return xr
 
 
-def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
+def stochasticResidualAnal(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.ndarray, sphase: np.ndarray, fs: int, stocf: float) -> np.ndarray:
     """
     Subtract sinusoids and approximate the residual with a stochastic envelope.
 
@@ -576,9 +567,4 @@ def stochasticResidualAnal(x, N, H, sfreq, smag, sphase, fs, stocf):
         env_frames.append(mXrenv)
         pin += H
 
-    if env_frames:
-        stocEnv = np.vstack(env_frames)
-    else:
-        stocEnv = np.empty((0, env_size))
-
-    return stocEnv
+    return np.vstack(env_frames) if env_frames else np.empty((0, env_size))

@@ -23,40 +23,35 @@ Install using pip:
 
     pip install sms-tools
 
+
+When installing via pip, the Cython extension is built automatically if a compatible compiler and Python environment are available. This provides significant speedups for core routines.
+
+    pip install sms-tools
+
+If you are developing locally or want to ensure the Cython extension is built, you can run:
+
+    pip install sms-tools
+    python setup.py build_ext --inplace
+
+If you encounter issues with the Cython extension, ensure you have Cython, setuptools, and a C compiler installed. The extension is optional; sms-tools will fall back to pure-Python routines if unavailable.
+
+You can verify which backend is active at runtime:
+
+    python - <<'PY'
+    from smstools.models import utilFunctions as UF
+    print("Using Cython backend:", UF.UF_C is not None)
+    print("Backend module:", getattr(UF.UF_C, "__file__", None))
+    PY
+
 Binary packages are available for Linux, macOS (Intel & Apple Silicon) and Windows (64 bit) on all recent python versions.
+
+For details about automatic Cython acceleration and fallback behavior, see the
+"Cython backend" section below.
 
 To build and install the package locally you can use the python packaging tools:
 
     pip install build
     python -m build
-
-
-Running tests
--------------
-
-To run the unit test suite locally:
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install -e ".[test]"
-    python -m pytest
-
-To run a single test file:
-
-    python -m pytest tests/test_errors.py
-
-To run a single test function by name:
-
-    python -m pytest tests/test_errors.py -k wavread
-
-Main smoke test files:
-
-    tests/test_models_smoke.py
-    tests/test_transformations_smoke.py
-
-Run only smoke tests:
-
-    python -m pytest -k smoke
 
 
 Cython backend
@@ -75,15 +70,19 @@ You can verify which backend is active at runtime:
     print("Backend module:", getattr(UF.UF_C, "__file__", None))
     PY
 
-Test case summary:
+Testing
+-------
 
-* `tests/test_api_contracts.py`: API/signature and output-shape contract checks for core model entry points.
-* `tests/test_errors.py`: error-handling contracts (invalid parameters and invalid I/O paths).
-* `tests/test_models_smoke.py`: fast smoke coverage for all analysis/synthesis model modules.
-* `tests/test_transformations_smoke.py`: fast smoke coverage for all transformation modules.
-* `tests/test_models_ground_truth.py`: algorithmic/ground-truth model tests on synthetic signals (frequency accuracy, additivity, and quality invariants).
-* `tests/test_transformations_ground_truth.py`: algorithmic/ground-truth transformation tests (scaling/morphing identity behavior and expected interpolation/attenuation trends).
+To install test dependencies and run the test suite, use:
 
+    pip install .[test]
+    pytest
+
+You can run a specific test file with:
+
+    pytest -v tests/test_cython_vs_python.py
+
+This will execute all tests and print detailed output.
 
 Jupyter Notebooks
 -------

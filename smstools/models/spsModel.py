@@ -1,12 +1,12 @@
-
 """
 Sinusoidal plus Stochastic Model (S+S) analysis and synthesis functions.
 Implements analysis, synthesis, and full model for S+S.
 """
 
 import math
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 from scipy.fft import fft, ifft
 from scipy.signal import resample
 from scipy.signal.windows import blackmanharris, hann, triang
@@ -32,7 +32,25 @@ def spsModelAnal(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Analyze a sound using the sinusoidal plus stochastic model.
-    Returns: tfreq, tmag, tphase, stocEnv
+
+    Args:
+        x: Input sound array.
+        fs: Sampling rate.
+        w: Analysis window array.
+        N: FFT size.
+        H: Hop size.
+        t: Peak threshold in negative dB.
+        minSineDur: Minimum sinusoidal track duration.
+        maxnSines: Maximum number of parallel sinusoids.
+        freqDevOffset: Allowed frame-to-frame frequency deviation at 0 Hz.
+        freqDevSlope: Frequency-deviation slope for higher frequencies.
+        stocf: Decimation factor for stochastic envelope.
+
+    Returns:
+        tfreq: Sinusoidal track frequencies.
+        tmag: Sinusoidal track magnitudes.
+        tphase: Sinusoidal track phases.
+        stocEnv: Stochastic envelope.
     """
     tfreq, tmag, tphase = SM.sineModelAnal(
         x, fs, w, N, H, t, maxnSines, minSineDur, freqDevOffset, freqDevSlope
@@ -54,7 +72,20 @@ def spsModelSynth(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Synthesize a sound using the sinusoidal plus stochastic model.
-    Returns: y (output), ys (sinusoidal), yst (stochastic)
+
+    Args:
+        tfreq: Sinusoidal track frequencies.
+        tmag: Sinusoidal track magnitudes.
+        tphase: Sinusoidal track phases.
+        stocEnv: Stochastic envelope.
+        N: Synthesis FFT size.
+        H: Hop size.
+        fs: Sampling rate.
+
+    Returns:
+        y: Output sound.
+        ys: Sinusoidal component.
+        yst: Stochastic component.
     """
     ys = SM.sineModelSynth(tfreq, tmag, tphase, N, H, fs)
     yst = STM.stochasticModelSynth(stocEnv, H, H * 2)
@@ -67,70 +98,45 @@ def spsModel(
     fs: float,
     w: np.ndarray,
     N: int,
-    t: float,
-    stocf: float,
+    H: int = 128,
+    t: float = -80,
+    minSineDur: float = 0.02,
+    maxnSines: int = 100,
+    freqDevOffset: float = 20.0,
+    freqDevSlope: float = 0.01,
+    Ns: int = 512,
+    stocf: float = 0.2,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Full analysis/synthesis of a sound using the sinusoidal plus stochastic model.
-    Returns: y (output), ys (sinusoidal), yst (stochastic)
+
+    Args:
+        x: Input sound array.
+        fs: Sampling rate.
+        w: Analysis window array.
+        N: FFT size.
+        t: Peak threshold in negative dB.
+        stocf: Decimation factor for stochastic envelope.
+
+    Returns:
+        y: Output sound.
+        ys: Sinusoidal component.
+        yst: Stochastic component.
     """
-    hM1 = int(math.floor((w.size + 1) / 2))
-    hM2 = int(math.floor(w.size / 2))
-    Ns = 512
-    H = Ns // 4
-    hNs = Ns // 2
-    pin = max(hNs, hM1)
-    pend = x.size - max(hNs, hM1)
-    ysw = np.zeros(Ns)
-    ystw = np.zeros(Ns)
-    ys = np.zeros(x.size)
-    yst = np.zeros(x.size)
-    w = w / sum(w)
-    sw = np.zeros(Ns)
-    ow = triang(2 * H)
-    sw[hNs - H : hNs + H] = ow
-    bh = blackmanharris(Ns)
-    bh = bh / sum(bh)
-    wr = bh
-    sw[hNs - H : hNs + H] = sw[hNs - H : hNs + H] / bh[hNs - H : hNs + H]
-    sws = H * hann(Ns) / 2
-
-    while pin < pend:
-        # Analysis
-        x1 = x[pin - hM1 : pin + hM2]
-        mX, pX = DFT.dftAnal(x1, w, N)
-        ploc = UF.peakDetection(mX, t)
-        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
-        ipfreq = fs * iploc / float(N)
-        ri = pin - hNs - 1
-        xw2 = x[ri : ri + Ns] * wr
-        fftbuffer = np.zeros(Ns)
-        fftbuffer[:hNs] = xw2[hNs:]
-        fftbuffer[hNs:] = xw2[:hNs]
-        X2 = fft(fftbuffer)
-
-        # Synthesis
-        Ys = UF.genSpecSines(ipfreq, ipmag, ipphase, Ns, fs)
-        Xr = X2 - Ys
-        mXr = 20 * np.log10(abs(Xr[:hNs]))
-        mXrenv = resample(np.maximum(-200, mXr), int(mXr.size * stocf))
-        stocEnv = resample(mXrenv, hNs)
-        pYst = 2 * np.pi * np.random.rand(hNs)
-        Yst = np.zeros(Ns, dtype=complex)
-        Yst[:hNs] = 10 ** (stocEnv / 20) * np.exp(1j * pYst)
-        Yst[hNs + 1 :] = 10 ** (stocEnv[:0:-1] / 20) * np.exp(-1j * pYst[:0:-1])
-
-        fftbuffer = np.real(ifft(Ys))
-        ysw[: hNs - 1] = fftbuffer[hNs + 1 :]
-        ysw[hNs - 1 :] = fftbuffer[: hNs + 1]
-
-        fftbuffer = np.real(ifft(Yst))
-        ystw[: hNs - 1] = fftbuffer[hNs + 1 :]
-        ystw[hNs - 1 :] = fftbuffer[: hNs + 1]
-
-        ys[ri : ri + Ns] += sw * ysw
-        yst[ri : ri + Ns] += sws * ystw
-        pin += H
-
-    y = ys + yst
+    # Use analysis then synthesis, ensure output lengths match input
+    tfreq, tmag, tphase, stocEnv = spsModelAnal(
+        x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope, stocf
+    )
+    y, ys, yst = spsModelSynth(tfreq, tmag, tphase, stocEnv, Ns, H, fs)
+    # Ensure output lengths match input
+    def match_length(arr, target_len):
+        if len(arr) > target_len:
+            return arr[:target_len]
+        elif len(arr) < target_len:
+            return np.pad(arr, (0, target_len - len(arr)))
+        else:
+            return arr
+    y = match_length(y, len(x))
+    ys = match_length(ys, len(x))
+    yst = match_length(yst, len(x))
     return y, ys, yst

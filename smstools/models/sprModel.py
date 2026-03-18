@@ -14,8 +14,16 @@ from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF
 
 
-def _build_overlap_add_window(Ns, H):
-    """Build normalized overlap-add synthesis window used by SPR."""
+def _build_overlap_add_window(Ns: int, H: int) -> tuple[np.ndarray, np.ndarray]:
+    """Build normalized overlap-add synthesis window used by SPR.
+
+    Args:
+        Ns: Synthesis FFT size.
+        H: Hop size.
+    Returns:
+        sw: Overlap-add window.
+        bh: Blackman-Harris window.
+    """
     hNs = Ns // 2
     sw = np.zeros(Ns)
     ow = triang(2 * H)
@@ -26,15 +34,33 @@ def _build_overlap_add_window(Ns, H):
     return sw, bh
 
 
-def _undo_zero_phase(fftbuffer, hNs):
-    """Undo zero-phase FFT arrangement back to time-domain frame order."""
+def _undo_zero_phase(fftbuffer: np.ndarray, hNs: int) -> np.ndarray:
+    """Undo zero-phase FFT arrangement back to time-domain frame order.
+
+    Args:
+        fftbuffer: FFT buffer.
+        hNs: Half synthesis FFT size.
+    Returns:
+        yw: Time-domain frame.
+    """
     yw = np.zeros(fftbuffer.size)
     yw[: hNs - 1] = fftbuffer[hNs + 1 :]
     yw[hNs - 1 :] = fftbuffer[: hNs + 1]
     return yw
 
 
-def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope):
+def sprModelAnal(
+    x: np.ndarray,
+    fs: float,
+    w: np.ndarray,
+    N: int,
+    H: int,
+    t: float,
+    minSineDur: float,
+    maxnSines: int,
+    freqDevOffset: float,
+    freqDevSlope: float,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Analyze sound using sinusoidal-plus-residual decomposition.
 
@@ -51,7 +77,9 @@ def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDe
         freqDevSlope: Frequency-deviation slope for higher frequencies.
 
     Returns:
-        tfreq, tmag, tphase: Sinusoidal tracks.
+        tfreq: Sinusoidal track frequencies.
+        tmag: Sinusoidal track magnitudes.
+        tphase: Sinusoidal track phases.
         xr: Residual signal.
     """
 
@@ -63,12 +91,22 @@ def sprModelAnal(x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDe
     return tfreq, tmag, tphase, xr
 
 
-def sprModelSynth(tfreq, tmag, tphase, xr, N, H, fs):
+def sprModelSynth(
+    tfreq: np.ndarray,
+    tmag: np.ndarray,
+    tphase: np.ndarray,
+    xr: np.ndarray,
+    N: int,
+    H: int,
+    fs: float,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Synthesize sound from sinusoidal tracks and residual signal.
 
     Args:
-        tfreq, tmag, tphase: Sinusoidal track frequencies, magnitudes, and phases.
+        tfreq: Sinusoidal track frequencies.
+        tmag: Sinusoidal track magnitudes.
+        tphase: Sinusoidal track phases.
         xr: Residual signal.
         N: Synthesis FFT size.
         H: Hop size.
@@ -85,7 +123,18 @@ def sprModelSynth(tfreq, tmag, tphase, xr, N, H, fs):
     return y, ys
 
 
-def sprModel(x, fs, w, N, t):
+def sprModel(
+    x: np.ndarray,
+    fs: float,
+    w: np.ndarray,
+    N: int,
+    H: int,
+    t: float,
+    minSineDur: float = 0.02,
+    maxnSines: int = 100,
+    freqDevOffset: float = 20,
+    freqDevSlope: float = 0.01,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     One-pass analysis/synthesis using sinusoidal-plus-residual model.
 
@@ -94,7 +143,12 @@ def sprModel(x, fs, w, N, t):
         fs: Sampling rate.
         w: Analysis window.
         N: FFT size (minimum 512).
+        H: Hop size.
         t: Peak threshold in negative dB.
+        minSineDur: Minimum sinusoidal track duration (in seconds, default 0.02).
+        maxnSines: Maximum number of parallel sinusoids (default 100).
+        freqDevOffset: Allowed frame-to-frame frequency deviation at 0 Hz (default 20).
+        freqDevSlope: Frequency-deviation slope for higher frequencies (default 0.01).
 
     Returns:
         y: Reconstructed signal.
@@ -102,43 +156,19 @@ def sprModel(x, fs, w, N, t):
         xr: Residual component.
     """
 
-    hM1 = (w.size + 1) // 2
-    hM2 = w.size // 2
+    # Use analysis then synthesis, ensure output lengths match input
+    tfreq, tmag, tphase, xr = sprModelAnal(
+        x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope
+    )
     Ns = 512
-    H = Ns // 4
-    hNs = Ns // 2
-    pin = max(hNs, hM1)
-    pend = x.size - max(hNs, hM1)
-    ys = np.zeros(x.size)
-    xr = np.zeros(x.size)
-    w = w / np.sum(w)
-    sw, wr = _build_overlap_add_window(Ns, H)
-
-    while pin < pend:
-        # Analysis
-        x1 = x[pin - hM1 : pin + hM2]
-        mX, pX = DFT.dftAnal(x1, w, N)
-        ploc = UF.peakDetection(mX, t)
-        iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc)
-        ipfreq = fs * iploc / float(N)
-
-        ri = pin - hNs - 1
-        xw2 = x[ri : ri + Ns] * wr
-        fftbuffer = np.zeros(Ns)
-        fftbuffer[:hNs] = xw2[hNs:]
-        fftbuffer[hNs:] = xw2[:hNs]
-        X2 = fft(fftbuffer)
-
-        # Synthesis
-        Ys = UF.genSpecSines(ipfreq, ipmag, ipphase, Ns, fs)
-        Xr = X2 - Ys
-
-        ysw = _undo_zero_phase(np.real(ifft(Ys)), hNs)
-        xrw = _undo_zero_phase(np.real(ifft(Xr)), hNs)
-
-        ys[ri : ri + Ns] += sw * ysw
-        xr[ri : ri + Ns] += sw * xrw
-        pin += H
-
-    y = ys + xr
+    y, ys = sprModelSynth(tfreq, tmag, tphase, xr, Ns, H, fs)
+    # Ensure output lengths match input
+    if len(y) > len(x):
+        y = y[:len(x)]
+        ys = ys[:len(x)]
+        xr = xr[:len(x)]
+    elif len(y) < len(x):
+        y = np.pad(y, (0, len(x) - len(y)))
+        ys = np.pad(ys, (0, len(x) - len(ys)))
+        xr = np.pad(xr, (0, len(x) - len(xr)))
     return y, ys, xr

@@ -10,12 +10,26 @@ from scipy.signal import resample
 from smstools.models import dftModel as DFT
 
 
-def stftFiltering(x, fs, w, N, H, filter):
+def stftFiltering(
+    x: np.ndarray,
+    fs: float,
+    w: np.ndarray,
+    N: int,
+    H: int,
+    filter: np.ndarray
+) -> np.ndarray:
     """
-    Apply a filter to a sound by using the STFT
-    x: input sound, w: analysis window, N: FFT size, H: hop size
-    filter: magnitude response of filter with frequency-magnitude pairs (in dB)
-    returns y: output sound
+    Apply a filter to a sound by using the STFT.
+
+    Args:
+        x: Input sound array.
+        fs: Sampling rate.
+        w: Analysis window array.
+        N: FFT size.
+        H: Hop size.
+        filter: Magnitude response of filter (in dB).
+    Returns:
+        y: Output sound array.
     """
 
     M = w.size  # size of analysis window
@@ -48,14 +62,34 @@ def stftFiltering(x, fs, w, N, H, filter):
     return y
 
 
-def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
+def stftMorph(
+    x1: np.ndarray,
+    x2: np.ndarray,
+    fs: float,
+    w1: np.ndarray,
+    N1: int,
+    w2: np.ndarray,
+    N2: int,
+    H1: int,
+    smoothf: float,
+    balancef: float
+) -> np.ndarray:
     """
-    Morph of two sounds using the STFT
-    x1, x2: input sounds, fs: sampling rate
-    w1, w2: analysis windows, N1, N2: FFT sizes, H1: hop size
-    smoothf: smooth factor of sound 2, bigger than 0 to max of 1, where 1 is no smothing,
-    balancef: balance between the 2 sounds, from 0 to 1, where 0 is sound 1 and 1 is sound 2
-    returns y: output sound
+    Morph two sounds using the STFT.
+
+    Args:
+        x1: First input sound array.
+        x2: Second input sound array.
+        fs: Sampling rate.
+        w1: Analysis window for x1.
+        N1: FFT size for x1.
+        w2: Analysis window for x2.
+        N2: FFT size for x2.
+        H1: Hop size for x1.
+        smoothf: Smooth factor for sound 2 (0 < smoothf <= 1).
+        balancef: Balance between the two sounds (0 = x1, 1 = x2).
+    Returns:
+        y: Output sound array.
     """
 
     if N2 / 2 * smoothf < 3:  # raise exception if decimation factor too small
@@ -90,7 +124,7 @@ def stftMorph(x1, x2, fs, w1, N1, w2, N2, H1, smoothf, balancef):
     x2 = np.append(x2, np.zeros(hM2_1))  # add zeros at the end to analyze last sample
     pin2 = hM2_1  # initialize sound pointer in middle of analysis window
     y = np.zeros(x1.size)  # initialize output array
-    for l in range(L):
+    for _ in range(L):
         # -----analysis-----
         mX1, pX1 = DFT.dftAnal(x1[pin1 - hM1_1 : pin1 + hM1_2], w1, N1)  # compute dft
         mX2, pX2 = DFT.dftAnal(x2[pin2 - hM2_1 : pin2 + hM2_2], w2, N2)  # compute dft

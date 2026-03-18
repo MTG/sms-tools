@@ -8,120 +8,129 @@
 import numpy as np
 from scipy.fft import irfft, rfft
 from smstools.models import utilFunctions as UF
-tol = 1e-14  # threshold used to compute phase
-_EPS = np.finfo(float).eps
 
+tol: float = 1e-14  # threshold used to compute phase
+_EPS: float = np.finfo(float).eps
 
-def _validate_window_fft_size(w, N):
-    if not UF.isPower2(N):
-        raise ValueError("FFT size (N) is not a power of 2")
-    if w.size > N:
-        raise ValueError("Window size (M) is bigger than FFT size")
-
-
-def _positive_spectrum_from_fft(X, hN):
+def _validate_window_fft_size(w: np.ndarray, N: int) -> None:
     """
-    The function `_positive_spectrum_from_fft` calculates the magnitude spectrum in decibels from the
-    FFT output.
+    Validate window and FFT size for DFT operations.
+
+    Args:
+        w: Analysis window array.
+        N: FFT size.
+
+    Raises:
+        ValueError: If N is not a power of 2 or w is larger than N.
+    """
+    if not UF.isPower2(N):
+        raise ValueError(f"FFT size (N={N}) is not a power of 2. Provided window size: {w.size}.")
+    if w.size > N:
+        raise ValueError(f"Window size (M={w.size}) is bigger than FFT size (N={N}).")
+
+def _positive_spectrum_from_fft(X: np.ndarray, hN: int) -> np.ndarray:
+    """
+    Calculate magnitude spectrum in decibels from FFT output.
+
+    Args:
+        X: FFT output array.
+        hN: Size of positive spectrum.
+
+    Returns:
+        Magnitude spectrum in dB.
     """
     absX = np.abs(X[:hN])
-    np.maximum(absX, _EPS, out=absX)  # avoid log of zero by replacing small values with _EPS
+    np.maximum(absX, _EPS, out=absX)
     return 20 * np.log10(absX)
 
+def _build_positive_spectrum(mX: np.ndarray, pX: np.ndarray) -> np.ndarray:
+    """
+    Build positive spectrum from magnitude and phase.
 
-def _build_positive_spectrum(mX, pX):
+    Args:
+        mX: Magnitude spectrum (dB).
+        pX: Phase spectrum (radians).
+
+    Returns:
+        Complex positive spectrum.
+    """
     pos_mag = 10 ** (mX / 20)
     return pos_mag * np.exp(1j * pX)
 
-
-def dftModel(x, w, N):
+def dftAnal(x: np.ndarray, w: np.ndarray, N: int) -> tuple[np.ndarray, np.ndarray]:
     """
-    Analysis/synthesis of a signal using the discrete Fourier transform
-    x: input signal, w: analysis window, N: FFT size
-    returns y: output signal
-    """
+    Analysis of a signal using the discrete Fourier transform.
 
+    Args:
+        x: Input signal.
+        w: Analysis window.
+        N: FFT size.
+
+    Returns:
+        mX: Magnitude spectrum (dB).
+        pX: Phase spectrum (radians).
+    """
     _validate_window_fft_size(w, N)
-
-    if not np.any(x):  # if input array is zeros return empty output
-        return np.zeros(x.size)
-
-    hN = (N // 2) + 1  # size of positive spectrum, it includes sample 0
-    hM1 = (w.size + 1) // 2  # half analysis window size by rounding
-    hM2 = w.size // 2  # half analysis window size by floor
-    fftbuffer = np.zeros(N)  # initialize buffer for FFT
-    y = np.zeros(x.size)  # initialize output array
-
-    # ----analysis--------
-    xw = x * w  # window the input sound
-    fftbuffer[:hM1] = xw[hM2:]  # zero-phase window in fftbuffer
+    hN = (N // 2) + 1
+    hM1 = (w.size + 1) // 2
+    hM2 = w.size // 2
+    fftbuffer = np.zeros(N)
+    w = w / np.sum(w)
+    xw = x * w
+    fftbuffer[:hM1] = xw[hM2:]
     fftbuffer[-hM2:] = xw[:hM2]
-    Xh = rfft(fftbuffer, n=N)  # compute positive spectrum (real FFT)
-    mX = _positive_spectrum_from_fft(Xh, hN)  # magnitude spectrum in dB
-    pX = np.unwrap(np.angle(Xh))  # unwrapped phase spectrum of positive frequencies
+    Xh = rfft(fftbuffer, n=N)
+    mX = _positive_spectrum_from_fft(Xh, hN)
+    Xh = Xh.copy()
+    Xh.real[np.abs(Xh.real) < tol] = 0.0
+    Xh.imag[np.abs(Xh.imag) < tol] = 0.0
+    pX = np.unwrap(np.angle(Xh))
+    return mX, pX
 
-    # -----synthesis-----
+def dftSynth(mX: np.ndarray, pX: np.ndarray, M: int) -> np.ndarray:
+    """
+    Synthesis of a signal using the discrete Fourier transform.
+
+    Args:
+        mX: Magnitude spectrum (dB).
+        pX: Phase spectrum (radians).
+        M: Window size.
+
+    Returns:
+        y: Output signal (length M).
+    """
+    hN = mX.size
+    N = (hN - 1) * 2
+    if not UF.isPower2(N):
+        raise ValueError(f"size of mX ({mX.size}) is not (N/2)+1 for N={N}. Check input spectrum size.")
+    hM1 = (M + 1) // 2
+    hM2 = M // 2
+    y = np.zeros(M)
     Yh = _build_positive_spectrum(mX, pX)
-    fftbuffer = irfft(Yh, n=N)  # compute inverse real FFT
-    y[:hM2] = fftbuffer[-hM2:]  # undo zero-phase window
+    fftbuffer = irfft(Yh, n=N)
+    y[:hM2] = fftbuffer[-hM2:]
     y[hM2:] = fftbuffer[:hM1]
     return y
 
-
-def dftAnal(x, w, N):
+def dftModel(x: np.ndarray, w: np.ndarray, N: int) -> np.ndarray:
     """
-    Analysis of a signal using the discrete Fourier transform
-    x: input signal, w: analysis window, N: FFT size
-    returns mX, pX: magnitude and phase spectrum
+    Analysis/synthesis of a signal using the discrete Fourier transform.
 
-    The analysis window is internally normalized by sum(w), so the resulting
-    spectra correspond to x * (w / sum(w)).
+    Args:
+        x: Input signal.
+        w: Analysis window.
+        N: FFT size.
+
+    Returns:
+        y: Output signal (same shape as x).
     """
-
-    _validate_window_fft_size(w, N)
-
-    hN = (N // 2) + 1  # size of positive spectrum, it includes sample 0
-    hM1 = (w.size + 1) // 2  # half analysis window size by rounding
-    hM2 = w.size // 2  # half analysis window size by floor
-    fftbuffer = np.zeros(N)  # initialize buffer for FFT
-    w = w / np.sum(w)  # normalize analysis window
-    xw = x * w  # window the input sound
-    fftbuffer[:hM1] = xw[hM2:]  # zero-phase window in fftbuffer
-    fftbuffer[-hM2:] = xw[:hM2]
-    Xh = rfft(fftbuffer, n=N)  # compute positive spectrum (real FFT)
-    mX = _positive_spectrum_from_fft(Xh, hN)  # magnitude spectrum in dB
-
-    Xh = Xh.copy()
-    Xh.real[
-        np.abs(Xh.real) < tol
-    ] = 0.0  # for phase calculation set to 0 the small values
-    Xh.imag[
-        np.abs(Xh.imag) < tol
-    ] = 0.0  # for phase calculation set to 0 the small values
-    pX = np.unwrap(np.angle(Xh))  # unwrapped phase spectrum of positive frequencies
-    return mX, pX
-
-
-def dftSynth(mX, pX, M):
-    """
-    Synthesis of a signal using the discrete Fourier transform
-    mX: magnitude spectrum, pX: phase spectrum, M: window size
-    returns y: output signal
-
-    If mX/pX come from dftAnal(), the output corresponds to the normalized
-    windowed signal used there (x * (w / sum(w))).
-    """
-
-    hN = mX.size  # size of positive spectrum, it includes sample 0
-    N = (hN - 1) * 2  # FFT size
-    if not UF.isPower2(N):  # raise error if N not a power of two, thus mX is wrong
-        raise ValueError("size of mX is not (N/2)+1")
-
-    hM1 = (M + 1) // 2  # half analysis window size by rounding
-    hM2 = M // 2  # half analysis window size by floor
-    y = np.zeros(M)  # initialize output array
-    Yh = _build_positive_spectrum(mX, pX)
-    fftbuffer = irfft(Yh, n=N)  # compute inverse real FFT
-    y[:hM2] = fftbuffer[-hM2:]  # undo zero-phase window
-    y[hM2:] = fftbuffer[:hM1]
+    # Analysis
+    mX, pX = dftAnal(x, w, N)
+    # Synthesis
+    y = dftSynth(mX, pX, w.size)
+    # Ensure output length matches input
+    if len(y) > len(x):
+        y = y[:len(x)]
+    elif len(y) < len(x):
+        y = np.pad(y, (0, len(x) - len(y)))
     return y
