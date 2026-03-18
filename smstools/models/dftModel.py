@@ -5,8 +5,10 @@
 # - `dftSynth`: synthesis of a time-domain frame from magnitude/phase
 # - `dftModel`: convenience analysis+synthesis round-trip for one frame
 
+
 import numpy as np
 from scipy.fft import irfft, rfft
+
 from smstools.models import utilFunctions as UF
 
 tol: float = 1e-14  # threshold used to compute phase
