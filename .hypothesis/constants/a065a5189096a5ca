@@ -1,0 +1,4 @@
+# file: /Users/xserra/sms-tools/smstools/models/utilFunctions.py
+# hypothesis_version: 6.151.9
+
+[1e-10, 0.01168, 0.14128, 0.25, 0.33, 0.35875, 0.48829, 0.5, 1.0, 1.4, 2.0, -200, 512, 'Input file is wrong', 'afplay', 'aplay', 'darwin', 'float32', 'float64', 'int', 'int16', 'int32', 'int64', 'linux', 'linux2', 'win32']

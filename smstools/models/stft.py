@@ -1,100 +1,107 @@
-# functions that implement analysis and synthesis of sounds using the Short-Time Fourier Transform
-# (for example usage check stft_function.py in the interface directory)
+# Short-Time Fourier Transform (STFT) utilities used by sms-tools.
+#
+# This module provides:
+# - `stftAnal`: frame-wise STFT analysis (magnitude/phase)
+# - `stftSynth`: overlap-add synthesis from STFT spectra
+# - `stft`: convenience analysis+synthesis round-trip
+
 
 import numpy as np
 
 from smstools.models import dftModel as DFT
 
 
-def stft(x, w, N, H):
+def stftAnal(x: np.ndarray, w: np.ndarray, N: int, H: int) -> tuple[np.ndarray, np.ndarray]:
     """
-    Analysis/synthesis of a sound using the short-time Fourier transform
-    x: input sound, w: analysis window, N: FFT size, H: hop size
-    returns y: output sound
+    Analysis of a sound using the short-time Fourier transform.
+
+    Args:
+        x: Input sound array.
+        w: Analysis window array.
+        N: FFT size.
+        H: Hop size.
+
+    Returns:
+        xmX: Magnitude spectra (frames x bins).
+        xpX: Phase spectra (frames x bins).
+
+    Raises:
+        ValueError: If hop size H is zero or negative.
     """
-
-    if H <= 0:  # raise error if hop size 0 or negative
-        raise ValueError("Hop size (H) smaller or equal to 0")
-
-    M = w.size  # size of analysis window
-    hM1 = (M + 1) // 2  # half analysis window size by rounding
-    hM2 = M // 2  # half analysis window size by floor
-    x = np.append(
-        np.zeros(hM2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hM1))  # add zeros at the end to analyze last sample
-    pin = hM1  # initialize sound pointer in middle of analysis window
-    pend = x.size - hM1  # last sample to start a frame
-    w = w / sum(w)  # normalize analysis window
-    y = np.zeros(x.size)  # initialize output array
-    while pin <= pend:  # while sound pointer is smaller than last sample
-        # -----analysis-----
-        x1 = x[pin - hM1 : pin + hM2]  # select one frame of input sound
-        mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        # -----synthesis-----
-        y1 = DFT.dftSynth(mX, pX, M)  # compute idft
-        y[pin - hM1 : pin + hM2] += H * y1  # overlap-add to generate output sound
-        pin += H  # advance sound pointer
-    y = np.delete(
-        y, range(hM2)
-    )  # delete half of first window which was added in stftAnal
-    y = np.delete(
-        y, range(y.size - hM1, y.size)
-    )  # delete half of the last window which as added in stftAnal
-    return y
-
-
-def stftAnal(x, w, N, H):
-    """
-    Analysis of a sound using the short-time Fourier transform
-    x: input array sound, w: analysis window, N: FFT size, H: hop size
-    returns xmX, xpX: magnitude and phase spectra
-    """
-    if H <= 0:  # raise error if hop size 0 or negative
-        raise ValueError("Hop size (H) smaller or equal to 0")
-
-    M = w.size  # size of analysis window
-    hM1 = (M + 1) // 2  # half analysis window size by rounding
-    hM2 = M // 2  # half analysis window size by floor
-    x = np.append(
-        np.zeros(hM2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hM2))  # add zeros at the end to analyze last sample
-    pin = hM1  # initialize sound pointer in middle of analysis window
-    pend = x.size - hM1  # last sample to start a frame
-    w = w / sum(w)  # normalize analysis window
-    xmX = []  # Initialise empty list for mX
-    xpX = []  # Initialise empty list for pX
-    while pin <= pend:  # while sound pointer is smaller than last sample
-        x1 = x[pin - hM1 : pin + hM2]  # select one frame of input sound
-        mX, pX = DFT.dftAnal(x1, w, N)  # compute dft
-        xmX.append(np.array(mX))  # Append output to list
-        xpX.append(np.array(pX))
-        pin += H  # advance sound pointer
-    xmX = np.array(xmX)  # Convert to numpy array
-    xpX = np.array(xpX)
+    if H <= 0:
+        raise ValueError(f"Hop size (H={H}) smaller or equal to 0. Provided window size: {w.size}.")
+    M = w.size
+    hM1 = (M + 1) // 2
+    hM2 = M // 2
+    x = np.concatenate((np.zeros(hM2), x, np.zeros(hM2)))
+    pin = hM1
+    pend = x.size - hM1
+    w = w / np.sum(w)
+    if pin > pend:
+        hN = (N // 2) + 1
+        return np.empty((0, hN)), np.empty((0, hN))
+    nFrames = 1 + (pend - pin) // H
+    hN = (N // 2) + 1
+    xmX = np.empty((nFrames, hN))
+    xpX = np.empty((nFrames, hN))
+    frame = 0
+    while pin <= pend:
+        x1 = x[pin - hM1 : pin + hM2]
+        mX, pX = DFT.dftAnal(x1, w, N)
+        xmX[frame, :] = mX
+        xpX[frame, :] = pX
+        frame += 1
+        pin += H
     return xmX, xpX
 
+def stftSynth(mY: np.ndarray, pY: np.ndarray, M: int, H: int) -> np.ndarray:
+    """
+    Synthesis of a sound using the short-time Fourier transform.
 
-def stftSynth(mY, pY, M, H):
+    Args:
+        mY: Magnitude spectra (frames x bins).
+        pY: Phase spectra (frames x bins).
+        M: Window size.
+        H: Hop size.
+
+    Returns:
+        y: Output sound array (same shape as input, minus padding).
     """
-    Synthesis of a sound using the short-time Fourier transform
-    mY: magnitude spectra, pY: phase spectra, M: window size, H: hop-size
-    returns y: output sound
-    """
-    hM1 = (M + 1) // 2  # half analysis window size by rounding
-    hM2 = M // 2  # half analysis window size by floor
-    nFrames = mY[:, 0].size  # number of frames
-    y = np.zeros(nFrames * H + hM1 + hM2)  # initialize output array
+    hM1 = (M + 1) // 2
+    hM2 = M // 2
+    nFrames = mY.shape[0]
+    y = np.zeros(nFrames * H + hM1 + hM2)
     pin = hM1
-    for i in range(nFrames):  # iterate over all frames
-        y1 = DFT.dftSynth(mY[i, :], pY[i, :], M)  # compute idft
-        y[pin - hM1 : pin + hM2] += H * y1  # overlap-add to generate output sound
-        pin += H  # advance sound pointer
-    y = np.delete(
-        y, range(hM2)
-    )  # delete half of first window which was added in stftAnal
-    y = np.delete(
-        y, range(y.size - hM1, y.size)
-    )  # delete the end of the sound that was added in stftAnal
+    for i in range(nFrames):
+        y1 = DFT.dftSynth(mY[i, :], pY[i, :], M)
+        y[pin - hM1 : pin + hM2] += H * y1
+        pin += H
+    return y[hM2 : y.size - hM1]
+
+def stft(x: np.ndarray, w: np.ndarray, N: int, H: int) -> np.ndarray:
+    """
+    Analysis/synthesis of a sound using the short-time Fourier transform.
+
+    Args:
+        x: Input sound array.
+        w: Analysis window array.
+        N: FFT size.
+        H: Hop size.
+
+    Returns:
+        y: Output sound array (same shape as input, minus padding).
+
+    Raises:
+        ValueError: If hop size H is zero or negative.
+    """
+    if H <= 0:
+        raise ValueError(f"Hop size (H={H}) smaller or equal to 0. Provided window size: {w.size}.")
+    M = w.size
+    mX, pX = stftAnal(x, w, N, H)
+    y = stftSynth(mX, pX, M, H)
+    # Ensure output length matches input
+    if len(y) > len(x):
+        y = y[:len(x)]
+    elif len(y) < len(x):
+        y = np.pad(y, (0, len(x) - len(y)))
     return y

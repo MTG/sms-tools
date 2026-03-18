@@ -1,5 +1,8 @@
-# functions that implement analysis and synthesis of sounds using the Stochastic Model
-# (for example usage check stochasticModel_function.py in the interface directory)
+"""Stochastic model analysis and synthesis.
+
+Implements frame-based stochastic envelope analysis and re-synthesis in linear or
+mel frequency scale. Public API remains compatible with the original module.
+"""
 
 import numpy as np
 from scipy.fft import fft, ifft
@@ -10,180 +13,297 @@ from scipy.signal.windows import hann
 from smstools.models import utilFunctions as UF
 
 
-def hertz_to_mel(f):
+def hertz_to_mel(f: float | np.ndarray) -> float | np.ndarray:
     """
-    Conversion from hertz scale to mel scale
+    Convert Hertz to mel scale.
+
+    Args:
+        f: Frequency in Hertz (scalar or array).
+    Returns:
+        Frequency in mel scale (scalar or array).
     """
     return 2595 * np.log10(1 + f / 700)
 
 
-def mel_to_hetz(m):
+def mel_to_hetz(m: float | np.ndarray) -> float | np.ndarray:
     """
-    Conversion from mel scale to hertz scale
+    Convert mel scale to Hertz.
+
+    Args:
+        m: Frequency in mel scale (scalar or array).
+    Returns:
+        Frequency in Hertz (scalar or array).
     """
     return 700 * (10 ** (m / 2595) - 1)
 
 
-def stochasticModelAnal(x, H, N, stocf, fs=44100, melScale=1):
+def mel_to_hertz(m: float | np.ndarray) -> float | np.ndarray:
     """
-    Stochastic analysis of a sound
-    x: input array sound, H: hop size, N: fftsize
-    stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
-    fs: sampling rate
-    melScale: choose between linear scale, 0, or mel scale, 1
-    returns stocEnv: stochastic envelope
-    """
+    Convert mel scale to Hertz (spelling-correct alias).
 
-    hN = N // 2 + 1  # positive size of fft
-    No2 = N // 2  # half of N
-    if hN * stocf < 3:  # raise exception if decimation factor too small
+    Args:
+        m: Frequency in mel scale (scalar or array).
+    Returns:
+        Frequency in Hertz (scalar or array).
+    """
+    return mel_to_hetz(m)
+
+
+def _validate_stochastic_params(H: int, N: int, stocf: float) -> None:
+    """
+    Validate common stochastic-model parameters.
+
+    Ensures hop size and FFT size are valid and that the stochastic decimation
+    factor is within supported limits.
+
+    Args:
+        H: Hop size.
+        N: FFT size.
+        stocf: Stochastic decimation factor.
+    Raises:
+        ValueError: If parameters are invalid.
+    """
+    hN = N // 2 + 1
+    if hN * stocf < 3:
         raise ValueError("Stochastic decimation factor too small")
-
-    if stocf > 1:  # raise exception if decimation factor too big
+    if stocf > 1:
         raise ValueError("Stochastic decimation factor above 1")
-
-    if H <= 0:  # raise error if hop size 0 or negative
+    if H <= 0:
         raise ValueError("Hop size (H) smaller or equal to 0")
-
-    if not (UF.isPower2(N)):  # raise error if N not a power of two
+    if not UF.isPower2(N):
         raise ValueError("FFT size (N) is not a power of 2")
 
-    w = hann(N)  # analysis window
-    x = np.append(
-        np.zeros(No2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(No2))  # add zeros at the end to analyze last sample
-    pin = No2  # initialize sound pointer in middle of analysis window
-    pend = x.size - No2  # last sample to start a frame
-    if melScale == 1:
-        binFreqsMel = hertz_to_mel(np.arange(hN) * fs / float(N))
-        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
+
+def _mel_grids(hN: int, fs: float, N: int) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Build mel-frequency grids used for interpolation.
+
+    Returns both the original bin-frequency mel grid and a uniformly spaced mel
+    grid of the same length for spline-based re-mapping.
+
+    Args:
+        hN: Number of positive FFT bins.
+        fs: Sampling rate.
+        N: FFT size.
+    Returns:
+        bin_freqs_mel: Mel scale of FFT bin frequencies.
+        uniform_mel_freq: Uniformly spaced mel grid.
+    """
+    bin_freqs_mel = hertz_to_mel(np.arange(hN) * fs / float(N))
+    uniform_mel_freq = np.linspace(bin_freqs_mel[0], bin_freqs_mel[-1], hN)
+    return bin_freqs_mel, uniform_mel_freq
+
+
+def _analyze_frame_to_env(
+    mX: np.ndarray,
+    stocf: float,
+    mel_scale: bool,
+    bin_freqs_mel: np.ndarray | None = None,
+    uniform_mel_freq: np.ndarray | None = None
+) -> np.ndarray:
+    """
+    Convert one magnitude spectrum frame to a decimated stochastic envelope.
+
+    Optionally performs mel-domain interpolation before decimation.
+
+    Args:
+        mX: Magnitude spectrum frame.
+        stocf: Decimation factor.
+        mel_scale: Whether to use mel scale.
+        bin_freqs_mel: Mel scale of FFT bin frequencies.
+        uniform_mel_freq: Uniformly spaced mel grid.
+    Returns:
+        Decimated stochastic envelope.
+    """
+    mX_clip = np.maximum(-200, mX)
+    env_size = int(stocf * mX.size)
+    if mel_scale:
+        spl = splrep(bin_freqs_mel, mX_clip)
+        return resample(splev(uniform_mel_freq, spl), env_size)
+    return resample(mX_clip, env_size)
+
+
+def _synthesize_env_to_magnitude(
+    env_frame: np.ndarray,
+    hN: int,
+    mel_scale: bool,
+    bin_freqs_mel: np.ndarray | None = None,
+    uniform_mel_freq: np.ndarray | None = None
+) -> np.ndarray:
+    """
+    Expand one stochastic envelope back to FFT-bin magnitude resolution.
+
+    Optionally maps from uniform mel grid back to original FFT-bin mel spacing.
+
+    Args:
+        env_frame: Stochastic envelope frame.
+        hN: Number of positive FFT bins.
+        mel_scale: Whether to use mel scale.
+        bin_freqs_mel: Mel scale of FFT bin frequencies.
+        uniform_mel_freq: Uniformly spaced mel grid.
+    Returns:
+        Magnitude spectrum frame.
+    """
+    mY = resample(env_frame, hN)
+    if mel_scale:
+        spl = splrep(uniform_mel_freq, mY)
+        return splev(bin_freqs_mel, spl)
+    return mY
+
+
+def _build_random_phase_spectrum(mY: np.ndarray, N: int, hN: int) -> np.ndarray:
+    """
+    Create a Hermitian spectrum from magnitude with random positive-phase bins.
+
+    The negative-frequency side is mirrored to ensure a real-valued inverse FFT.
+
+    Args:
+        mY: Magnitude spectrum frame.
+        N: FFT size.
+        hN: Number of positive FFT bins.
+    Returns:
+        Hermitian spectrum with random phase.
+    """
+    pY = 2 * np.pi * np.random.rand(hN)
+    Y = np.zeros(N, dtype=complex)
+    Y[:hN] = 10 ** (mY / 20) * np.exp(1j * pY)
+    Y[hN:] = 10 ** (mY[-2:0:-1] / 20) * np.exp(-1j * pY[-2:0:-1])
+    return Y
+
+
+def stochasticModelAnal(
+    x: np.ndarray,
+    H: int,
+    N: int,
+    stocf: float,
+    fs: float = 44100,
+    melScale: int = 1
+) -> np.ndarray:
+    """
+    Analyze sound into stochastic spectral envelopes.
+
+    Args:
+        x: Input sound array.
+        H: Hop size.
+        N: FFT size.
+        stocf: Decimation factor for stochastic envelope (0 < stocf <= 1).
+        fs: Sampling rate.
+        melScale: Use mel scale when 1, linear scale when 0.
+
+    Returns:
+        stocEnv: Stochastic envelopes, one row per frame.
+    """
+
+    _validate_stochastic_params(H, N, stocf)
+
+    hN = N // 2 + 1
+    no2 = N // 2
+    w = hann(N)
+    x = np.concatenate([np.zeros(no2), x, np.zeros(no2)])
+    pin = no2
+    pend = x.size - no2
+    mel_scale = melScale == 1
+    if mel_scale:
+        bin_freqs_mel, uniform_mel_freq = _mel_grids(hN, fs, N)
+    else:
+        bin_freqs_mel, uniform_mel_freq = None, None
+
+    env_frames = []
     while pin <= pend:
-        xw = x[pin - No2 : pin + No2] * w  # window the input sound
-        X = fft(xw)  # compute FFT
-        mX = 20 * np.log10(abs(X[:hN]))  # magnitude spectrum of positive frequencies
-        if melScale == 1:
-            spl = splrep(binFreqsMel, np.maximum(-200, mX))
-            mY = resample(
-                splev(uniformMelFreq, spl), int(stocf * hN)
-            )  # decimate the mag spectrum
-        else:
-            mY = resample(
-                np.maximum(-200, mX), int(stocf * hN)
-            )  # decimate the mag spectrum
-        if pin == No2:  # first frame
-            stocEnv = np.array([mY])
-        else:  # rest of frames
-            stocEnv = np.vstack((stocEnv, np.array([mY])))
-        pin += H  # advance sound pointer
-    return stocEnv
+        xw = x[pin - no2 : pin + no2] * w
+        X = fft(xw)
+        mX = 20 * np.log10(np.abs(X[:hN]))
+        mY = _analyze_frame_to_env(
+            mX, stocf, mel_scale, bin_freqs_mel, uniform_mel_freq
+        )
+        env_frames.append(mY)
+        pin += H
+
+    return np.vstack(env_frames)
 
 
-def stochasticModelSynth(stocEnv, H, N, fs=44100, melScale=1):
+def stochasticModelSynth(
+    stocEnv: np.ndarray,
+    H: int,
+    N: int,
+    fs: float = 44100,
+    melScale: int = 1
+) -> np.ndarray:
     """
-    Stochastic synthesis of a sound
-    stocEnv: stochastic envelope; H: hop size; N: fft size
-    fs: sampling rate
-    melScale: choose between linear scale, 0, or mel scale, 1 (should match the analysis)
-    returns y: output sound
+    Synthesize sound from stochastic envelopes.
+
+    Args:
+        stocEnv: Stochastic envelope, one row per frame.
+        H: Hop size.
+        N: FFT size.
+        fs: Sampling rate.
+        melScale: Use mel scale when 1, linear scale when 0.
+
+    Returns:
+        y: Output synthesized sound.
     """
 
-    if not (UF.isPower2(N)):  # raise error if N not a power of two
+    if not UF.isPower2(N):
         raise ValueError("N is not a power of two")
 
-    hN = N // 2 + 1  # positive size of fft
-    No2 = N // 2  # half of N
-    L = stocEnv[:, 0].size  # number of frames
-    ysize = H * (L + 3)  # output sound size
-    y = np.zeros(ysize)  # initialize output array
-    ws = 2 * hann(N)  # synthesis window
-    pout = 0  # output sound pointer
-    if melScale == 1:
-        binFreqsMel = hertz_to_mel(np.arange(hN) * fs / float(N))
-        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
+    hN = N // 2 + 1
+    no2 = N // 2
+    L = stocEnv.shape[0]
+    ysize = H * (L + 3)
+    y = np.zeros(ysize)
+    ws = 2 * hann(N)
+    pout = 0
+    mel_scale = melScale == 1
+    if mel_scale:
+        bin_freqs_mel, uniform_mel_freq = _mel_grids(hN, fs, N)
+    else:
+        bin_freqs_mel, uniform_mel_freq = None, None
+
     for l in range(L):
-        mY = resample(stocEnv[l, :], hN)  # interpolate to original size
-        if melScale == 1:
-            spl = splrep(uniformMelFreq, mY)
-            mY = splev(binFreqsMel, spl)
-        pY = 2 * np.pi * np.random.rand(hN)  # generate phase random values
-        Y = np.zeros(N, dtype=complex)  # initialize synthesis spectrum
-        Y[:hN] = 10 ** (mY / 20) * np.exp(1j * pY)  # generate positive freq.
-        Y[hN:] = 10 ** (mY[-2:0:-1] / 20) * np.exp(
-            -1j * pY[-2:0:-1]
-        )  # generate negative freq.
-        fftbuffer = np.real(ifft(Y))  # inverse FFT
-        y[pout : pout + N] += ws * fftbuffer  # overlap-add
+        mY = _synthesize_env_to_magnitude(
+            stocEnv[l, :], hN, mel_scale, bin_freqs_mel, uniform_mel_freq
+        )
+        Y = _build_random_phase_spectrum(mY, N, hN)
+        fftbuffer = np.real(ifft(Y))
+        y[pout : pout + N] += ws * fftbuffer
         pout += H
-    y = np.delete(y, range(No2))  # delete half of first window
-    y = np.delete(y, range(y.size - No2, y.size))  # delete half of the last window
+
+    y = y[no2 : y.size - no2]
     return y
 
 
-def stochasticModel(x, H, N, stocf, fs=44100, melScale=1):
+def stochasticModel(
+    x: np.ndarray,
+    H: int,
+    N: int,
+    stocf: float,
+    fs: float = 44100,
+    melScale: int = 1
+) -> np.ndarray:
     """
-    Stochastic analysis/synthesis of a sound, one frame at a time
-    x: input array sound, H: hop size, N: fft size
-    stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
-    fs: sampling rate
-    melScale: choose between linear scale, 0, or mel scale, 1 (should match the analysis)
-    returns y: output sound
+    One-pass stochastic analysis/synthesis (frame-by-frame).
+
+    Args:
+        x: Input sound array.
+        H: Hop size.
+        N: FFT size.
+        stocf: Decimation factor for stochastic envelope (0 < stocf <= 1).
+        fs: Sampling rate.
+        melScale: Use mel scale when 1, linear scale when 0.
+
+    Returns:
+        y: Output synthesized sound.
     """
-    hN = N // 2 + 1  # positive size of fft
-    No2 = N // 2  # half of N
-    if hN * stocf < 3:  # raise exception if decimation factor too small
-        raise ValueError("Stochastic decimation factor too small")
 
-    if stocf > 1:  # raise exception if decimation factor too big
-        raise ValueError("Stochastic decimation factor above 1")
+    _validate_stochastic_params(H, N, stocf)
 
-    if H <= 0:  # raise error if hop size 0 or negative
-        raise ValueError("Hop size (H) smaller or equal to 0")
-
-    if not (UF.isPower2(N)):  # raise error if N not a power of twou
-        raise ValueError("FFT size (N) is not a power of 2")
-
-    w = hann(N)  # analysis/synthesis window
-    x = np.append(
-        np.zeros(No2), x
-    )  # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(No2))  # add zeros at the end to analyze last sample
-    pin = No2  # initialize sound pointer in middle of analysis window
-    pend = x.size - No2  # last sample to start a frame
-    y = np.zeros(x.size)  # initialize output array
-    if melScale == 1:
-        binFreqsMel = hertz_to_mel(np.arange(hN) * fs / float(N))
-        uniformMelFreq = np.linspace(binFreqsMel[0], binFreqsMel[-1], hN)
-    while pin <= pend:
-        # -----analysis-----
-        xw = x[pin - No2 : pin + No2] * w  # window the input sound
-        X = fft(xw)  # compute FFT
-        mX = 20 * np.log10(abs(X[:hN]))  # magnitude spectrum of positive frequencies
-        if melScale == 1:
-            spl = splrep(binFreqsMel, np.maximum(-200, mX))
-            stocEnv = resample(
-                splev(uniformMelFreq, spl), int(stocf * hN)
-            )  # decimate the mag spectrum
-        else:
-            stocEnv = resample(
-                np.maximum(-200, mX), int(stocf * hN)
-            )  # decimate the mag spectrum
-        # -----synthesis-----
-        mY = resample(stocEnv, hN)  # interpolate to original size
-        if melScale == 1:
-            spl = splrep(uniformMelFreq, mY)
-            mY = splev(binFreqsMel, spl)
-        pY = 2 * np.pi * np.random.rand(hN)  # generate phase random values
-        Y = np.zeros(N, dtype=complex)
-        Y[:hN] = 10 ** (mY / 20) * np.exp(1j * pY)  # generate positive freq.
-        Y[hN:] = 10 ** (mY[-2:0:-1] / 20) * np.exp(
-            -1j * pY[-2:0:-1]
-        )  # generate negative freq.
-        fftbuffer = np.real(ifft(Y))  # inverse FFT
-        y[pin - No2 : pin + No2] += w * fftbuffer  # overlap-add
-        pin += H  # advance sound pointer
-    y = np.delete(y, range(No2))  # delete half of first window which was added
-    y = np.delete(
-        y, range(y.size - No2, y.size)
-    )  # delete half of last window which was added
+    # Analysis
+    stocEnv = stochasticModelAnal(x, H, N, stocf, fs, melScale)
+    # Synthesis
+    y = stochasticModelSynth(stocEnv, H, N, fs, melScale)
+    # Ensure output length matches input
+    if len(y) > len(x):
+        y = y[:len(x)]
+    elif len(y) < len(x):
+        y = np.pad(y, (0, len(x) - len(y)))
     return y

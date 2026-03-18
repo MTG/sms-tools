@@ -1,0 +1,4 @@
+# file: /Users/xserra/sms-tools/smstools/models/sineModel.py
+# hypothesis_version: 6.151.9
+
+[0.01, 100, 512]
