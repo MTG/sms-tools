@@ -84,10 +84,12 @@ You can run a specific test file with:
 
 This will execute all tests and print detailed output.
 
-Jupyter Notebooks
+sms-tools-materials repository
 -------
-We provide a separate repository of examples and teaching materials in the form of Jupyter notebooks.
-You can find them at https://github.com/MTG/sms-tools-materials
+
+There is a separate repository containing teaching materials, example notebooks, and exercises used in courses that use the sms-tools package. It includes Jupyter notebooks, audio examples, and practical guides to help students and researchers learn about sound analysis, synthesis, and transformation with sms-tools.
+
+For more information and resources, see: https://github.com/MTG/sms-tools-materials
 
 License
 -------
