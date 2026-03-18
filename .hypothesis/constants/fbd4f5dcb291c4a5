@@ -1,0 +1,4 @@
+# file: /Users/xserra/sms-tools/smstools/models/harmonicModel.py
+# hypothesis_version: 6.151.9
+
+[0.01, 0.02, 2.0, 5.0, 100, 512]

@@ -47,7 +47,30 @@ Install using pip:
 
     pip install sms-tools
 
+
+When installing via pip, the Cython extension is built automatically if a compatible compiler and Python environment are available. This provides significant speedups for core routines.
+
+    pip install sms-tools
+
+If you are developing locally or want to ensure the Cython extension is built, you can run:
+
+    pip install sms-tools
+    python setup.py build_ext --inplace
+
+If you encounter issues with the Cython extension, ensure you have Cython, setuptools, and a C compiler installed. The extension is optional; sms-tools will fall back to pure-Python routines if unavailable.
+
+You can verify which backend is active at runtime:
+
+    python - <<'PY'
+    from smstools.models import utilFunctions as UF
+    print("Using Cython backend:", UF.UF_C is not None)
+    print("Backend module:", getattr(UF.UF_C, "__file__", None))
+    PY
+
 Binary packages are available for Linux, macOS (Intel & Apple Silicon) and Windows (64 bit) on all recent python versions.
+
+For details about automatic Cython acceleration and fallback behavior, see the
+"Cython backend" section below.
 
 To build and install the package locally you can use the python packaging tools:
 
@@ -55,42 +78,35 @@ To build and install the package locally you can use the python packaging tools:
     python -m build
 
 
-Running tests
--------------
+Cython backend
+--------------
 
-To run the unit test suite locally:
+sms-tools includes a compiled Cython extension for selected core routines.
+When available, it is used automatically for better performance.
+If it cannot be imported, sms-tools falls back to pure-Python implementations
+with the same public behavior (typically slower).
 
-    python3 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install -e ".[test]"
-    python -m pytest
+You can verify which backend is active at runtime:
 
-To run a single test file:
+    python - <<'PY'
+    from smstools.models import utilFunctions as UF
+    print("Using Cython backend:", UF.UF_C is not None)
+    print("Backend module:", getattr(UF.UF_C, "__file__", None))
+    PY
 
-    python -m pytest tests/test_errors.py
+Testing
+-------
 
-To run a single test function by name:
+To install test dependencies and run the test suite, use:
 
-    python -m pytest tests/test_errors.py -k wavread
+    pip install .[test]
+    pytest
 
-Main smoke test files:
+You can run a specific test file with:
 
-    tests/test_models_smoke.py
-    tests/test_transformations_smoke.py
+    pytest -v tests/test_cython_vs_python.py
 
-Run only smoke tests:
-
-    python -m pytest -k smoke
-
-Test case summary:
-
-* `tests/test_api_contracts.py`: API/signature and output-shape contract checks for core model entry points.
-* `tests/test_errors.py`: error-handling contracts (invalid parameters and invalid I/O paths).
-* `tests/test_models_smoke.py`: fast smoke coverage for all analysis/synthesis model modules.
-* `tests/test_transformations_smoke.py`: fast smoke coverage for all transformation modules.
-* `tests/test_models_ground_truth.py`: algorithmic/ground-truth model tests on synthetic signals (frequency accuracy, additivity, and quality invariants).
-* `tests/test_transformations_ground_truth.py`: algorithmic/ground-truth transformation tests (scaling/morphing identity behavior and expected interpolation/attenuation trends).
-
+This will execute all tests and print detailed output.
 
 Jupyter Notebooks
 -------

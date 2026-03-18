@@ -34,6 +34,7 @@ tests/test_api_contracts.py
 tests/test_cython_vs_python.py
 tests/test_errors.py
 tests/test_models_ground_truth.py
+tests/test_models_property.py
 tests/test_models_smoke.py
 tests/test_multirate.py
 tests/test_transformations_ground_truth.py
