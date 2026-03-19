@@ -2,9 +2,17 @@ import inspect
 
 import numpy as np
 
-from smstools.models import (dftModel, harmonicModel, hprModel, hpsModel,
-                             sineModel, sprModel, spsModel, stft,
-                             stochasticModel)
+from smstools.models import (
+    dftModel,
+    harmonicModel,
+    hprModel,
+    hpsModel,
+    sineModel,
+    sprModel,
+    spsModel,
+    stft,
+    stochasticModel,
+)
 
 
 def _signal(fs=44100, length=4096):
@@ -26,55 +34,96 @@ def _analysis_params():
 
 def test_model_module_signatures_are_stable():
     # Updated signature to match new API
-    assert str(inspect.signature(sineModel.sineModel)) == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, t: float, max_n_sines: int = 100, min_sine_dur: float = 0.01, freq_dev_offset: float = 20, freq_dev_slope: float = 0.01) -> numpy.ndarray"
-    assert str(inspect.signature(sineModel.sineModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, maxnSines: int = 100, minSineDur: float = 0.01, freqDevOffset: float = 20, freqDevSlope: float = 0.01) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(sineModel.sineModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, t: float, max_n_sines: int = 100, min_sine_dur: float = 0.01, freq_dev_offset: float = 20, freq_dev_slope: float = 0.01) -> numpy.ndarray"
     )
-    assert str(inspect.signature(sineModel.sineModelSynth)) == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, N: int, H: int, fs: float) -> numpy.ndarray"
-
-    assert str(inspect.signature(harmonicModel.f0Detection)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minf0: float, maxf0: float, f0et: float) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(sineModel.sineModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, maxnSines: int = 100, minSineDur: float = 0.01, freqDevOffset: float = 20, freqDevSlope: float = 0.01) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
     )
-    assert str(inspect.signature(harmonicModel.harmonicModel)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float) -> numpy.ndarray"
-    )
-    assert str(inspect.signature(harmonicModel.harmonicModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float = 0.01, minSineDur: float = 0.02) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(sineModel.sineModelSynth))
+        == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, N: int, H: int, fs: float) -> numpy.ndarray"
     )
 
-    assert str(inspect.signature(stochasticModel.stochasticModelAnal)) == (
-        "(x: numpy.ndarray, H: int, N: int, stocf: float, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(harmonicModel.f0Detection))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minf0: float, maxf0: float, f0et: float) -> numpy.ndarray"
     )
-    assert str(inspect.signature(stochasticModel.stochasticModelSynth)) == (
-        "(stocEnv: numpy.ndarray, H: int, N: int, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(harmonicModel.harmonicModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float) -> numpy.ndarray"
     )
-    assert str(inspect.signature(stochasticModel.stochasticModel)) == (
-        "(x: numpy.ndarray, H: int, N: int, stocf: float, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(harmonicModel.harmonicModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float = 0.01, minSineDur: float = 0.02) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
     )
 
-    assert str(inspect.signature(sprModel.sprModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, maxnSines: int, freqDevOffset: float, freqDevSlope: float) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(stochasticModel.stochasticModelAnal))
+        == "(x: numpy.ndarray, H: int, N: int, stocf: float, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
     )
-    assert str(inspect.signature(sprModel.sprModelSynth)) == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, xr: numpy.ndarray, N: int, H: int, fs: float) -> tuple[numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(sprModel.sprModel)) == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float = 0.02, maxnSines: int = 100, freqDevOffset: float = 20, freqDevSlope: float = 0.01) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(stochasticModel.stochasticModelSynth))
+        == "(stocEnv: numpy.ndarray, H: int, N: int, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
+    )
+    assert (
+        str(inspect.signature(stochasticModel.stochasticModel))
+        == "(x: numpy.ndarray, H: int, N: int, stocf: float, fs: float = 44100, melScale: int = 1) -> numpy.ndarray"
+    )
 
-    assert str(inspect.signature(spsModel.spsModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, maxnSines: int, freqDevOffset: float, freqDevSlope: float, stocf: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(sprModel.sprModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, maxnSines: int, freqDevOffset: float, freqDevSlope: float) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
     )
-    assert str(inspect.signature(spsModel.spsModelSynth)) == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, stocEnv: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(spsModel.spsModel)) == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, minSineDur: float = 0.02, maxnSines: int = 100, freqDevOffset: float = 20.0, freqDevSlope: float = 0.01, Ns: int = 512, stocf: float = 0.2) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(sprModel.sprModelSynth))
+        == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, xr: numpy.ndarray, N: int, H: int, fs: float) -> tuple[numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(sprModel.sprModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float = 0.02, maxnSines: int = 100, freqDevOffset: float = 20, freqDevSlope: float = 0.01) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
 
-    assert str(inspect.signature(hprModel.hprModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(spsModel.spsModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, maxnSines: int, freqDevOffset: float, freqDevSlope: float, stocf: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
     )
-    assert str(inspect.signature(hprModel.hprModelSynth)) == "(hfreq: numpy.ndarray, hmag: numpy.ndarray, hphase: numpy.ndarray, xr: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(hprModel.hprModel)) == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, nH: int = 100, minf0: float = 50.0, maxf0: float = 5000.0, f0et: float = 5.0, harmDevSlope: float = 0.01, minSineDur: float = 0.02, Ns: int = 512) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(spsModel.spsModelSynth))
+        == "(tfreq: numpy.ndarray, tmag: numpy.ndarray, tphase: numpy.ndarray, stocEnv: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(spsModel.spsModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, minSineDur: float = 0.02, maxnSines: int = 100, freqDevOffset: float = 20.0, freqDevSlope: float = 0.01, Ns: int = 512, stocf: float = 0.2) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
 
-    assert str(inspect.signature(hpsModel.hpsModelAnal)) == (
-        "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float, minSineDur: float, Ns: int, stocf: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(hprModel.hprModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, minSineDur: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
     )
-    assert str(inspect.signature(hpsModel.hpsModelSynth)) == "(hfreq: numpy.ndarray, hmag: numpy.ndarray, hphase: numpy.ndarray, stocEnv: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(hpsModel.hpsModel)) == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, nH: int = 100, minf0: float = 50.0, maxf0: float = 5000.0, f0et: float = 5.0, harmDevSlope: float = 0.01, minSineDur: float = 0.02, Ns: int = 512, stocf: float = 0.2) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(hprModel.hprModelSynth))
+        == "(hfreq: numpy.ndarray, hmag: numpy.ndarray, hphase: numpy.ndarray, xr: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(hprModel.hprModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, nH: int = 100, minf0: float = 50.0, maxf0: float = 5000.0, f0et: float = 5.0, harmDevSlope: float = 0.01, minSineDur: float = 0.02, Ns: int = 512) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
+
+    assert (
+        str(inspect.signature(hpsModel.hpsModelAnal))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int, t: float, nH: int, minf0: float, maxf0: float, f0et: float, harmDevSlope: float, minSineDur: float, Ns: int, stocf: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(hpsModel.hpsModelSynth))
+        == "(hfreq: numpy.ndarray, hmag: numpy.ndarray, hphase: numpy.ndarray, stocEnv: numpy.ndarray, N: int, H: int, fs: float) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(hpsModel.hpsModel))
+        == "(x: numpy.ndarray, fs: float, w: numpy.ndarray, N: int, H: int = 128, t: float = -80, nH: int = 100, minf0: float = 50.0, maxf0: float = 5000.0, f0et: float = 5.0, harmDevSlope: float = 0.01, minSineDur: float = 0.02, Ns: int = 512, stocf: float = 0.2) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
 
 
 def test_dftmodel_zero_input_returns_zero_with_same_shape():
@@ -131,7 +180,9 @@ def test_sine_model_analysis_and_synthesis_shapes_are_stable():
         params["t"],
         maxnSines=20,
     )
-    y = sineModel.sineModelSynth(tfreq, tmag, tphase, 512, params["H"], params["fs"])
+    y = sineModel.sineModelSynth(
+        tfreq, tmag, tphase, 512, params["H"], params["fs"]
+    )
 
     assert tfreq.ndim == 2
     assert tmag.shape == tfreq.shape
@@ -208,10 +259,20 @@ def test_spr_model_analysis_synthesis_and_full_model_shapes_are_stable():
         freqDevOffset=20,
         freqDevSlope=0.01,
     )
-    y_synth, ys = sprModel.sprModelSynth(tfreq, tmag, tphase, xr, 512, params["H"], params["fs"])
+    y_synth, ys = sprModel.sprModelSynth(
+        tfreq, tmag, tphase, xr, 512, params["H"], params["fs"]
+    )
     y, ys_full, xr_full = sprModel.sprModel(
-        x, params["fs"], params["w"], params["N"], params["H"], params["t"],
-        minSineDur=0.01, maxnSines=20, freqDevOffset=20, freqDevSlope=0.01
+        x,
+        params["fs"],
+        params["w"],
+        params["N"],
+        params["H"],
+        params["t"],
+        minSineDur=0.01,
+        maxnSines=20,
+        freqDevOffset=20,
+        freqDevSlope=0.01,
     )
 
     assert tfreq.ndim == 2
@@ -246,8 +307,17 @@ def test_sps_model_analysis_synthesis_and_full_model_shapes_are_stable():
         tfreq, tmag, tphase, stocEnv, 512, params["H"], params["fs"]
     )
     y, ys_full, yst_full = spsModel.spsModel(
-        x, params["fs"], params["w"], params["N"], params["H"], params["t"],
-        minSineDur=0.01, maxnSines=20, freqDevOffset=20, freqDevSlope=0.01, stocf=1
+        x,
+        params["fs"],
+        params["w"],
+        params["N"],
+        params["H"],
+        params["t"],
+        minSineDur=0.01,
+        maxnSines=20,
+        freqDevOffset=20,
+        freqDevSlope=0.01,
+        stocf=1,
     )
 
     assert tfreq.ndim == 2
@@ -280,7 +350,9 @@ def test_hpr_model_analysis_synthesis_and_full_model_shapes_are_stable():
         f0et=5,
         harmDevSlope=0.01,
     )
-    y_synth, yh = hprModel.hprModelSynth(hfreq, hmag, hphase, xr, 512, params["H"], params["fs"])
+    y_synth, yh = hprModel.hprModelSynth(
+        hfreq, hmag, hphase, xr, 512, params["H"], params["fs"]
+    )
     y, yh_full, xr_full = hprModel.hprModel(
         x,
         params["fs"],

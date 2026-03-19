@@ -50,7 +50,9 @@ N = 1024  # FFT size used throughout
 
 def _sine_peaks(f0_hz, n_harmonics=6, fs=FS, n_fft=N):
     """Return (pfreq, pmag, pphase) arrays for a harmonic series."""
-    freqs = np.array([f0_hz * k for k in range(1, n_harmonics + 1)], dtype=float)
+    freqs = np.array(
+        [f0_hz * k for k in range(1, n_harmonics + 1)], dtype=float
+    )
     mags = np.array([-6.0 * k for k in range(n_harmonics)], dtype=float)
     phases = np.zeros(n_harmonics, dtype=float)
     return freqs, mags, phases
@@ -85,7 +87,9 @@ class TestGenSpecSinesPython:
         Y = genSpecSines_p(freqs, mags, phases, N, FS)
         hN = N // 2
         np.testing.assert_allclose(
-            Y[1:hN], Y[N - 1 : hN : -1].conj(), atol=1e-10,
+            Y[1:hN],
+            Y[N - 1 : hN : -1].conj(),
+            atol=1e-10,
             err_msg="genSpecSines_p output is not conjugate-symmetric",
         )
 
@@ -99,9 +103,9 @@ class TestGenSpecSinesPython:
         hN = N // 2
         peak_bin = np.argmax(np.abs(Y[:hN]))
         expected_bin = round(N * f0 / FS)
-        assert abs(peak_bin - expected_bin) <= 1, (
-            f"Peak at bin {peak_bin}, expected ~{expected_bin}"
-        )
+        assert (
+            abs(peak_bin - expected_bin) <= 1
+        ), f"Peak at bin {peak_bin}, expected ~{expected_bin}"
 
     def test_empty_input_returns_zeros(self):
         Y = genSpecSines_p(np.array([]), np.array([]), np.array([]), N, FS)
@@ -113,7 +117,9 @@ class TestGenSpecSinesPython:
         mags = np.array([0.0, 0.0])
         phases = np.array([0.0, 0.0])
         Y = genSpecSines_p(freqs, mags, phases, N, FS)
-        assert np.max(np.abs(Y)) < 1e-10, "Out-of-range bins should be suppressed"
+        assert (
+            np.max(np.abs(Y)) < 1e-10
+        ), "Out-of-range bins should be suppressed"
 
     def test_magnitude_scales_linearly(self):
         """Doubling the linear amplitude (+ 6 dB) should double the peak magnitude."""
@@ -122,13 +128,19 @@ class TestGenSpecSinesPython:
         phases = np.array([0.0])
 
         Y1 = genSpecSines_p(freqs, np.array([0.0]), phases, N, FS)
-        Y2 = genSpecSines_p(freqs, np.array([6.0]), phases, N, FS)  # +6 dB ≈ ×2
+        Y2 = genSpecSines_p(
+            freqs, np.array([6.0]), phases, N, FS
+        )  # +6 dB ≈ ×2
 
         hN = N // 2
         peak1 = np.max(np.abs(Y1[:hN]))
         peak2 = np.max(np.abs(Y2[:hN]))
-        np.testing.assert_allclose(peak2 / peak1, 2.0, rtol=0.02,
-                                   err_msg="+6 dB should double linear amplitude")
+        np.testing.assert_allclose(
+            peak2 / peak1,
+            2.0,
+            rtol=0.02,
+            err_msg="+6 dB should double linear amplitude",
+        )
 
     @pytest.mark.parametrize("fs", [22050, 44100, 48000])
     def test_conjugate_symmetry_at_multiple_rates(self, fs):
@@ -138,7 +150,9 @@ class TestGenSpecSinesPython:
         Y = genSpecSines_p(freqs[mask], mags[mask], phases[mask], N, fs)
         hN = N // 2
         np.testing.assert_allclose(
-            Y[1:hN], Y[N - 1 : hN : -1].conj(), atol=1e-10,
+            Y[1:hN],
+            Y[N - 1 : hN : -1].conj(),
+            atol=1e-10,
         )
 
 
@@ -158,9 +172,9 @@ class TestTWMPython:
         freqs, mags, _ = _sine_peaks(f0_true, n_harmonics=8)
         f0c = _f0_candidates(f0_true, n=9)
         f0, _ = TWM_p(freqs, mags, f0c)
-        assert abs(f0 - f0_true) < f0_true * 0.15, (
-            f"Expected f0≈{f0_true}, got {f0:.2f}"
-        )
+        assert (
+            abs(f0 - f0_true) < f0_true * 0.15
+        ), f"Expected f0≈{f0_true}, got {f0:.2f}"
 
     def test_error_is_finite(self):
         """TWM_p error may be negative (due to the r-scaled magnitude term) but must be finite."""
@@ -173,11 +187,13 @@ class TestTWMPython:
         """The candidate closest to the true f0 should have the minimum error."""
         f0_true = 440.0
         freqs, mags, _ = _sine_peaks(f0_true, n_harmonics=8)
-        candidates = np.array([f0_true * r for r in [0.5, 0.75, 1.0, 1.5, 2.0]])
-        f0, _ = TWM_p(freqs, mags, candidates)
-        assert abs(f0 - f0_true) / f0_true < 0.1, (
-            f"Best candidate should be near {f0_true}, got {f0:.2f}"
+        candidates = np.array(
+            [f0_true * r for r in [0.5, 0.75, 1.0, 1.5, 2.0]]
         )
+        f0, _ = TWM_p(freqs, mags, candidates)
+        assert (
+            abs(f0 - f0_true) / f0_true < 0.1
+        ), f"Best candidate should be near {f0_true}, got {f0:.2f}"
 
     def test_single_candidate(self):
         """TWM_p should work with a single f0 candidate."""
@@ -213,7 +229,10 @@ class TestGenSpecSinesCythonVsPython:
         mag_p = np.abs(Y_p)
         significant = np.maximum(mag_c, mag_p) > 1e-3
         np.testing.assert_allclose(
-            mag_c[significant], mag_p[significant], rtol=1.5e-2, atol=5e-4,
+            mag_c[significant],
+            mag_p[significant],
+            rtol=1.5e-2,
+            atol=5e-4,
             err_msg="Magnitude spectra from C and Python differ on significant bins",
         )
 
@@ -233,7 +252,9 @@ class TestGenSpecSinesCythonVsPython:
         phase_c = np.angle(Y_c[1:hN][significant])
         phase_p = np.angle(Y_p[1:hN][significant])
         phase_error = np.abs(np.angle(np.exp(1j * (phase_c - phase_p))))
-        assert np.max(phase_error) < 0.08, "Phase spectra from C and Python differ"
+        assert (
+            np.max(phase_error) < 0.08
+        ), "Phase spectra from C and Python differ"
 
     @cython_only
     @pytest.mark.parametrize("f0", [220.0, 440.0, 880.0])
@@ -245,9 +266,9 @@ class TestGenSpecSinesCythonVsPython:
         Y_c = _UF_C.genSpecSines(bins, mags, phases, N)
         Y_p = genSpecSines_p(freqs, mags, phases, N, FS)
         hN = N // 2
-        assert np.argmax(np.abs(Y_c[:hN])) == np.argmax(np.abs(Y_p[:hN])), (
-            f"C and Python disagree on peak bin for f0={f0} Hz"
-        )
+        assert np.argmax(np.abs(Y_c[:hN])) == np.argmax(
+            np.abs(Y_p[:hN])
+        ), f"C and Python disagree on peak bin for f0={f0} Hz"
 
     @cython_only
     def test_empty_input_agreement(self):
@@ -266,9 +287,9 @@ class TestTWMCythonVsPython:
         f0c = _f0_candidates(f0_true, n=9)
         f0_c, _ = _UF_C.twm(freqs, mags, f0c)
         f0_p, _ = TWM_p(freqs, mags, f0c)
-        assert abs(f0_c - f0_p) < 1.0, (
-            f"C twm={f0_c:.2f} vs Python twm={f0_p:.2f} disagree"
-        )
+        assert (
+            abs(f0_c - f0_p) < 1.0
+        ), f"C twm={f0_c:.2f} vs Python twm={f0_p:.2f} disagree"
 
     @cython_only
     def test_error_agreement(self):
@@ -278,8 +299,12 @@ class TestTWMCythonVsPython:
         f0_c, err_c = _UF_C.twm(freqs, mags, f0c)
         f0_p, err_p = TWM_p(freqs, mags, f0c)
         # Errors should be in the same ballpark (within 20 %)
-        np.testing.assert_allclose(err_c, err_p, rtol=0.20,
-                                   err_msg="C and Python TWM errors differ significantly")
+        np.testing.assert_allclose(
+            err_c,
+            err_p,
+            rtol=0.20,
+            err_msg="C and Python TWM errors differ significantly",
+        )
 
     @cython_only
     @pytest.mark.parametrize("f0_true", [110.0, 220.0, 330.0, 440.0, 880.0])

@@ -1,0 +1,4 @@
+# file: /Users/xserra/sms-tools/smstools/models/hpsModel.py
+# hypothesis_version: 6.151.9
+
+[0.01, 0.02, 0.2, 5.0, 50.0, 5000.0, 100, 128, 512]

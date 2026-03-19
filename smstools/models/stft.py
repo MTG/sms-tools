@@ -11,7 +11,9 @@ import numpy as np
 from smstools.models import dftModel as DFT
 
 
-def stftAnal(x: np.ndarray, w: np.ndarray, N: int, H: int) -> tuple[np.ndarray, np.ndarray]:
+def stftAnal(
+    x: np.ndarray, w: np.ndarray, N: int, H: int
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Analysis of a sound using the short-time Fourier transform.
 
@@ -29,7 +31,10 @@ def stftAnal(x: np.ndarray, w: np.ndarray, N: int, H: int) -> tuple[np.ndarray, 
         ValueError: If hop size H is zero or negative.
     """
     if H <= 0:
-        raise ValueError(f"Hop size (H={H}) smaller or equal to 0. Provided window size: {w.size}.")
+        raise ValueError(
+            f"Hop size (H={H}) smaller or equal to 0. "
+            f"Provided window size: {w.size}."
+        )
     M = w.size
     hM1 = (M + 1) // 2
     hM2 = M // 2
@@ -53,6 +58,7 @@ def stftAnal(x: np.ndarray, w: np.ndarray, N: int, H: int) -> tuple[np.ndarray, 
         frame += 1
         pin += H
     return xmX, xpX
+
 
 def stftSynth(mY: np.ndarray, pY: np.ndarray, M: int, H: int) -> np.ndarray:
     """
@@ -78,6 +84,7 @@ def stftSynth(mY: np.ndarray, pY: np.ndarray, M: int, H: int) -> np.ndarray:
         pin += H
     return y[hM2 : y.size - hM1]
 
+
 def stft(x: np.ndarray, w: np.ndarray, N: int, H: int) -> np.ndarray:
     """
     Analysis/synthesis of a sound using the short-time Fourier transform.
@@ -95,13 +102,16 @@ def stft(x: np.ndarray, w: np.ndarray, N: int, H: int) -> np.ndarray:
         ValueError: If hop size H is zero or negative.
     """
     if H <= 0:
-        raise ValueError(f"Hop size (H={H}) smaller or equal to 0. Provided window size: {w.size}.")
+        raise ValueError(
+            f"Hop size (H={H}) smaller or equal to 0. "
+            f"Provided window size: {w.size}."
+        )
     M = w.size
     mX, pX = stftAnal(x, w, N, H)
     y = stftSynth(mX, pX, M, H)
     # Ensure output length matches input
     if len(y) > len(x):
-        y = y[:len(x)]
+        y = y[: len(x)]
     elif len(y) < len(x):
         y = np.pad(y, (0, len(x) - len(y)))
     return y

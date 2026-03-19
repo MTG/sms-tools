@@ -1,0 +1,16 @@
+# SMS-Tools requirements for development, testing, and CI
+# Install with: pip install -r requirements.txt
+
+# Core dependencies (match pyproject.toml)
+matplotlib
+numpy<2.0.0
+scipy
+
+# Testing dependencies
+pytest>=8.0
+pytest-cov>=5.0
+hypothesis
+
+# Linting/formatting (optional, for development)
+flake8
+isort

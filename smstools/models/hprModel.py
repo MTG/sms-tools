@@ -127,6 +127,7 @@ def hprModel(
         x, fs, w, N, H, t, minSineDur, nH, minf0, maxf0, f0et, harmDevSlope
     )
     y, yh = hprModelSynth(hfreq, hmag, hphase, xr, Ns, H, fs)
+
     # Ensure output lengths match input
     def match_length(arr, target_len):
         if len(arr) > target_len:
@@ -135,6 +136,7 @@ def hprModel(
             return np.pad(arr, (0, target_len - len(arr)))
         else:
             return arr
+
     y = match_length(y, len(x))
     yh = match_length(yh, len(x))
     xr = match_length(xr, len(x))

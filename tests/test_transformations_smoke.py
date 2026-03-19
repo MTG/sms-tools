@@ -3,10 +3,13 @@ import inspect
 import numpy as np
 import pytest
 
-from smstools.transformations import (harmonicTransformations,
-                                      hpsTransformations, sineTransformations,
-                                      stftTransformations,
-                                      stochasticTransformations)
+from smstools.transformations import (
+    harmonicTransformations,
+    hpsTransformations,
+    sineTransformations,
+    stftTransformations,
+    stochasticTransformations,
+)
 
 
 def _harmonic_tracks(frames=12, tracks=6):
@@ -32,14 +35,63 @@ def test_transformations_public_signatures_are_stable():
         actual_names = [p for p in sig.parameters]
         return actual_names == expected_names
 
-    assert _sig_matches(sineTransformations.sineTimeScaling, ["sfreq", "smag", "timeScaling"])
-    assert _sig_matches(sineTransformations.sineFreqScaling, ["sfreq", "freqScaling"])
-    assert _sig_matches(stochasticTransformations.stochasticTimeScale, ["stocEnv", "timeScaling"])
-    assert _sig_matches(harmonicTransformations.harmonicFreqScaling, ["hfreq", "hmag", "freqScaling", "freqStretching", "timbrePreservation", "fs"])
-    assert _sig_matches(hpsTransformations.hpsTimeScale, ["hfreq", "hmag", "stocEnv", "timeScaling"])
-    assert _sig_matches(hpsTransformations.hpsMorph, ["hfreq1", "hmag1", "stocEnv1", "hfreq2", "hmag2", "stocEnv2", "hfreqIntp", "hmagIntp", "stocIntp"])
-    assert _sig_matches(stftTransformations.stftFiltering, ["x", "fs", "w", "N", "H", "filter"])
-    assert _sig_matches(stftTransformations.stftMorph, ["x1", "x2", "fs", "w1", "N1", "w2", "N2", "H1", "smoothf", "balancef"])
+    assert _sig_matches(
+        sineTransformations.sineTimeScaling, ["sfreq", "smag", "timeScaling"]
+    )
+    assert _sig_matches(
+        sineTransformations.sineFreqScaling, ["sfreq", "freqScaling"]
+    )
+    assert _sig_matches(
+        stochasticTransformations.stochasticTimeScale,
+        ["stocEnv", "timeScaling"],
+    )
+    assert _sig_matches(
+        harmonicTransformations.harmonicFreqScaling,
+        [
+            "hfreq",
+            "hmag",
+            "freqScaling",
+            "freqStretching",
+            "timbrePreservation",
+            "fs",
+        ],
+    )
+    assert _sig_matches(
+        hpsTransformations.hpsTimeScale,
+        ["hfreq", "hmag", "stocEnv", "timeScaling"],
+    )
+    assert _sig_matches(
+        hpsTransformations.hpsMorph,
+        [
+            "hfreq1",
+            "hmag1",
+            "stocEnv1",
+            "hfreq2",
+            "hmag2",
+            "stocEnv2",
+            "hfreqIntp",
+            "hmagIntp",
+            "stocIntp",
+        ],
+    )
+    assert _sig_matches(
+        stftTransformations.stftFiltering, ["x", "fs", "w", "N", "H", "filter"]
+    )
+    assert _sig_matches(
+        stftTransformations.stftMorph,
+        [
+            "x1",
+            "x2",
+            "fs",
+            "w1",
+            "N1",
+            "w2",
+            "N2",
+            "H1",
+            "smoothf",
+            "balancef",
+        ],
+    )
 
 
 def test_sine_transformations_smoke():
@@ -48,7 +100,9 @@ def test_sine_transformations_smoke():
     ysfreq, ysmag = sineTransformations.sineTimeScaling(
         sfreq, smag, np.array([0.0, 0.0, 1.0, 1.0])
     )
-    yfreq = sineTransformations.sineFreqScaling(sfreq, np.array([0.0, 1.0, 1.0, 1.0]))
+    yfreq = sineTransformations.sineFreqScaling(
+        sfreq, np.array([0.0, 1.0, 1.0, 1.0])
+    )
 
     assert ysfreq.shape == sfreq.shape
     assert ysmag.shape == smag.shape
@@ -132,7 +186,9 @@ def test_stft_transformations_smoke():
     filt = np.zeros((N // 2) + 1)
 
     yf = stftTransformations.stftFiltering(x1, fs, w, N, H, filt)
-    ym = stftTransformations.stftMorph(x1, x2, fs, w, N, w, N, H, smoothf=1.0, balancef=0.5)
+    ym = stftTransformations.stftMorph(
+        x1, x2, fs, w, N, w, N, H, smoothf=1.0, balancef=0.5
+    )
 
     assert yf.shape == x1.shape
     assert ym.shape == x1.shape
@@ -146,7 +202,9 @@ def test_transformation_error_contracts():
     stoc = _stoc_env(frames=4, bins=8)
 
     with pytest.raises(ValueError, match="even size"):
-        sineTransformations.sineTimeScaling(sfreq, smag, np.array([0.0, 1.0, 2.0]))
+        sineTransformations.sineTimeScaling(
+            sfreq, smag, np.array([0.0, 1.0, 2.0])
+        )
 
     with pytest.raises(ValueError, match="even size"):
         harmonicTransformations.harmonicFreqScaling(
@@ -159,13 +217,19 @@ def test_transformation_error_contracts():
         )
 
     with pytest.raises(ValueError, match="even size"):
-        stochasticTransformations.stochasticTimeScale(stoc, np.array([0.0, 1.0, 2.0]))
+        stochasticTransformations.stochasticTimeScale(
+            stoc, np.array([0.0, 1.0, 2.0])
+        )
 
     x = np.random.default_rng(2).standard_normal(2048)
     w = np.hanning(511)
 
     with pytest.raises(ValueError, match="Smooth factor too small"):
-        stftTransformations.stftMorph(x, x, 44100, w, 1024, w, 1024, 128, smoothf=0.001, balancef=0.5)
+        stftTransformations.stftMorph(
+            x, x, 44100, w, 1024, w, 1024, 128, smoothf=0.001, balancef=0.5
+        )
 
     with pytest.raises(ValueError, match="Balance factor outside range"):
-        stftTransformations.stftMorph(x, x, 44100, w, 1024, w, 1024, 128, smoothf=1.0, balancef=1.5)
+        stftTransformations.stftMorph(
+            x, x, 44100, w, 1024, w, 1024, 128, smoothf=1.0, balancef=1.5
+        )

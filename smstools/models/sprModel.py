@@ -6,15 +6,15 @@ subtraction.
 """
 
 import numpy as np
-from scipy.fft import fft, ifft
 from scipy.signal.windows import blackmanharris, triang
 
-from smstools.models import dftModel as DFT
 from smstools.models import sineModel as SM
 from smstools.models import utilFunctions as UF
 
 
-def _build_overlap_add_window(Ns: int, H: int) -> tuple[np.ndarray, np.ndarray]:
+def _build_overlap_add_window(
+    Ns: int, H: int
+) -> tuple[np.ndarray, np.ndarray]:
     """Build normalized overlap-add synthesis window used by SPR.
 
     Args:
@@ -164,9 +164,9 @@ def sprModel(
     y, ys = sprModelSynth(tfreq, tmag, tphase, xr, Ns, H, fs)
     # Ensure output lengths match input
     if len(y) > len(x):
-        y = y[:len(x)]
-        ys = ys[:len(x)]
-        xr = xr[:len(x)]
+        y = y[: len(x)]
+        ys = ys[: len(x)]
+        xr = xr[: len(x)]
     elif len(y) < len(x):
         y = np.pad(y, (0, len(x) - len(y)))
         ys = np.pad(ys, (0, len(x) - len(ys)))

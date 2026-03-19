@@ -12,11 +12,11 @@ Uses Cython-accelerated C functions when available, falling back to pure-Python
 implementations for portability.
 """
 
-import copy
 import os
 import subprocess
 import sys
 import warnings
+from typing import Optional
 
 import numpy as np
 from scipy.fft import fft, fftshift, ifft
@@ -41,7 +41,10 @@ if sys.platform == "win32":
 
         winsound_imported = True
     except ImportError:
-        warnings.warn("You won't be able to play sounds, winsound could not be imported", RuntimeWarning)
+        warnings.warn(
+            "You won't be able to play sounds, winsound could not be imported",
+            RuntimeWarning,
+        )
 
 
 def isPower2(num: int) -> bool:
@@ -119,7 +122,10 @@ def wavplay(filename: str) -> None:
         if winsound_imported:
             winsound.PlaySound(filename, winsound.SND_FILENAME)
         else:
-            warnings.warn("Cannot play sound, winsound could not be imported", RuntimeWarning)
+            warnings.warn(
+                "Cannot play sound, winsound could not be imported",
+                RuntimeWarning,
+            )
         return
 
     else:
@@ -158,7 +164,9 @@ def peakDetection(mX: np.ndarray, t: float) -> np.ndarray:
     return np.where(peaks)[0] + 1  # Add 1 to compensate for [1:-1] slicing
 
 
-def peakInterp(mX: np.ndarray, pX: np.ndarray, ploc: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def peakInterp(
+    mX: np.ndarray, pX: np.ndarray, ploc: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Refine peak location and magnitude using parabolic interpolation.
 
@@ -183,7 +191,9 @@ def peakInterp(mX: np.ndarray, pX: np.ndarray, ploc: np.ndarray) -> tuple[np.nda
 
     iploc = ploc + 0.5 * (lval - rval) / denom  # Fractional peak location
     ipmag = val - 0.25 * (lval - rval) * (iploc - ploc)  # Refined magnitude
-    ipphase = np.interp(iploc, np.arange(pX.size), pX)  # Linear phase interpolation
+    ipphase = np.interp(
+        iploc, np.arange(pX.size), pX
+    )  # Linear phase interpolation
 
     return iploc, ipmag, ipphase
 
@@ -227,7 +237,9 @@ def genBhLobe(x: np.ndarray) -> np.ndarray:
     return y
 
 
-def genSpecSines(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int) -> np.ndarray:
+def genSpecSines(
+    ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int
+) -> np.ndarray:
     """
     Generate sinusoidal spectrum, using C backend when available.
 
@@ -242,10 +254,16 @@ def genSpecSines(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: 
         Y: Generated complex sinusoidal spectrum.
     """
 
-    return UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N) if UF_C is not None else genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
+    return (
+        UF_C.genSpecSines(N * ipfreq / float(fs), ipmag, ipphase, N)
+        if UF_C is not None
+        else genSpecSines_p(ipfreq, ipmag, ipphase, N, fs)
+    )
 
 
-def genSpecSines_p(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int) -> np.ndarray:
+def genSpecSines_p(
+    ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N: int, fs: int
+) -> np.ndarray:
     """
     Pure-Python sinusoidal spectrum generation.
 
@@ -280,7 +298,9 @@ def genSpecSines_p(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N
             elif b[m] > hN:  # peak lobe crosses Nyquist bin
                 Y[2 * hN - b[m]] += lmag[m] * np.exp(-1j * ipphase[i])
             elif b[m] in (0, hN):  # peak lobe in the limits of the spectrum
-                Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i]) + lmag[m] * np.exp(-1j * ipphase[i])
+                Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i]) + lmag[
+                    m
+                ] * np.exp(-1j * ipphase[i])
             else:  # peak lobe in positive freq. range
                 Y[b[m]] += lmag[m] * np.exp(1j * ipphase[i])
     Y[hN + 1 :] = Y[
@@ -289,7 +309,9 @@ def genSpecSines_p(ipfreq: np.ndarray, ipmag: np.ndarray, ipphase: np.ndarray, N
     return Y
 
 
-def sinewaveSynth(freqs: np.ndarray, amp: float, H: int, fs: int) -> np.ndarray:
+def sinewaveSynth(
+    freqs: np.ndarray, amp: float, H: int, fs: int
+) -> np.ndarray:
     """
     Synthesize a sinusoid with time-varying frequency and amplitude.
 
@@ -308,26 +330,30 @@ def sinewaveSynth(freqs: np.ndarray, amp: float, H: int, fs: int) -> np.ndarray:
     lastfreq = freqs[0]
     frames = []
 
-    for l in range(n_frames):
-        if (lastfreq == 0) and (freqs[l] == 0):  # Silent to silent
+    for idx in range(n_frames):
+        if (lastfreq == 0) and (freqs[idx] == 0):  # Silent to silent
             A = np.zeros(H)
             freq = np.zeros(H)
-        elif (lastfreq == 0) and (freqs[l] > 0):  # Silent to tone (ramp up)
+        elif (lastfreq == 0) and (freqs[idx] > 0):  # Silent to tone (ramp up)
             A = np.linspace(0, amp, H, endpoint=False)
-            freq = np.full(H, freqs[l])
-        elif (lastfreq > 0) and (freqs[l] > 0):  # Tone to tone
+            freq = np.full(H, freqs[idx])
+        elif (lastfreq > 0) and (freqs[idx] > 0):  # Tone to tone
             A = np.full(H, amp)
-            freq = np.full(H, lastfreq) if lastfreq == freqs[l] else np.linspace(
-                lastfreq, freqs[l], H, endpoint=False
+            freq = (
+                np.full(H, lastfreq)
+                if lastfreq == freqs[idx]
+                else np.linspace(lastfreq, freqs[idx], H, endpoint=False)
             )
-        elif (lastfreq > 0) and (freqs[l] == 0):  # Tone to silent (ramp down)
+        elif (lastfreq > 0) and (
+            freqs[idx] == 0
+        ):  # Tone to silent (ramp down)
             A = np.linspace(amp, 0, H, endpoint=False)
             freq = np.full(H, lastfreq)
 
         # Generate phase and waveform
         phase = 2 * np.pi * freq * t + lastphase
         yh = A * np.cos(phase)
-        lastfreq = freqs[l]
+        lastfreq = freqs[idx]
         lastphase = phase[-1] % (2 * np.pi)  # Wrap phase for continuity
         frames.append(yh)
 
@@ -350,13 +376,16 @@ def cleaningTrack(track: np.ndarray, minTrackLength: int = 3) -> np.ndarray:
     cleanTrack = np.copy(track)
     trackBegs = (
         np.nonzero(
-            (track[: nFrames - 1] <= 0) & (track[1:] > 0)  # beginning of track contours
+            (track[: nFrames - 1] <= 0)
+            & (track[1:] > 0)  # beginning of track contours
         )[0]
         + 1
     )
     if track[0] > 0:
         trackBegs = np.insert(trackBegs, 0, 0)
-    trackEnds = np.nonzero((track[: nFrames - 1] > 0) & (track[1:] <= 0))[0] + 1
+    trackEnds = (
+        np.nonzero((track[: nFrames - 1] > 0) & (track[1:] <= 0))[0] + 1
+    )
     if track[nFrames - 1] > 0:
         trackEnds = np.append(trackEnds, nFrames - 1)
     trackLengths = 1 + trackEnds - trackBegs
@@ -366,7 +395,15 @@ def cleaningTrack(track: np.ndarray, minTrackLength: int = 3) -> np.ndarray:
     return cleanTrack
 
 
-def f0Twm(pfreq: np.ndarray, pmag: np.ndarray, ef0max: float, minf0: float, maxf0: float, f0t: float = 0, fs: int | None = None) -> float:
+def f0Twm(
+    pfreq: np.ndarray,
+    pmag: np.ndarray,
+    ef0max: float,
+    minf0: float,
+    maxf0: float,
+    f0t: float = 0,
+    fs: Optional[int] = None,
+):
     """
     Wrapper around TWM f0 detection that selects candidate peaks and validates result.
 
@@ -383,7 +420,9 @@ def f0Twm(pfreq: np.ndarray, pmag: np.ndarray, ef0max: float, minf0: float, maxf
         f0: Estimated fundamental frequency in Hz, or 0 when rejected
     """
     if minf0 < 0:
-        raise ValueError("Minimum fundamental frequency (minf0) smaller than 0")
+        raise ValueError(
+            "Minimum fundamental frequency (minf0) smaller than 0"
+        )
 
     if maxf0 <= minf0:
         raise ValueError(
@@ -427,7 +466,9 @@ def f0Twm(pfreq: np.ndarray, pmag: np.ndarray, ef0max: float, minf0: float, maxf
     return f0 if (f0 > 0) and (f0error < ef0max) else 0
 
 
-def TWM_p(pfreq: np.ndarray, pmag: np.ndarray, f0c: np.ndarray) -> tuple[float, float]:
+def TWM_p(
+    pfreq: np.ndarray, pmag: np.ndarray, f0c: np.ndarray
+) -> tuple[float, float]:
     """
     Two-way mismatch algorithm for f0 detection (Beauchamp & Maher).
 
@@ -485,7 +526,15 @@ def TWM_p(pfreq: np.ndarray, pmag: np.ndarray, f0c: np.ndarray) -> tuple[float, 
     return f0, total_error[f0index]
 
 
-def sineSubtraction(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.ndarray, sphase: np.ndarray, fs: int) -> np.ndarray:
+def sineSubtraction(
+    x: np.ndarray,
+    N: int,
+    H: int,
+    sfreq: np.ndarray,
+    smag: np.ndarray,
+    sphase: np.ndarray,
+    fs: int,
+) -> np.ndarray:
     """
     Subtract sinusoids from audio signal to extract residual.
 
@@ -500,7 +549,9 @@ def sineSubtraction(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.n
         xr: Residual signal after sine subtraction
     """
     hN = N // 2
-    x = np.concatenate([np.zeros(hN), x, np.zeros(hN)])  # Pad for centered windowing
+    x = np.concatenate(
+        [np.zeros(hN), x, np.zeros(hN)]
+    )  # Pad for centered windowing
     bh = blackmanharris(N)
     w = bh / np.sum(bh)
     sw = np.zeros(N)
@@ -510,13 +561,17 @@ def sineSubtraction(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.n
     xr = np.zeros(x.size)
     pin = 0
 
-    for l in range(L):
+    for idx in range(L):
         xw = x[pin : pin + N] * w
         X = fft(fftshift(xw))
         if UF_C is not None:
-            Yh = UF_C.genSpecSines(N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N)
+            Yh = UF_C.genSpecSines(
+                N * sfreq[idx, :] / fs, smag[idx, :], sphase[idx, :], N
+            )
         else:
-            Yh = genSpecSines_p(sfreq[l, :], smag[l, :], sphase[l, :], N, fs)
+            Yh = genSpecSines_p(
+                sfreq[idx, :], smag[idx, :], sphase[idx, :], N, fs
+            )
         Xr = X - Yh
         xrw = np.real(fftshift(ifft(Xr)))
         xr[pin : pin + N] += xrw * sw
@@ -527,7 +582,16 @@ def sineSubtraction(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.n
     return xr
 
 
-def stochasticResidualAnal(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, smag: np.ndarray, sphase: np.ndarray, fs: int, stocf: float) -> np.ndarray:
+def stochasticResidualAnal(
+    x: np.ndarray,
+    N: int,
+    H: int,
+    sfreq: np.ndarray,
+    smag: np.ndarray,
+    sphase: np.ndarray,
+    fs: int,
+    stocf: float,
+) -> np.ndarray:
     """
     Subtract sinusoids and approximate the residual with a stochastic envelope.
 
@@ -552,13 +616,17 @@ def stochasticResidualAnal(x: np.ndarray, N: int, H: int, sfreq: np.ndarray, sma
     pin = 0
     env_frames = []
 
-    for l in range(L):
+    for idx in range(L):
         xw = x[pin : pin + N] * w
         X = fft(fftshift(xw))
         if UF_C is not None:
-            Yh = UF_C.genSpecSines(N * sfreq[l, :] / fs, smag[l, :], sphase[l, :], N)
+            Yh = UF_C.genSpecSines(
+                N * sfreq[idx, :] / fs, smag[idx, :], sphase[idx, :], N
+            )
         else:
-            Yh = genSpecSines_p(sfreq[l, :], smag[l, :], sphase[l, :], N, fs)
+            Yh = genSpecSines_p(
+                sfreq[idx, :], smag[idx, :], sphase[idx, :], N, fs
+            )
 
         Xr = X - Yh
         mXr = 20 * np.log10(np.abs(Xr[:hN]))

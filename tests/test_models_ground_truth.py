@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 
@@ -35,7 +34,6 @@ def test_harmonic_model_synthesis_snr():
     length = 8192
     nH = 6
     N = 2048
-    H = 128
     t = -80
     minf0 = 80.0
     maxf0 = 1000.0
@@ -192,11 +190,26 @@ def test_non_harmonic_multi_chirp_tracks_match_ground_truth():
 
 def test_spr_component_additivity():
     """SPR output should satisfy y == ys + xr."""
-    pytest.xfail("SPR additivity test: known boundary/model effect, see synthesis windowing.")
-    x = _harmonic_stack(220.0, length=4096, harmonics=6) + 0.02 * np.random.default_rng(0).standard_normal(4096)
+    pytest.xfail(
+        "SPR additivity test: known boundary/model effect, see synthesis windowing."
+    )
+    x = _harmonic_stack(
+        220.0, length=4096, harmonics=6
+    ) + 0.02 * np.random.default_rng(0).standard_normal(4096)
     w = np.hanning(513)
 
-    y, ys, xr = sprModel.sprModel(x, fs=FS, w=w, N=1024, H=128, t=-80, minSineDur=0.02, maxnSines=6, freqDevOffset=20, freqDevSlope=0.01)
+    y, ys, xr = sprModel.sprModel(
+        x,
+        fs=FS,
+        w=w,
+        N=1024,
+        H=128,
+        t=-80,
+        minSineDur=0.02,
+        maxnSines=6,
+        freqDevOffset=20,
+        freqDevSlope=0.01,
+    )
 
     assert y.shape == x.shape
     assert ys.shape == x.shape
@@ -225,7 +238,9 @@ def test_spr_residual_snr_on_complex_sinusoids():
     amp2 = 0.33 * (1.0 + 0.18 * np.sin(2 * np.pi * 2.3 * n / FS + 0.4))
     amp3 = 0.24 * (1.0 + 0.15 * np.sin(2 * np.pi * 1.1 * n / FS + 0.2))
 
-    sinusoidal = amp1 * np.sin(phase1) + amp2 * np.sin(phase2) + amp3 * np.sin(phase3)
+    sinusoidal = (
+        amp1 * np.sin(phase1) + amp2 * np.sin(phase2) + amp3 * np.sin(phase3)
+    )
     noise = 0.03 * rng.standard_normal(length)
     x = sinusoidal + noise
 
@@ -263,7 +278,9 @@ def test_spr_residual_snr_on_complex_sinusoids():
 def test_dft_roundtrip_meets_snr_threshold():
     M = 2047
     N = 8192
-    x = _sine(440.0, length=M, amp=0.9) + 0.25 * _sine(880.0, length=M, amp=0.7)
+    x = _sine(440.0, length=M, amp=0.9) + 0.25 * _sine(
+        880.0, length=M, amp=0.7
+    )
     w = np.hanning(M)
 
     mX, pX = DFT.dftAnal(x, w, N)
@@ -318,7 +335,9 @@ def test_stochastic_analysis_synthesis_produces_valid_signal():
 
 def test_hpr_component_additivity():
     """HPR output should satisfy y == yh + xr."""
-    pytest.xfail("HPR additivity test: known boundary/model effect, see synthesis windowing.")
+    pytest.xfail(
+        "HPR additivity test: known boundary/model effect, see synthesis windowing."
+    )
     x = _harmonic_stack(220.0, length=4096, harmonics=6)
     w = np.hanning(513)
 
@@ -345,11 +364,25 @@ def test_hpr_component_additivity():
 
 def test_sps_component_additivity():
     """SPS output should satisfy y == ys + yst."""
-    pytest.xfail("SPS additivity test: known boundary/model effect, see synthesis windowing.")
+    pytest.xfail(
+        "SPS additivity test: known boundary/model effect, see synthesis windowing."
+    )
     x = _harmonic_stack(220.0, length=4096, harmonics=6)
     w = np.hanning(513)
 
-    y, ys, yst = spsModel.spsModel(x, fs=FS, w=w, N=1024, H=128, t=-80, minSineDur=0.02, maxnSines=6, freqDevOffset=20, freqDevSlope=0.01, stocf=1)
+    y, ys, yst = spsModel.spsModel(
+        x,
+        fs=FS,
+        w=w,
+        N=1024,
+        H=128,
+        t=-80,
+        minSineDur=0.02,
+        maxnSines=6,
+        freqDevOffset=20,
+        freqDevSlope=0.01,
+        stocf=1,
+    )
 
     assert y.shape == x.shape
     assert ys.shape == x.shape
@@ -359,7 +392,9 @@ def test_sps_component_additivity():
 
 def test_hps_component_additivity():
     """HPS output should satisfy y == yh + yst."""
-    pytest.xfail("HPS additivity test: known boundary/model effect, see synthesis windowing.")
+    pytest.xfail(
+        "HPS additivity test: known boundary/model effect, see synthesis windowing."
+    )
     x = _harmonic_stack(220.0, length=4096, harmonics=6)
     w = np.hanning(513)
 
@@ -396,10 +431,14 @@ def test_gen_spec_sines_python_is_conjugate_symmetric_near_nyquist():
     assert Y.shape == (N,)
     assert np.isfinite(Y.real).all()
     assert np.isfinite(Y.imag).all()
-    np.testing.assert_allclose(Y[hN + 1 :], np.conj(Y[hN - 1 : 0 : -1]), atol=1e-10)
+    np.testing.assert_allclose(
+        Y[hN + 1 :], np.conj(Y[hN - 1 : 0 : -1]), atol=1e-10
+    )
 
 
-def test_f0_detection_requires_two_consistent_frames_to_set_stability(monkeypatch):
+def test_f0_detection_requires_two_consistent_frames_to_set_stability(
+    monkeypatch,
+):
     x = np.zeros(2048)
     w = np.hanning(513)
     N = 1024
@@ -416,7 +455,11 @@ def test_f0_detection_requires_two_consistent_frames_to_set_stability(monkeypatc
         return np.array([10, 20, 30])
 
     def fake_peak_interp(mX, pX, ploc):
-        return ploc.astype(float), np.array([0.0, -3.0, -6.0]), np.zeros(ploc.size)
+        return (
+            ploc.astype(float),
+            np.array([0.0, -3.0, -6.0]),
+            np.zeros(ploc.size),
+        )
 
     def fake_f0_twm(ipfreq, ipmag, f0et, minf0, maxf0, f0stable, fs=None):
         received_stable.append(f0stable)
