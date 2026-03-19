@@ -1,0 +1,4 @@
+# file: /Users/xserra/sms-tools/smstools/models/dftModel.py
+# hypothesis_version: 6.151.9
+
+[0.0, 1e-14, 'dftAnal', 'dftModel', 'dftSynth']

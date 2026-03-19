@@ -16,6 +16,7 @@ import os
 import subprocess
 import sys
 import warnings
+from typing import Optional
 
 import numpy as np
 from scipy.fft import fft, fftshift, ifft
@@ -401,8 +402,8 @@ def f0Twm(
     minf0: float,
     maxf0: float,
     f0t: float = 0,
-    fs: int | None = None,
-) -> float:
+    fs: Optional[int] = None,
+):
     """
     Wrapper around TWM f0 detection that selects candidate peaks and validates result.
 

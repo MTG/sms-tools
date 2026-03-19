@@ -4,6 +4,8 @@ Implements frame-based stochastic envelope analysis and re-synthesis in linear o
 mel frequency scale. Public API remains compatible with the original module.
 """
 
+from typing import Optional
+
 import numpy as np
 from scipy.fft import fft, ifft
 from scipy.interpolate import splev, splrep
@@ -98,8 +100,8 @@ def _analyze_frame_to_env(
     mX: np.ndarray,
     stocf: float,
     mel_scale: bool,
-    bin_freqs_mel: np.ndarray | None = None,
-    uniform_mel_freq: np.ndarray | None = None,
+    bin_freqs_mel: Optional[np.ndarray] = None,
+    uniform_mel_freq: Optional[np.ndarray] = None,
 ) -> np.ndarray:
     """
     Convert one magnitude spectrum frame to a decimated stochastic envelope.
@@ -200,7 +202,6 @@ def stochasticModelAnal(
 
     hN = N // 2 + 1
     no2 = N // 2
-    w = hann(N)
     x = np.concatenate([np.zeros(no2), x, np.zeros(no2)])
     pin = no2
     pend = x.size - no2
@@ -211,6 +212,7 @@ def stochasticModelAnal(
         bin_freqs_mel, uniform_mel_freq = None, None
 
     env_frames = []
+    w = hann(N)
     while pin <= pend:
         xw = x[pin - no2 : pin + no2] * w
         X = fft(xw)
