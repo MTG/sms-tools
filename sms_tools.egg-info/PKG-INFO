@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sms-tools
-Version: 1.0.1
+Version: 1.2
 Summary: Sound analysis/synthesis tools for music applications
 Author-email: "Music Technology Group, Universitat Pompeu Fabra" <mtg-info@upf.edu>
 Project-URL: Homepage, https://github.com/mtg/sms-tools
@@ -20,6 +20,7 @@ Requires-Dist: scipy
 Provides-Extra: test
 Requires-Dist: pytest>=8.0; extra == "test"
 Requires-Dist: pytest-cov>=5.0; extra == "test"
+Requires-Dist: hypothesis; extra == "test"
 Dynamic: license-file
 
 sms-tools
@@ -108,10 +109,12 @@ You can run a specific test file with:
 
 This will execute all tests and print detailed output.
 
-Jupyter Notebooks
+sms-tools-materials repository
 -------
-We provide a separate repository of examples and teaching materials in the form of Jupyter notebooks.
-You can find them at https://github.com/MTG/sms-tools-materials
+
+There is a separate repository containing teaching materials, example notebooks, and exercises used in courses that use the sms-tools package. It includes Jupyter notebooks, audio examples, and practical guides to help students and researchers learn about sound analysis, synthesis, and transformation with sms-tools.
+
+For more information and resources, see: https://github.com/MTG/sms-tools-materials
 
 License
 -------

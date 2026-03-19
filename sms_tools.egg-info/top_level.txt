@@ -1,4 +1,5 @@
 benchmarks
 build
+dist
 smstools
 tests
