@@ -133,9 +133,23 @@ def hpsModel(
     """
     # Use analysis then synthesis, ensure output lengths match input
     hfreq, hmag, hphase, stocEnv = hpsModelAnal(
-        x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur, Ns, stocf
+        x,
+        fs,
+        w,
+        N,
+        H,
+        t,
+        nH,
+        minf0,
+        maxf0,
+        f0et,
+        harmDevSlope,
+        minSineDur,
+        Ns,
+        stocf,
     )
     y, yh, yst = hpsModelSynth(hfreq, hmag, hphase, stocEnv, Ns, H, fs)
+
     # Ensure output lengths match input
     def match_length(arr, target_len):
         if len(arr) > target_len:
@@ -144,6 +158,7 @@ def hpsModel(
             return np.pad(arr, (0, target_len - len(arr)))
         else:
             return arr
+
     y = match_length(y, len(x))
     yh = match_length(yh, len(x))
     yst = match_length(yst, len(x))

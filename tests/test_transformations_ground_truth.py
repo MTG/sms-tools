@@ -7,13 +7,14 @@ predictable, so assertions can be exact or tightly bounded rather than merely
 """
 
 import numpy as np
-import pytest
 
-from smstools.models import dftModel as DFT
-from smstools.transformations import (harmonicTransformations,
-                                      hpsTransformations, sineTransformations,
-                                      stftTransformations,
-                                      stochasticTransformations)
+from smstools.transformations import (
+    harmonicTransformations,
+    hpsTransformations,
+    sineTransformations,
+    stftTransformations,
+    stochasticTransformations,
+)
 
 FS = 44100
 
@@ -21,6 +22,7 @@ FS = 44100
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _sine_tracks(frames, tracks, base_freq=220.0):
     """Synthetic sine-track matrix: track k holds (k+1)*base_freq Hz."""
@@ -55,6 +57,7 @@ def _sine(freq, length, amp=0.8, fs=FS):
 # ---------------------------------------------------------------------------
 # sineTransformations
 # ---------------------------------------------------------------------------
+
 
 class TestSineFreqScaling:
     """sineFreqScaling: multiplies every active bin by a time-varying envelope."""
@@ -96,7 +99,9 @@ class TestSineFreqScaling:
 
     def test_output_shape_matches_input(self):
         tfreq, _ = _sine_tracks(frames=15, tracks=5)
-        ysfreq = sineTransformations.sineFreqScaling(tfreq, np.array([0, 1.5, 1, 1.5]))
+        ysfreq = sineTransformations.sineFreqScaling(
+            tfreq, np.array([0, 1.5, 1, 1.5])
+        )
         assert ysfreq.shape == tfreq.shape
 
 
@@ -106,8 +111,11 @@ class TestSineTimeScaling:
     def test_2x_scaling_doubles_frame_count(self):
         tfreq, tmag = _sine_tracks(frames=20, tracks=3)
         ysfreq, ysmag = sineTransformations.sineTimeScaling(
-            tfreq, tmag,
-            timeScaling=np.array([0, 0, 1, 2]),  # map 1 input unit → 2 output units
+            tfreq,
+            tmag,
+            timeScaling=np.array(
+                [0, 0, 1, 2]
+            ),  # map 1 input unit → 2 output units
         )
         assert ysfreq.shape[0] == 2 * tfreq.shape[0]
         assert ysmag.shape[0] == 2 * tfreq.shape[0]
@@ -115,7 +123,8 @@ class TestSineTimeScaling:
     def test_half_scaling_halves_frame_count(self):
         tfreq, tmag = _sine_tracks(frames=20, tracks=3)
         ysfreq, ysmag = sineTransformations.sineTimeScaling(
-            tfreq, tmag,
+            tfreq,
+            tmag,
             timeScaling=np.array([0, 0, 1, 0.5]),
         )
         assert ysfreq.shape[0] == 10
@@ -125,7 +134,8 @@ class TestSineTimeScaling:
         """1-to-1 time mapping should return the exact same frames."""
         tfreq, tmag = _sine_tracks(frames=20, tracks=3)
         ysfreq, ysmag = sineTransformations.sineTimeScaling(
-            tfreq, tmag,
+            tfreq,
+            tmag,
             timeScaling=np.array([0, 0, 1, 1]),
         )
         assert ysfreq.shape == tfreq.shape
@@ -133,12 +143,16 @@ class TestSineTimeScaling:
         # be rows drawn directly from the input, so the concatenated set is a
         # subset of input rows.
         for row in ysfreq:
-            assert any(np.allclose(row, tfreq[i]) for i in range(tfreq.shape[0]))
+            assert any(
+                np.allclose(row, tfreq[i]) for i in range(tfreq.shape[0])
+            )
 
     def test_column_count_unchanged(self):
         tfreq, tmag = _sine_tracks(frames=30, tracks=7)
         ysfreq, ysmag = sineTransformations.sineTimeScaling(
-            tfreq, tmag, timeScaling=np.array([0, 0, 1, 3]),
+            tfreq,
+            tmag,
+            timeScaling=np.array([0, 0, 1, 3]),
         )
         assert ysfreq.shape[1] == tfreq.shape[1]
         assert ysmag.shape[1] == tmag.shape[1]
@@ -148,27 +162,31 @@ class TestSineTimeScaling:
 # stochasticTransformations
 # ---------------------------------------------------------------------------
 
+
 class TestStochasticTimeScale:
     """stochasticTimeScale: frame-axis resample of the stochastic envelope."""
 
     def test_2x_scaling_doubles_frame_count(self):
         env = _stoc_env(frames=16, bins=128)
         yenv = stochasticTransformations.stochasticTimeScale(
-            env, timeScaling=np.array([0, 0, 1, 2]),
+            env,
+            timeScaling=np.array([0, 0, 1, 2]),
         )
         assert yenv.shape[0] == 2 * 16
 
     def test_half_scaling_halves_frame_count(self):
         env = _stoc_env(frames=20, bins=64)
         yenv = stochasticTransformations.stochasticTimeScale(
-            env, timeScaling=np.array([0, 0, 1, 0.5]),
+            env,
+            timeScaling=np.array([0, 0, 1, 0.5]),
         )
         assert yenv.shape[0] == 10
 
     def test_bin_count_preserved(self):
         env = _stoc_env(frames=12, bins=50)
         yenv = stochasticTransformations.stochasticTimeScale(
-            env, timeScaling=np.array([0, 0, 1, 3]),
+            env,
+            timeScaling=np.array([0, 0, 1, 3]),
         )
         assert yenv.shape[1] == 50
 
@@ -177,7 +195,8 @@ class TestStochasticTimeScale:
         val = -35.0
         env = _stoc_env(frames=10, bins=32, value=val)
         yenv = stochasticTransformations.stochasticTimeScale(
-            env, timeScaling=np.array([0, 0, 1, 2]),
+            env,
+            timeScaling=np.array([0, 0, 1, 2]),
         )
         np.testing.assert_allclose(yenv, val, atol=1e-10)
 
@@ -185,6 +204,7 @@ class TestStochasticTimeScale:
 # ---------------------------------------------------------------------------
 # harmonicTransformations
 # ---------------------------------------------------------------------------
+
 
 class TestHarmonicFreqScaling:
     """harmonicFreqScaling: scales / stretches the frequency grid of harmonics."""
@@ -194,9 +214,10 @@ class TestHarmonicFreqScaling:
         original = hfreq.copy()
 
         yhfreq, yhmag = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
-            freqScaling=np.array([0, 2, 1, 2]),       # constant ×2
-            freqStretching=np.array([0, 1, 1, 1]),     # no stretching
+            hfreq,
+            hmag,
+            freqScaling=np.array([0, 2, 1, 2]),  # constant ×2
+            freqStretching=np.array([0, 1, 1, 1]),  # no stretching
             timbrePreservation=0,
             fs=FS,
         )
@@ -208,7 +229,8 @@ class TestHarmonicFreqScaling:
         original = hfreq.copy()
 
         yhfreq, yhmag = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
+            hfreq,
+            hmag,
             freqScaling=np.array([0, 1, 1, 1]),
             freqStretching=np.array([0, 1, 1, 1]),
             timbrePreservation=0,
@@ -222,7 +244,8 @@ class TestHarmonicFreqScaling:
         original_hmag = hmag.copy()
 
         yhfreq, yhmag = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
+            hfreq,
+            hmag,
             freqScaling=np.array([0, 1.5, 1, 1.5]),
             freqStretching=np.array([0, 1, 1, 1]),
             timbrePreservation=0,
@@ -236,15 +259,18 @@ class TestHarmonicFreqScaling:
         hfreq, hmag = _harmonic_tracks(frames=10, tracks=6, f0=200.0)
 
         yhfreq, yhmag = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
-            freqScaling=np.array([0, 2, 1, 2]),       # ×2 shift
+            hfreq,
+            hmag,
+            freqScaling=np.array([0, 2, 1, 2]),  # ×2 shift
             freqStretching=np.array([0, 1, 1, 1]),
             timbrePreservation=1,
             fs=FS,
         )
 
         # At least some frame should have different magnitudes
-        assert not np.allclose(yhmag, hmag), "Timbre preservation should alter magnitudes"
+        assert not np.allclose(
+            yhmag, hmag
+        ), "Timbre preservation should alter magnitudes"
 
     def test_zero_freq_bins_remain_zero(self):
         hfreq = np.zeros((8, 4))
@@ -252,7 +278,8 @@ class TestHarmonicFreqScaling:
         hfreq[:, :2] = np.array([220.0, 440.0])  # only 2 active harmonics
 
         yhfreq, _ = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
+            hfreq,
+            hmag,
             freqScaling=np.array([0, 2, 1, 2]),
             freqStretching=np.array([0, 1, 1, 1]),
             timbrePreservation=0,
@@ -264,7 +291,8 @@ class TestHarmonicFreqScaling:
     def test_output_shape_matches_input(self):
         hfreq, hmag = _harmonic_tracks(frames=15, tracks=8)
         yhfreq, yhmag = harmonicTransformations.harmonicFreqScaling(
-            hfreq, hmag,
+            hfreq,
+            hmag,
             freqScaling=np.array([0, 1, 1, 1]),
             freqStretching=np.array([0, 1, 1, 1]),
             timbrePreservation=0,
@@ -277,6 +305,7 @@ class TestHarmonicFreqScaling:
 # ---------------------------------------------------------------------------
 # stftTransformations
 # ---------------------------------------------------------------------------
+
 
 class TestStftFiltering:
     """stftFiltering: applies a magnitude filter frame-by-frame via STFT."""
@@ -297,7 +326,9 @@ class TestStftFiltering:
         assert np.isfinite(y).all()
         # Energy ratio should be close to 1 (within OLA gain tolerance)
         energy_ratio = np.sum(y**2) / np.sum(x**2)
-        assert 0.5 < energy_ratio < 2.0, f"Energy ratio {energy_ratio:.3f} unexpected"
+        assert (
+            0.5 < energy_ratio < 2.0
+        ), f"Energy ratio {energy_ratio:.3f} unexpected"
 
     def test_minus60db_filter_strongly_attenuates_signal(self):
         """-60 dB flat filter should reduce signal energy by ~6 orders of magnitude."""
@@ -310,7 +341,9 @@ class TestStftFiltering:
 
         energy_in = np.sum(x**2)
         energy_out = np.sum(y**2)
-        assert energy_out < energy_in * 1e-4, "Signal should be strongly attenuated"
+        assert (
+            energy_out < energy_in * 1e-4
+        ), "Signal should be strongly attenuated"
 
     def test_output_shape_matches_input(self):
         x = _sine(330.0, length=8192)
@@ -332,8 +365,9 @@ class TestStftMorph:
         w1 = w2 = np.hanning(513)
         N1 = N2 = 1024
 
-        y = stftTransformations.stftMorph(x1, x2, FS, w1, N1, w2, N2, H1=128,
-                                          smoothf=1.0, balancef=0.0)
+        y = stftTransformations.stftMorph(
+            x1, x2, FS, w1, N1, w2, N2, H1=128, smoothf=1.0, balancef=0.0
+        )
 
         e1 = np.sum(x1**2)
         ey = np.sum(y**2)
@@ -347,15 +381,17 @@ class TestStftMorph:
         w1 = w2 = np.hanning(513)
         N1 = N2 = 1024
 
-        y0 = stftTransformations.stftMorph(x1, x2, FS, w1, N1, w2, N2, H1=128,
-                                           smoothf=1.0, balancef=0.0)
-        y1 = stftTransformations.stftMorph(x1, x2, FS, w1, N1, w2, N2, H1=128,
-                                           smoothf=1.0, balancef=1.0)
+        y0 = stftTransformations.stftMorph(
+            x1, x2, FS, w1, N1, w2, N2, H1=128, smoothf=1.0, balancef=0.0
+        )
+        y1 = stftTransformations.stftMorph(
+            x1, x2, FS, w1, N1, w2, N2, H1=128, smoothf=1.0, balancef=1.0
+        )
 
         # Moving balance toward sound 2 (quieter) should reduce energy
-        assert np.sum(y1**2) < np.sum(y0**2), (
-            "balance=1 (quiet x2) should produce less energy than balance=0 (loud x1)"
-        )
+        assert np.sum(y1**2) < np.sum(
+            y0**2
+        ), "balance=1 (quiet x2) should produce less energy than balance=0 (loud x1)"
 
     def test_output_shape_matches_x1(self):
         x1 = _sine(440.0, length=4096)
@@ -363,14 +399,16 @@ class TestStftMorph:
         w1 = w2 = np.hanning(513)
         N1 = N2 = 1024
 
-        y = stftTransformations.stftMorph(x1, x2, FS, w1, N1, w2, N2, H1=256,
-                                          smoothf=1.0, balancef=0.5)
+        y = stftTransformations.stftMorph(
+            x1, x2, FS, w1, N1, w2, N2, H1=256, smoothf=1.0, balancef=0.5
+        )
         assert y.shape == x1.shape
 
 
 # ---------------------------------------------------------------------------
 # hpsTransformations
 # ---------------------------------------------------------------------------
+
 
 class TestHpsTimeScale:
     """hpsTimeScale: resamples all three HPS component track matrices together."""
@@ -380,7 +418,10 @@ class TestHpsTimeScale:
         stoc = _stoc_env(frames=20, bins=64)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsTimeScale(
-            hfreq, hmag, stoc, timeScaling=np.array([0, 0, 1, 2]),
+            hfreq,
+            hmag,
+            stoc,
+            timeScaling=np.array([0, 0, 1, 2]),
         )
         assert yhfreq.shape[0] == 2 * 20
         assert yhmag.shape[0] == 2 * 20
@@ -391,7 +432,10 @@ class TestHpsTimeScale:
         stoc = _stoc_env(frames=20, bins=64)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsTimeScale(
-            hfreq, hmag, stoc, timeScaling=np.array([0, 0, 1, 0.5]),
+            hfreq,
+            hmag,
+            stoc,
+            timeScaling=np.array([0, 0, 1, 0.5]),
         )
         assert yhfreq.shape[0] == 10
 
@@ -400,7 +444,10 @@ class TestHpsTimeScale:
         stoc = _stoc_env(frames=16, bins=50)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsTimeScale(
-            hfreq, hmag, stoc, timeScaling=np.array([0, 0, 1, 2]),
+            hfreq,
+            hmag,
+            stoc,
+            timeScaling=np.array([0, 0, 1, 2]),
         )
         assert yhfreq.shape[1] == hfreq.shape[1]
         assert yhmag.shape[1] == hmag.shape[1]
@@ -413,7 +460,10 @@ class TestHpsTimeScale:
         stoc = _stoc_env(frames=12, bins=32, value=-30.0)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsTimeScale(
-            hfreq, hmag, stoc, timeScaling=np.array([0, 0, 1, 2]),
+            hfreq,
+            hmag,
+            stoc,
+            timeScaling=np.array([0, 0, 1, 2]),
         )
 
         # Implementation currently leaves boundary rows unfilled; check populated frames.
@@ -441,11 +491,17 @@ class TestHpsMorph:
         stoc2 = _stoc_env(frames=10, bins=32, value=-60.0)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsMorph(
-            hfreq1, hmag1, stoc1,
-            hfreq2, hmag2, stoc2,
-            hfreqIntp=np.array([0.0, 1.0, 1.0, 1.0]),   # 100 % freq from sound 2
-            hmagIntp=np.array([0.0, 1.0, 1.0, 1.0]),    # 100 % mag from sound 2
-            stocIntp=np.array([0.0, 1.0, 1.0, 1.0]),    # 100 % stoc from sound 2
+            hfreq1,
+            hmag1,
+            stoc1,
+            hfreq2,
+            hmag2,
+            stoc2,
+            hfreqIntp=np.array(
+                [0.0, 1.0, 1.0, 1.0]
+            ),  # 100 % freq from sound 2
+            hmagIntp=np.array([0.0, 1.0, 1.0, 1.0]),  # 100 % mag from sound 2
+            stocIntp=np.array([0.0, 1.0, 1.0, 1.0]),  # 100 % stoc from sound 2
         )
 
         np.testing.assert_allclose(ystoc, stoc2, atol=1e-10)
@@ -460,9 +516,13 @@ class TestHpsMorph:
         stoc2 = _stoc_env(frames=10, bins=32, value=-60.0)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsMorph(
-            hfreq1, hmag1, stoc1,
-            hfreq2, hmag2, stoc2,
-            hfreqIntp=np.array([0.0, 0.0, 1.0, 0.0]),   # 0 % → sound 1
+            hfreq1,
+            hmag1,
+            stoc1,
+            hfreq2,
+            hmag2,
+            stoc2,
+            hfreqIntp=np.array([0.0, 0.0, 1.0, 0.0]),  # 0 % → sound 1
             hmagIntp=np.array([0.0, 0.0, 1.0, 0.0]),
             stocIntp=np.array([0.0, 0.0, 1.0, 0.0]),
         )
@@ -480,8 +540,12 @@ class TestHpsMorph:
         expected = 0.5 * (stoc1 + stoc2)  # = -30.0
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsMorph(
-            hfreq1, hmag1, stoc1,
-            hfreq2, hmag2, stoc2,
+            hfreq1,
+            hmag1,
+            stoc1,
+            hfreq2,
+            hmag2,
+            stoc2,
             hfreqIntp=np.array([0.0, 0.5, 1.0, 0.5]),
             hmagIntp=np.array([0.0, 0.5, 1.0, 0.5]),
             stocIntp=np.array([0.0, 0.5, 1.0, 0.5]),
@@ -498,8 +562,12 @@ class TestHpsMorph:
         stoc2 = _stoc_env(frames=8, bins=32)
 
         yhfreq, yhmag, ystoc = hpsTransformations.hpsMorph(
-            hfreq1, hmag1, stoc1,
-            hfreq2, hmag2, stoc2,
+            hfreq1,
+            hmag1,
+            stoc1,
+            hfreq2,
+            hmag2,
+            stoc2,
             hfreqIntp=np.array([0.0, 0.5, 1.0, 0.5]),
             hmagIntp=np.array([0.0, 0.5, 1.0, 0.5]),
             stocIntp=np.array([0.0, 0.5, 1.0, 0.5]),

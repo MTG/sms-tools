@@ -12,8 +12,6 @@ Key functions:
   - cleaningSineTracks: Remove short track fragments
 """
 
-import math
-
 import numpy as np
 from scipy.fft import fftshift, ifft
 from scipy.signal.windows import blackmanharris, triang
@@ -28,7 +26,7 @@ def sineTracking(
     pphase: np.ndarray,
     tfreq: np.ndarray,
     freqDevOffset: float = 20,
-    freqDevSlope: float = 0.01
+    freqDevSlope: float = 0.01,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Assign spectral peaks to existing sinusoidal tracks from previous frame.
@@ -107,7 +105,9 @@ def sineTracking(
     return tfreqn, tmagn, tphasen
 
 
-def cleaningSineTracks(tfreq: np.ndarray, minTrackLength: int = 3) -> np.ndarray:
+def cleaningSineTracks(
+    tfreq: np.ndarray, minTrackLength: int = 3
+) -> np.ndarray:
     """
     Remove sinusoidal track fragments below minimum duration threshold.
 
@@ -130,8 +130,7 @@ def cleaningSineTracks(tfreq: np.ndarray, minTrackLength: int = 3) -> np.ndarray
         trackFreqs = tfreq[:, t]  # frequencies of one track
         trackBegs = (
             np.nonzero(
-                (trackFreqs[: nFrames - 1] <= 0)  # begining of track contours
-                & (trackFreqs[1:] > 0)
+                (trackFreqs[: nFrames - 1] <= 0) & (trackFreqs[1:] > 0)
             )[0]
             + 1
         )
@@ -139,15 +138,16 @@ def cleaningSineTracks(tfreq: np.ndarray, minTrackLength: int = 3) -> np.ndarray
             trackBegs = np.insert(trackBegs, 0, 0)
         trackEnds = (
             np.nonzero(
-                (trackFreqs[: nFrames - 1] > 0)  # end of track contours
-                & (trackFreqs[1:] <= 0)
+                (trackFreqs[: nFrames - 1] > 0) & (trackFreqs[1:] <= 0)
             )[0]
             + 1
         )
         if trackFreqs[nFrames - 1] > 0:
             trackEnds = np.append(trackEnds, nFrames - 1)
         trackLengths = 1 + trackEnds - trackBegs  # lengths of trach contours
-        for i, j in zip(trackBegs, trackLengths):  # delete short track contours
+        for i, j in zip(
+            trackBegs, trackLengths
+        ):  # delete short track contours
             if j <= minTrackLength:
                 trackFreqs[i : i + j] = 0
     return tfreq
@@ -187,7 +187,7 @@ def sineModelAnal(
     maxnSines: int = 100,
     minSineDur: float = 0.01,
     freqDevOffset: float = 20,
-    freqDevSlope: float = 0.01
+    freqDevSlope: float = 0.01,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Multi-frame sinusoidal analysis with automatic track continuity.
@@ -272,7 +272,7 @@ def sineModelSynth(
     tphase: np.ndarray,
     N: int,
     H: int,
-    fs: float
+    fs: float,
 ) -> np.ndarray:
     """
     Reconstruct audio from sinusoidal track parameters.
@@ -301,16 +301,16 @@ def sineModelSynth(
     sw = _build_synthesis_window(N, H)
     lastytfreq = tfreq[0, :]
     ytphase = 2 * np.pi * np.random.rand(tfreq[0, :].size)
-    for l in range(L):
+    for idx in range(L):
         # Use provided phases or propagate from previous frame
         if tphase.size > 0:
-            ytphase = tphase[l, :]
+            ytphase = tphase[idx, :]
         else:
-            ytphase += (np.pi * (lastytfreq + tfreq[l, :]) / fs) * H
+            ytphase += (np.pi * (lastytfreq + tfreq[idx, :]) / fs) * H
 
         # Generate spectral sines and synthesize frame
-        Y = UF.genSpecSines(tfreq[l, :], tmag[l, :], ytphase, N, fs)
-        lastytfreq = tfreq[l, :]
+        Y = UF.genSpecSines(tfreq[idx, :], tmag[idx, :], ytphase, N, fs)
+        lastytfreq = tfreq[idx, :]
         ytphase = ytphase % (2 * np.pi)
         yw = np.real(fftshift(ifft(Y)))
         # Robust buffer overrun prevention
@@ -322,7 +322,7 @@ def sineModelSynth(
             valid = y.size - start_idx
             y[start_idx : start_idx + valid] += (sw * yw)[:valid]
         else:
-            y[start_idx : end_idx] += sw * yw
+            y[start_idx:end_idx] += sw * yw
         pout += H
 
     # Trim half-window padding from start and end
@@ -339,7 +339,7 @@ def sineModel(
     max_n_sines: int = 100,
     min_sine_dur: float = 0.01,
     freq_dev_offset: float = 20,
-    freq_dev_slope: float = 0.01
+    freq_dev_slope: float = 0.01,
 ) -> np.ndarray:
     """
     Single-pass sinusoidal analysis/synthesis without frame tracking.
@@ -364,11 +364,22 @@ def sineModel(
     """
     Ns = 512  # synthesis FFT size
     H = Ns // 4  # hop size for synthesis
-    tfreq, tmag, tphase = sineModelAnal(x, fs, w, N, H, t, max_n_sines, min_sine_dur, freq_dev_offset, freq_dev_slope)
+    tfreq, tmag, tphase = sineModelAnal(
+        x,
+        fs,
+        w,
+        N,
+        H,
+        t,
+        max_n_sines,
+        min_sine_dur,
+        freq_dev_offset,
+        freq_dev_slope,
+    )
     y = sineModelSynth(tfreq, tmag, tphase, Ns, H, fs)
     # Ensure output length matches input
     if len(y) > len(x):
-        y = y[:len(x)]
+        y = y[: len(x)]
     elif len(y) < len(x):
         y = np.pad(y, (0, len(x) - len(y)))
     return y

@@ -99,7 +99,7 @@ def _analyze_frame_to_env(
     stocf: float,
     mel_scale: bool,
     bin_freqs_mel: np.ndarray | None = None,
-    uniform_mel_freq: np.ndarray | None = None
+    uniform_mel_freq: np.ndarray | None = None,
 ) -> np.ndarray:
     """
     Convert one magnitude spectrum frame to a decimated stochastic envelope.
@@ -128,7 +128,7 @@ def _synthesize_env_to_magnitude(
     hN: int,
     mel_scale: bool,
     bin_freqs_mel: np.ndarray | None = None,
-    uniform_mel_freq: np.ndarray | None = None
+    uniform_mel_freq: np.ndarray | None = None,
 ) -> np.ndarray:
     """
     Expand one stochastic envelope back to FFT-bin magnitude resolution.
@@ -151,7 +151,9 @@ def _synthesize_env_to_magnitude(
     return mY
 
 
-def _build_random_phase_spectrum(mY: np.ndarray, N: int, hN: int) -> np.ndarray:
+def _build_random_phase_spectrum(
+    mY: np.ndarray, N: int, hN: int
+) -> np.ndarray:
     """
     Create a Hermitian spectrum from magnitude with random positive-phase bins.
 
@@ -177,7 +179,7 @@ def stochasticModelAnal(
     N: int,
     stocf: float,
     fs: float = 44100,
-    melScale: int = 1
+    melScale: int = 1,
 ) -> np.ndarray:
     """
     Analyze sound into stochastic spectral envelopes.
@@ -223,11 +225,7 @@ def stochasticModelAnal(
 
 
 def stochasticModelSynth(
-    stocEnv: np.ndarray,
-    H: int,
-    N: int,
-    fs: float = 44100,
-    melScale: int = 1
+    stocEnv: np.ndarray, H: int, N: int, fs: float = 44100, melScale: int = 1
 ) -> np.ndarray:
     """
     Synthesize sound from stochastic envelopes.
@@ -259,9 +257,9 @@ def stochasticModelSynth(
     else:
         bin_freqs_mel, uniform_mel_freq = None, None
 
-    for l in range(L):
+    for idx in range(L):
         mY = _synthesize_env_to_magnitude(
-            stocEnv[l, :], hN, mel_scale, bin_freqs_mel, uniform_mel_freq
+            stocEnv[idx, :], hN, mel_scale, bin_freqs_mel, uniform_mel_freq
         )
         Y = _build_random_phase_spectrum(mY, N, hN)
         fftbuffer = np.real(ifft(Y))
@@ -278,7 +276,7 @@ def stochasticModel(
     N: int,
     stocf: float,
     fs: float = 44100,
-    melScale: int = 1
+    melScale: int = 1,
 ) -> np.ndarray:
     """
     One-pass stochastic analysis/synthesis (frame-by-frame).
@@ -303,7 +301,7 @@ def stochasticModel(
     y = stochasticModelSynth(stocEnv, H, N, fs, melScale)
     # Ensure output length matches input
     if len(y) > len(x):
-        y = y[:len(x)]
+        y = y[: len(x)]
     elif len(y) < len(x):
         y = np.pad(y, (0, len(x) - len(y)))
     return y

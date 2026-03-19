@@ -33,11 +33,10 @@ def sineTimeScaling(
     indexes = timeScalingEnv(np.arange(outL))
     ysfreq = sfreq[int(round(indexes[0])), :]
     ysmag = smag[int(round(indexes[0])), :]
-    for l in indexes[1:]:
-        ysfreq = np.vstack((ysfreq, sfreq[int(round(l)), :]))
-        ysmag = np.vstack((ysmag, smag[int(round(l)), :]))
+    for idx in indexes[1:]:
+        ysfreq = np.vstack((ysfreq, sfreq[int(round(idx)), :]))
+        ysmag = np.vstack((ysmag, smag[int(round(idx)), :]))
     return ysfreq, ysmag
-
 
 
 def sineFreqScaling(
@@ -61,9 +60,9 @@ def sineFreqScaling(
         np.arange(L), L * freqScaling[::2] / freqScaling[-2], freqScaling[1::2]
     )
     ysfreq = np.zeros_like(sfreq)
-    for l in range(L):
-        ind_valid = np.where(sfreq[l, :] != 0)[0]
+    for idx in range(L):
+        ind_valid = np.where(sfreq[idx, :] != 0)[0]
         if ind_valid.size == 0:
             continue
-        ysfreq[l, ind_valid] = sfreq[l, ind_valid] * freqScalingEnv[l]
+        ysfreq[idx, ind_valid] = sfreq[idx, ind_valid] * freqScalingEnv[idx]
     return ysfreq

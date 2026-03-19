@@ -3,15 +3,10 @@ Sinusoidal plus Stochastic Model (S+S) analysis and synthesis functions.
 Implements analysis, synthesis, and full model for S+S.
 """
 
-import math
 from typing import Tuple
 
 import numpy as np
-from scipy.fft import fft, ifft
-from scipy.signal import resample
-from scipy.signal.windows import blackmanharris, hann, triang
 
-from smstools.models import dftModel as DFT
 from smstools.models import sineModel as SM
 from smstools.models import stochasticModel as STM
 from smstools.models import utilFunctions as UF
@@ -125,9 +120,20 @@ def spsModel(
     """
     # Use analysis then synthesis, ensure output lengths match input
     tfreq, tmag, tphase, stocEnv = spsModelAnal(
-        x, fs, w, N, H, t, minSineDur, maxnSines, freqDevOffset, freqDevSlope, stocf
+        x,
+        fs,
+        w,
+        N,
+        H,
+        t,
+        minSineDur,
+        maxnSines,
+        freqDevOffset,
+        freqDevSlope,
+        stocf,
     )
     y, ys, yst = spsModelSynth(tfreq, tmag, tphase, stocEnv, Ns, H, fs)
+
     # Ensure output lengths match input
     def match_length(arr, target_len):
         if len(arr) > target_len:
@@ -136,6 +142,7 @@ def spsModel(
             return np.pad(arr, (0, target_len - len(arr)))
         else:
             return arr
+
     y = match_length(y, len(x))
     ys = match_length(ys, len(x))
     yst = match_length(yst, len(x))

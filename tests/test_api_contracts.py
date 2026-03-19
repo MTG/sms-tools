@@ -6,21 +6,47 @@ from smstools.models import dftModel, stft, utilFunctions
 
 
 def test_dft_public_signatures_are_stable():
-    assert str(inspect.signature(dftModel.dftModel)) == "(x: numpy.ndarray, w: numpy.ndarray, N: int) -> numpy.ndarray"
-    assert str(inspect.signature(dftModel.dftAnal)) == "(x: numpy.ndarray, w: numpy.ndarray, N: int) -> tuple[numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(dftModel.dftSynth)) == "(mX: numpy.ndarray, pX: numpy.ndarray, M: int) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(dftModel.dftModel))
+        == "(x: numpy.ndarray, w: numpy.ndarray, N: int) -> numpy.ndarray"
+    )
+    assert (
+        str(inspect.signature(dftModel.dftAnal))
+        == "(x: numpy.ndarray, w: numpy.ndarray, N: int) -> tuple[numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(dftModel.dftSynth))
+        == "(mX: numpy.ndarray, pX: numpy.ndarray, M: int) -> numpy.ndarray"
+    )
 
 
 def test_stft_public_signatures_are_stable():
-    assert str(inspect.signature(stft.stft)) == "(x: numpy.ndarray, w: numpy.ndarray, N: int, H: int) -> numpy.ndarray"
-    assert str(inspect.signature(stft.stftAnal)) == "(x: numpy.ndarray, w: numpy.ndarray, N: int, H: int) -> tuple[numpy.ndarray, numpy.ndarray]"
-    assert str(inspect.signature(stft.stftSynth)) == "(mY: numpy.ndarray, pY: numpy.ndarray, M: int, H: int) -> numpy.ndarray"
+    assert (
+        str(inspect.signature(stft.stft))
+        == "(x: numpy.ndarray, w: numpy.ndarray, N: int, H: int) -> numpy.ndarray"
+    )
+    assert (
+        str(inspect.signature(stft.stftAnal))
+        == "(x: numpy.ndarray, w: numpy.ndarray, N: int, H: int) -> tuple[numpy.ndarray, numpy.ndarray]"
+    )
+    assert (
+        str(inspect.signature(stft.stftSynth))
+        == "(mY: numpy.ndarray, pY: numpy.ndarray, M: int, H: int) -> numpy.ndarray"
+    )
 
 
 def test_utilfunctions_public_signatures_are_stable():
-    assert str(inspect.signature(utilFunctions.isPower2)) == "(num: int) -> bool"
-    assert str(inspect.signature(utilFunctions.peakDetection)) == "(mX: numpy.ndarray, t: float) -> numpy.ndarray"
-    assert str(inspect.signature(utilFunctions.peakInterp)) == "(mX: numpy.ndarray, pX: numpy.ndarray, ploc: numpy.ndarray) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    assert (
+        str(inspect.signature(utilFunctions.isPower2)) == "(num: int) -> bool"
+    )
+    assert (
+        str(inspect.signature(utilFunctions.peakDetection))
+        == "(mX: numpy.ndarray, t: float) -> numpy.ndarray"
+    )
+    assert (
+        str(inspect.signature(utilFunctions.peakInterp))
+        == "(mX: numpy.ndarray, pX: numpy.ndarray, ploc: numpy.ndarray) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]"
+    )
 
 
 def test_dftanal_return_format_is_two_1d_arrays():

@@ -1,4 +1,3 @@
-
 from typing import Tuple
 
 import numpy as np
@@ -38,15 +37,12 @@ def hpsTimeScale(
     yhfreq = np.zeros((indexes.shape[0], hfreq.shape[1]))
     yhmag = np.zeros((indexes.shape[0], hmag.shape[1]))
     ystocEnv = np.zeros((indexes.shape[0], stocEnv.shape[1]))
-    frameIdx = 0
-    for l in indexes[1:]:
-        idx = int(round(l))
+    for frameIdx, idx_val in enumerate(indexes[1:]):
+        idx = int(round(idx_val))
         yhfreq[frameIdx, :] = hfreq[idx, :]
         yhmag[frameIdx, :] = hmag[idx, :]
         ystocEnv[frameIdx, :] = stocEnv[idx, :]
-        frameIdx += 1
     return yhfreq, yhmag, ystocEnv
-
 
 
 def hpsMorph(
@@ -76,32 +72,44 @@ def hpsMorph(
         ystocEnv: Output stochastic envelope
     """
     if hfreqIntp.size % 2 != 0:
-        raise ValueError("Harmonic frequencies interpolation array does not have an even size")
+        raise ValueError(
+            "Harmonic frequencies interpolation array does not have an even size"
+        )
     if hmagIntp.size % 2 != 0:
-        raise ValueError("Harmonic magnitudes interpolation does not have an even size")
+        raise ValueError(
+            "Harmonic magnitudes interpolation does not have an even size"
+        )
     if stocIntp.size % 2 != 0:
-        raise ValueError("Stochastic component array does not have an even size")
+        raise ValueError(
+            "Stochastic component array does not have an even size"
+        )
     L1 = hfreq1[:, 0].size
     L2 = hfreq2[:, 0].size
     hfreqIntp[::2] = (L1 - 1) * hfreqIntp[::2] / hfreqIntp[-2]
     hmagIntp[::2] = (L1 - 1) * hmagIntp[::2] / hmagIntp[-2]
     stocIntp[::2] = (L1 - 1) * stocIntp[::2] / stocIntp[-2]
-    hfreqIntpEnv = interp1d(hfreqIntp[0::2], hfreqIntp[1::2], fill_value=0)
+    hfreqIntpEnv = interp1d(hfreqIntp[::2], hfreqIntp[1::2], fill_value=0)
     hfreqIndexes = hfreqIntpEnv(np.arange(L1))
-    hmagIntpEnv = interp1d(hmagIntp[0::2], hmagIntp[1::2], fill_value=0)
+    hmagIntpEnv = interp1d(hmagIntp[::2], hmagIntp[1::2], fill_value=0)
     hmagIndexes = hmagIntpEnv(np.arange(L1))
-    stocIntpEnv = interp1d(stocIntp[0::2], stocIntp[1::2], fill_value=0)
+    stocIntpEnv = interp1d(stocIntp[::2], stocIntp[1::2], fill_value=0)
     stocIndexes = stocIntpEnv(np.arange(L1))
     yhfreq = np.zeros_like(hfreq1)
     yhmag = np.zeros_like(hmag1)
     ystocEnv = np.zeros_like(stocEnv1)
-    for l in range(L1):
-        dataIndex = int(round(((L2 - 1) * l) / float(L1 - 1)))
+    for idx in range(L1):
+        dataIndex = int(round(((L2 - 1) * idx) / float(L1 - 1)))
         harmonics = np.intersect1d(
-            np.nonzero(hfreq1[l, :])[0],
+            np.nonzero(hfreq1[idx, :])[0],
             np.nonzero(hfreq2[dataIndex, :])[0],
         )
-        yhfreq[l, harmonics] = (1 - hfreqIndexes[l]) * hfreq1[l, harmonics] + hfreqIndexes[l] * hfreq2[dataIndex, harmonics]
-        yhmag[l, harmonics] = (1 - hmagIndexes[l]) * hmag1[l, harmonics] + hmagIndexes[l] * hmag2[dataIndex, harmonics]
-        ystocEnv[l, :] = (1 - stocIndexes[l]) * stocEnv1[l, :] + stocIndexes[l] * stocEnv2[dataIndex, :]
+        yhfreq[idx, harmonics] = (1 - hfreqIndexes[idx]) * hfreq1[
+            idx, harmonics
+        ] + hfreqIndexes[idx] * hfreq2[dataIndex, harmonics]
+        yhmag[idx, harmonics] = (1 - hmagIndexes[idx]) * hmag1[
+            idx, harmonics
+        ] + hmagIndexes[idx] * hmag2[dataIndex, harmonics]
+        ystocEnv[idx, :] = (1 - stocIndexes[idx]) * stocEnv1[
+            idx, :
+        ] + stocIndexes[idx] * stocEnv2[dataIndex, :]
     return yhfreq, yhmag, ystocEnv

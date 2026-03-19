@@ -1,4 +1,3 @@
-
 """
 Transformations using the stochasticModel (stochastic spectral model).
 """
@@ -32,6 +31,6 @@ def stochasticTimeScale(
     )
     indexes = (L - 1) * timeScalingEnv(np.arange(outL) / float(outL))
     ystocEnv = stocEnv[0, :]
-    for l in indexes[1:]:
-        ystocEnv = np.vstack((ystocEnv, stocEnv[int(round(l)), :]))
+    for idx in indexes[1:]:
+        ystocEnv = np.vstack((ystocEnv, stocEnv[int(round(idx)), :]))
     return ystocEnv
