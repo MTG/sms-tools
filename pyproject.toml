@@ -27,7 +27,8 @@ Issues = "https://github.com/mtg/sms-tools/issues"
 [project.optional-dependencies]
 test = [
   "pytest>=8.0",
-  "pytest-cov>=5.0"
+  "pytest-cov>=5.0",
+  "hypothesis"
 ]
 
 [tool.setuptools.packages]
@@ -46,3 +47,6 @@ skip = ["pp*", "cp36*", "cp37*", "cp38", "*i686*", "*musllinux*", "*ppc64le*", "
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-ra"
+
+[tool.black]
+line-length = 79
