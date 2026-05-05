@@ -9976,7 +9976,6 @@ static const char* __Pyx_BufFmt_CheckString(__Pyx_BufFmt_Context* ctx, const cha
           PyList_SET_ITEM(fromlist, 0, marker);
   #else
           if (unlikely(PyList_SetItem(fromlist, 0, marker) < 0)) {
-              Py_DECREF(marker);
               Py_DECREF(fromlist);
               return NULL;
           }
